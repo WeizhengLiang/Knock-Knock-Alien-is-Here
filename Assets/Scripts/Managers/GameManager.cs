@@ -88,6 +88,8 @@ public class GameManager : MonoBehaviour
         
         // 重置时间缩放（以防游戏在暂停状态重启）
         Time.timeScale = 1;
+
+        DraggableObject.ResetGlobalState();
         
         // 重新加载当前场景
         Scene currentScene = SceneManager.GetActiveScene();
