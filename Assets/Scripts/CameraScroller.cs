@@ -8,10 +8,14 @@ public class CameraScroller : MonoBehaviour
     public float leftBoundary_X, rightBoundary_X;
     private bool shouldScrollLeft = false;
     private bool shouldScrollRight = false;
+    public GameObject leftScreenEdge, rightScreenEdge;
+    private Animator animLeft, animRight;
 
     void Start()
     {
         cam = Camera.main;
+        animLeft = leftScreenEdge.GetComponent<Animator>();
+        animRight = rightScreenEdge.GetComponent<Animator>();
     }
 
     void Update()
@@ -38,27 +42,29 @@ public class CameraScroller : MonoBehaviour
 
     public void PointerEnter(string side)
     {
-        //Debug.Log(side);
         if (side == "left")
         {
             shouldScrollLeft = true;
+            animLeft.SetBool("Show", true);
         }
         else if (side == "right")
         {
             shouldScrollRight = true;
+            animRight.SetBool("Show", true);
         }
     }
 
     public void PointerExit(string side)
     {
-        //Debug.Log(side);
         if (side == "left")
         {
             shouldScrollLeft = false;
+            animLeft.SetBool("Show", false);
         }
         else if (side == "right")
         {
             shouldScrollRight = false;
+            animRight.SetBool("Show", false);
         }
     }
 }

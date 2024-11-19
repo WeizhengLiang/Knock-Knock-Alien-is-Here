@@ -183,6 +183,7 @@ GameObject:
   - component: {fileID: 1074673491902039748}
   - component: {fileID: 7572654732623557170}
   - component: {fileID: 5660749017604867470}
+  - component: {fileID: 4791767223859215638}
   m_Layer: 5
   m_Name: EdgeRight
   m_TagString: Untagged
@@ -206,8 +207,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -96.387, y: 0.00024414}
-  m_SizeDelta: {x: 193.183, y: 1080}
+  m_AnchoredPosition: {x: -160, y: -0.00012207}
+  m_SizeDelta: {x: 320, y: 1080}
   m_Pivot: {x: 0.49999937, y: 0.4999999}
 --- !u!222 &1074673491902039748
 CanvasRenderer:
@@ -230,14 +231,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.49411762, g: 1, b: 0.9471461, a: 0.23921569}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 83e22392b96938643be8b15c0bfd4705, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -292,6 +293,27 @@ MonoBehaviour:
             m_StringArgument: right
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!95 &4791767223859215638
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512606441725664700}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e3c1ca153fc846f4186b8826a57decc7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2034283732873975821
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,6 +363,8 @@ MonoBehaviour:
   scrollSpeed: 12
   leftBoundary_X: -23
   rightBoundary_X: 23
+  leftScreenEdge: {fileID: 7040789973422150603}
+  rightScreenEdge: {fileID: 1512606441725664700}
 --- !u!1 &7040789973422150603
 GameObject:
   m_ObjectHideFlags: 0
@@ -353,6 +377,7 @@ GameObject:
   - component: {fileID: 4922426345018834983}
   - component: {fileID: 6575685531394948975}
   - component: {fileID: 453081145623579760}
+  - component: {fileID: 6876128401540974183}
   m_Layer: 5
   m_Name: EdgeLeft
   m_TagString: Untagged
@@ -367,17 +392,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7040789973422150603}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2671149358517557761}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 96.391, y: 0.00024414}
-  m_SizeDelta: {x: 193.182, y: 1080}
+  m_AnchoredPosition: {x: 160.045, y: 0.00024414057}
+  m_SizeDelta: {x: 320, y: 1080}
   m_Pivot: {x: 0.49999937, y: 0.4999999}
 --- !u!222 &4922426345018834983
 CanvasRenderer:
@@ -400,14 +425,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.49411762, g: 1, b: 0.9471461, a: 0.23921569}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 83e22392b96938643be8b15c0bfd4705, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -462,3 +487,24 @@ MonoBehaviour:
             m_StringArgument: left
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!95 &6876128401540974183
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7040789973422150603}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e3c1ca153fc846f4186b8826a57decc7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
