@@ -7,7 +7,8 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
     
     [Header("UI Panels")]
-    [SerializeField] private GameObject gamePanel;    // 新增游戏面板
+    [SerializeField] private GameObject mainPanel;
+    [SerializeField] private GameObject gamePanel;   
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject gameOverPanel;
     
@@ -56,6 +57,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         // 初始化时隐藏所有面板
+        mainPanel.SetActive(true);
         gamePanel.SetActive(false);
         pausePanel.SetActive(false);
         gameOverPanel.SetActive(false);
@@ -74,6 +76,10 @@ public class UIManager : MonoBehaviour
         float time = GameManager.Instance.GetRemainingTime();
         timerText.text = $"Time: {time:F1}";
     }
+    public void ShowMainPanel(bool show)
+    {
+        mainPanel.SetActive(show);
+    }
     
     public void ShowGamePanel(bool show)
     {
@@ -91,8 +97,17 @@ public class UIManager : MonoBehaviour
     }
     
     // 切换到游戏状态时调用此方法
+    public void SwitchToMainState()
+    {
+        ShowMainPanel(true);
+        ShowGamePanel(false);
+        ShowPausePanel(false);
+        ShowGameOverPanel(false);
+    }
+    
     public void SwitchToGameState()
     {
+        ShowMainPanel(false);
         ShowGamePanel(true);
         ShowPausePanel(false);
         ShowGameOverPanel(false);
@@ -101,13 +116,18 @@ public class UIManager : MonoBehaviour
     // 切换到暂停状态时调用此方法
     public void SwitchToPauseState()
     {
+        ShowMainPanel(false);
+        ShowGamePanel(false);
         ShowPausePanel(true);
+        ShowGameOverPanel(false);
     }
     
     // 切换到游戏结束状态时调用此方法
     public void SwitchToGameOverState()
     {
+        ShowMainPanel(false);
         ShowGamePanel(false);
+        ShowPausePanel(false);
         ShowGameOverPanel(true);
     }
 

@@ -104,6 +104,9 @@ public class GameManager : MonoBehaviour
         // 更新UI显示
         switch (newState)
         {
+            case GameState.Menu:
+                UIManager.Instance.SwitchToMainState();
+                break;
             case GameState.Playing:
                 UIManager.Instance.SwitchToGameState();
                 break;
