@@ -17,7 +17,7 @@ public class DraggableObject : MonoBehaviour
     protected Rigidbody2D rb;
     protected Collider2D col;
     protected SpriteRenderer spriteRenderer;
-    private bool isDragging = false;
+    protected bool isDragging = false;
     protected bool isInvalidPosition = false;
     protected Color originalColor;
     private static bool isAnyObjectBeingDragged = false;
