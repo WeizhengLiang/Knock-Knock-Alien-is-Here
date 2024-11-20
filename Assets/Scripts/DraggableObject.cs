@@ -6,7 +6,11 @@ using UnityEngine;
 public class DraggableObject : MonoBehaviour
 {
     [Header("拖拽设置")]
-    [SerializeField] protected float dragSpeed = 10f;
+    [SerializeField] protected float dragSpeed = 5f;
+    [SerializeField] protected float baseDragSpeed = 5f;    // 基础拖拽速度
+    [SerializeField] protected float massInfluence = 0.5f;   // 质量对拖拽速度的影响程度
+    [SerializeField] protected float minDragSpeed = 0.5f;      // 最小拖拽速度
+    [SerializeField] protected float maxDragSpeed = 15f;     // 最大拖拽速度
     [SerializeField] private LayerMask collisionLayer;
 
     [Header("基础物体属性")]
@@ -49,6 +53,8 @@ public class DraggableObject : MonoBehaviour
         col.isTrigger = false;
         // 创建拖拽锚点对象
         CreateDragAnchor();
+        // 根据质量计算拖拽速度
+        CalculateDragSpeed();
     }
 
     protected virtual void OnEnable()
@@ -112,6 +118,26 @@ public class DraggableObject : MonoBehaviour
             rb.angularVelocity = frozenAngularVelocity;
             
             wasFrozen = false;
+        }
+    }
+
+    protected virtual void CalculateDragSpeed()
+    {
+        if (rb != null)
+        {
+            // 质量越大，速度越慢
+            float massMultiplier = 1f / (1f + (rb.mass * massInfluence));
+            dragSpeed = baseDragSpeed * massMultiplier;
+            
+            // 限制在最小和最大速度范围内
+            dragSpeed = Mathf.Clamp(dragSpeed, minDragSpeed, maxDragSpeed);
+            
+            // 输出调试信息
+            Debug.Log($"{gameObject.name} 的质量: {rb.mass}, 拖拽速度: {dragSpeed}");
+        }
+        else
+        {
+            dragSpeed = baseDragSpeed;
         }
     }
 
@@ -206,7 +232,11 @@ public class DraggableObject : MonoBehaviour
         if (dragAnchor != null)
         {
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            dragAnchor.transform.position = mousePos;
+            Vector2 currentAnchorPos = dragAnchor.transform.position;
+            
+            // 使用 dragSpeed 来插值移动锚点
+            Vector2 newPosition = Vector2.Lerp(currentAnchorPos, mousePos, dragSpeed * Time.deltaTime);
+            dragAnchor.transform.position = newPosition;
         }
     }
     

@@ -10,7 +10,8 @@ public class HeavyObject : DraggableObject
     {
         base.Start();
         // 重物可能需要更大的拖拽速度来体现重量感
-        dragSpeed *= 0.2f;
+        baseDragSpeed *= 0.8f;
+        CalculateDragSpeed();  // 重新计算实际拖拽速度
     }
     
     public override float GetWeight() { return heavyWeight; }

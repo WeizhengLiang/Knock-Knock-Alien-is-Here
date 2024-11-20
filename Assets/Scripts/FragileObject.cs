@@ -21,7 +21,8 @@ public class FragileObject : DraggableObject
     {
         base.Start();
         // 易碎物体可能需要更快的拖拽速度来体现轻盈感
-        dragSpeed *= 1.2f;
+        baseDragSpeed *= 1.2f;
+        CalculateDragSpeed();  // 重新计算实际拖拽速度
         lastForceTime = Time.time;
     }
     
