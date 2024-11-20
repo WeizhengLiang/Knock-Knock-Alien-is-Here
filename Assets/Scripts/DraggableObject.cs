@@ -16,6 +16,11 @@ public class DraggableObject : MonoBehaviour
     [Header("基础物体属性")]
     [SerializeField] protected float baseWeight = 1f;
     [SerializeField] protected float baseStrength = 1f;
+
+    [Header("材质设置")]
+    [SerializeField] protected Material normalMaterial;      // 正常状态材质
+    [SerializeField] protected Material draggingMaterial;    // 拖拽状态材质
+    [SerializeField] protected Material invalidMaterial;     // 无效位置状态材质
     
     protected Camera mainCamera;
     protected Rigidbody2D rb;
@@ -243,7 +248,21 @@ public class DraggableObject : MonoBehaviour
     protected virtual void UpdatePlacementValidation()
     {
         isInvalidPosition = !IsValidPlacement();
-        spriteRenderer.color = isInvalidPosition ? Color.red : originalColor;
+        if (spriteRenderer != null)
+        {
+            if (isDragging)
+            {
+                spriteRenderer.material = draggingMaterial;
+            }
+            else if (isInvalidPosition)
+            {
+                spriteRenderer.material = invalidMaterial;
+            }
+            else
+            {
+                spriteRenderer.material = normalMaterial;
+            }
+        }
     }
     
     private void TryPlaceObject()
@@ -277,7 +296,10 @@ public class DraggableObject : MonoBehaviour
         rb.isKinematic = true;  // 改为 true 防止自由落体
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
-        spriteRenderer.color = Color.red;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.material = invalidMaterial;
+        }
         
         // 保持其他物体冻结
         FreezeAllObjects();
@@ -298,7 +320,10 @@ public class DraggableObject : MonoBehaviour
         dragAnchor.SetActive(false);
         
         col.isTrigger = false;
-        spriteRenderer.color = originalColor;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.material = normalMaterial;
+        }
         
         // 解冻所有物体
         UnfreezeAllObjects();

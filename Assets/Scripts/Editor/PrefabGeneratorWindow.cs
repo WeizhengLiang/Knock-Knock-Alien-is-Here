@@ -6,6 +6,16 @@ public class PrefabGeneratorWindow : EditorWindow
 {
     private enum ObjectType { Normal, Heavy, Fragile }
 
+    // 预设材质路径
+    private const string NORMAL_MATERIAL_PATH = "Assets/Art/Material/Mat_Default.mat";
+    private const string DRAGGING_MATERIAL_PATH = "Assets/Art/Material/Mat_Pickup.mat";
+    private const string INVALID_MATERIAL_PATH = "Assets/Art/Material/Mat_Red.mat";
+    
+    // 缓存材质引用
+    private Material normalMaterial;
+    private Material draggingMaterial;
+    private Material invalidMaterial;
+
     private class ObjectTemplate
     {
         public string prefabName = "NewPrefab";
@@ -21,6 +31,24 @@ public class PrefabGeneratorWindow : EditorWindow
     public static void ShowWindow()
     {
         GetWindow<PrefabGeneratorWindow>("Prefab Generator");
+    }
+
+    private void OnEnable()
+    {
+        // 加载材质
+        LoadMaterials();
+    }
+
+    private void LoadMaterials()
+    {
+        normalMaterial = AssetDatabase.LoadAssetAtPath<Material>(NORMAL_MATERIAL_PATH);
+        draggingMaterial = AssetDatabase.LoadAssetAtPath<Material>(DRAGGING_MATERIAL_PATH);
+        invalidMaterial = AssetDatabase.LoadAssetAtPath<Material>(INVALID_MATERIAL_PATH);
+        
+        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null)
+        {
+            Debug.LogError("无法加载材质！请确保材质文件存在于正确的路径中。");
+        }
     }
 
     private void OnGUI()
@@ -64,6 +92,13 @@ public class PrefabGeneratorWindow : EditorWindow
 
     private void GeneratePrefabs()
     {
+        // 确保材质已加载
+        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null)
+        {
+            Debug.LogError("材质未正确加载！");
+            return;
+        }
+
         foreach (var template in templates)
         {
             if (string.IsNullOrEmpty(template.prefabName) || template.objectSprite == null || (template.selectedType == ObjectType.Fragile && template.brokenPrefab == null))
@@ -83,6 +118,23 @@ public class PrefabGeneratorWindow : EditorWindow
 
             GameObject newObject = Instantiate(templatePrefab);
             newObject.name = template.prefabName;
+
+            // 设置材质
+            DraggableObject draggable = newObject.GetComponent<DraggableObject>();
+            if (draggable != null)
+            {
+                SerializedObject serializedDraggable = new SerializedObject(draggable);
+                
+                SerializedProperty normalMatProp = serializedDraggable.FindProperty("normalMaterial");
+                SerializedProperty draggingMatProp = serializedDraggable.FindProperty("draggingMaterial");
+                SerializedProperty invalidMatProp = serializedDraggable.FindProperty("invalidMaterial");
+                
+                normalMatProp.objectReferenceValue = normalMaterial;
+                draggingMatProp.objectReferenceValue = draggingMaterial;
+                invalidMatProp.objectReferenceValue = invalidMaterial;
+                
+                serializedDraggable.ApplyModifiedProperties();
+            }
 
             SpriteRenderer sr = newObject.GetComponent<SpriteRenderer>();
             if (sr != null)
