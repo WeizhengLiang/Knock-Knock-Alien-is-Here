@@ -11,8 +11,8 @@ public class FragileObject : DraggableObject
     [SerializeField] private float forceResetTime = 0.5f;       // 重置累积力的时间
     
     [Header("破碎效果")]
-    [SerializeField] private GameObject brokenPrefab;           // 破碎预制体
-    
+    [SerializeField] public GameObject brokenPrefab;           // 破碎预制体
+
     private float accumulatedForce = 0f;    // 累积受力
     private float lastForceTime;            // 上次受力时间
     private bool isBroken = false;          // 是否已破碎
