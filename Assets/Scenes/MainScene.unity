@@ -439,12 +439,12 @@ MonoBehaviour:
   pausePanel: {fileID: 1371536687}
   gameOverPanel: {fileID: 1290063138}
   timerText: {fileID: 1836397455}
-  coverageText: {fileID: 1893279501}
-  resultText: {fileID: 322145288}
   restartButton: {fileID: 1959304235}
   startButton: {fileID: 441080903}
   pauseButton: {fileID: 346320048}
   resumeButton: {fileID: 2123906529}
+  coverageText: {fileID: 1893279501}
+  resultText: {fileID: 322145288}
   winUI: {fileID: 972960296}
   loseUI: {fileID: 1332744206}
   returnButton: {fileID: 888812578}
@@ -485,8 +485,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1836397454}
-  - {fileID: 1893279500}
-  - {fileID: 322145287}
   - {fileID: 346320051}
   - {fileID: 666503069}
   m_Father: {fileID: 702321331}
@@ -819,7 +817,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 108998818}
+  m_Father: {fileID: 1290063139}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3190,6 +3188,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 322145287}
+  - {fileID: 1893279500}
   - {fileID: 614664872}
   - {fileID: 1959304232}
   - {fileID: 972960297}
@@ -4229,7 +4229,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 108998818}
+  m_Father: {fileID: 1290063139}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4462,6 +4462,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1078932413}
     m_Modifications:
+    - target: {fileID: 3084301597165584489, guid: adeaa31c2bad6468da4d44e0c0cf1596, type: 3}
+      propertyPath: m_Mass
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3153505941042417800, guid: adeaa31c2bad6468da4d44e0c0cf1596, type: 3}
       propertyPath: m_Name
       value: green_chair

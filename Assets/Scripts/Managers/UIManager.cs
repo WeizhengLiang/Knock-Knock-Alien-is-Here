@@ -17,8 +17,6 @@ public class UIManager : MonoBehaviour
     
     [Header("Game UI Elements")]
     [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private TextMeshProUGUI coverageText;
-    [SerializeField] private TextMeshProUGUI resultText;
 
     [Header("Buttons")]
     [SerializeField] private Button restartButton;    // 在 Inspector 中关联重启按钮
@@ -27,6 +25,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button resumeButton;    // 在 Inspector 中关联继续按钮
 
     [Header("End Game UI")]
+    [SerializeField] private TextMeshProUGUI coverageText;
+    [SerializeField] private TextMeshProUGUI resultText;
     [SerializeField] private GameObject winUI;
     [SerializeField] private GameObject loseUI;
     [SerializeField] private Button returnButton;
@@ -96,16 +96,16 @@ public class UIManager : MonoBehaviour
         pauseButton.onClick.AddListener(OnPauseButtonClicked);
         resumeButton.onClick.AddListener(OnResumeButtonClicked);
         // Return按钮
-        returnButton.onClick.AddListener(() => SceneManager.LoadScene("MainMenu"));
+        returnButton.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
         
         // 胜利场景按钮
-        futureDayButton.onClick.AddListener(() => SceneManager.LoadScene("FutureScene"));
+        futureDayButton.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
         
         // 失败场景按钮
-        timeMachineButton.onClick.AddListener(() => SceneManager.LoadScene("PastScene"));
+        timeMachineButton.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
         
         // Collection按钮
-        collectionButton.onClick.AddListener(() => SceneManager.LoadScene("Collection"));
+        collectionButton.onClick.AddListener(() => Debug.Log("open Collection"));
         
         // 初始时隐藏所有结算按钮
         returnButton.gameObject.SetActive(false);
@@ -284,7 +284,7 @@ public class UIManager : MonoBehaviour
     private IEnumerator ShowWinSequence()
     {
         winUI.SetActive(true);
-        resultText.text = "胜利！";
+        resultText.text = "Victory!";
         // 显示胜利相关按钮
         returnButton.gameObject.SetActive(true);
         futureDayButton.gameObject.SetActive(true);
@@ -295,7 +295,7 @@ public class UIManager : MonoBehaviour
     private IEnumerator ShowLoseSequence()
     {
         loseUI.SetActive(true);
-        resultText.text = "失败...";
+        resultText.text = "Lose...";
         // 显示失败相关按钮
         returnButton.gameObject.SetActive(true);
         timeMachineButton.gameObject.SetActive(true);
