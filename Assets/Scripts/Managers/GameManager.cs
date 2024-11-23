@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,12 +15,16 @@ public class GameManager : MonoBehaviour
         GameOver
     }
     
-    // 游戏配置
-    private const float GAME_DURATION = 20f;
-    
     // 游戏状态变量
     public GameState CurrentState { get; private set; }
     private float remainingTime;
+
+    [Header("游戏设置")]
+    [SerializeField] private float levelCompleteDelay = 1f;    // 完成后的延迟时间    
+    [SerializeField] private float totalGameTime = 20f;    // 总游戏时间
+    [SerializeField] private float finalCountdownTime = 3f; // 最后的倒计时时间
+    [SerializeField] private float winThreshold = 70f;
+    private bool isFinalCountdown = false;
     
     private void Awake()
     {
@@ -51,6 +56,13 @@ public class GameManager : MonoBehaviour
     private void UpdateGameTimer()
     {
         remainingTime -= Time.deltaTime;
+        // 检查是否进入最后3秒
+        if (!isFinalCountdown && remainingTime <= finalCountdownTime)
+        {
+            isFinalCountdown = true;
+            UIManager.Instance.ShowFinalCountdown();
+        }
+        
         if (remainingTime <= 0)
         {
             EndGame();
@@ -59,7 +71,8 @@ public class GameManager : MonoBehaviour
     
     public void StartGame()
     {
-        remainingTime = GAME_DURATION;
+        remainingTime = totalGameTime;
+        isFinalCountdown = false;
         SetGameState(GameState.Playing);
     }
     
@@ -77,14 +90,15 @@ public class GameManager : MonoBehaviour
     
     public void EndGame()
     {
+        remainingTime = 0;
         SetGameState(GameState.GameOver);
-        // TODO: 实现游戏结束逻辑
+        OnCountdownComplete();
     }
 
     public void RestartGame()
     {
         // 重置游戏时间
-        remainingTime = GAME_DURATION;
+        remainingTime = totalGameTime;
         
         // 重置时间缩放（以防游戏在暂停状态重启）
         Time.timeScale = 1;
@@ -124,5 +138,27 @@ public class GameManager : MonoBehaviour
     public float GetRemainingTime()
     {
         return remainingTime;
+    }
+
+    public void OnLevelComplete()
+    {
+        StartCoroutine(LevelCompleteSequence());
+    }
+    
+    private IEnumerator LevelCompleteSequence()
+    {
+        // 禁用所有物体的拖拽
+        DraggableObject.SetGlobalFrozen(true);
+        
+        // 等待一段时间
+        yield return new WaitForSeconds(levelCompleteDelay);
+
+        // 可以在这里添加其他胜利效果
+        // 例如：播放音效、粒子效果等
+    }
+    public void OnCountdownComplete()
+    {
+        float finalCoverage = DoorAreaManager.Instance.GetCurrentCoverage();
+        UIManager.Instance.StartGameEndSequence(finalCoverage, winThreshold);
     }
 }

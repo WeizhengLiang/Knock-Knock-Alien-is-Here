@@ -5,8 +5,7 @@ public class DoorAreaManager : MonoBehaviour
     public static DoorAreaManager Instance { get; private set; }
     
     [Header("区域设置")]
-    [SerializeField] private BoxCollider2D doorArea; // 门口可放置区域
-    [SerializeField] private float maxStackHeight = 5f; // 最大堆叠高度
+    [SerializeField] private DoorCoverageCalculator doorCoverageCalculator;
     
     private void Awake()
     {
@@ -20,13 +19,8 @@ public class DoorAreaManager : MonoBehaviour
         }
     }
     
-    public bool IsInsideDoorArea(Vector2 position)
+    public float GetCurrentCoverage()
     {
-        return doorArea.bounds.Contains(position);
-    }
-    
-    public float GetMaxStackHeight()
-    {
-        return maxStackHeight;
+        return doorCoverageCalculator != null ? doorCoverageCalculator.GetCurrentCoverage() : 0f;
     }
 }

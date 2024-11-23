@@ -1,6 +1,9 @@
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -14,13 +17,31 @@ public class UIManager : MonoBehaviour
     
     [Header("Game UI Elements")]
     [SerializeField] private TextMeshProUGUI timerText;
-    // 可以在这里添加其他游戏中需要的 UI 元素
+    [SerializeField] private TextMeshProUGUI coverageText;
+    [SerializeField] private TextMeshProUGUI resultText;
 
     [Header("Buttons")]
     [SerializeField] private Button restartButton;    // 在 Inspector 中关联重启按钮
     [SerializeField] private Button startButton;    // 在 Inspector 中关联开始按钮
     [SerializeField] private Button pauseButton;    // 在 Inspector 中关联暂停按钮
     [SerializeField] private Button resumeButton;    // 在 Inspector 中关联继续按钮
+
+    [Header("End Game UI")]
+    [SerializeField] private GameObject winUI;
+    [SerializeField] private GameObject loseUI;
+    [SerializeField] private Button returnButton;
+    [SerializeField] private Button futureDayButton;    // 胜利时显示
+    [SerializeField] private Button timeMachineButton;  // 失败时显示
+    [SerializeField] private Button collectionButton;
+    [SerializeField] private float coverageAnimSpeed = 50f;
+
+    [Header("Countdown UI")]
+    [SerializeField] private GameObject finalCountdownUI;   // 最后3秒倒计时UI
+    [SerializeField] private TextMeshProUGUI countdownText;
+
+    private float displayedCoverage;
+    private float targetCoverage;
+    private bool isAnimatingCoverage;
     
     private void Awake()
     {
@@ -33,25 +54,7 @@ public class UIManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (restartButton != null)
-        {
-            restartButton.onClick.AddListener(OnRestartButtonClicked);
-        }
-
-        if (startButton != null)
-        {
-            startButton.onClick.AddListener(OnStartButtonClicked);
-        }
-
-        if (pauseButton != null)
-        {
-            pauseButton.onClick.AddListener(OnPauseButtonClicked);
-        }
-
-        if (resumeButton != null)
-        {
-            resumeButton.onClick.AddListener(OnResumeButtonClicked);
-        }
+        SetupButtons();
     }
     
     private void Start()
@@ -74,8 +77,43 @@ public class UIManager : MonoBehaviour
     private void UpdateTimerDisplay()
     {
         float time = GameManager.Instance.GetRemainingTime();
-        timerText.text = $"Time: {time:F1}";
+        if (time <= 3f)
+        {
+            // 显示大数字倒计时
+            countdownText.text = Mathf.CeilToInt(time).ToString();
+        }
+        else
+        {
+            // 显示普通计时器
+            timerText.text = $"Time: {time:F1}";
+        }
     }
+
+    private void SetupButtons()
+    {
+        restartButton.onClick.AddListener(OnRestartButtonClicked);
+        startButton.onClick.AddListener(OnStartButtonClicked);
+        pauseButton.onClick.AddListener(OnPauseButtonClicked);
+        resumeButton.onClick.AddListener(OnResumeButtonClicked);
+        // Return按钮
+        returnButton.onClick.AddListener(() => SceneManager.LoadScene("MainMenu"));
+        
+        // 胜利场景按钮
+        futureDayButton.onClick.AddListener(() => SceneManager.LoadScene("FutureScene"));
+        
+        // 失败场景按钮
+        timeMachineButton.onClick.AddListener(() => SceneManager.LoadScene("PastScene"));
+        
+        // Collection按钮
+        collectionButton.onClick.AddListener(() => SceneManager.LoadScene("Collection"));
+        
+        // 初始时隐藏所有结算按钮
+        returnButton.gameObject.SetActive(false);
+        futureDayButton.gameObject.SetActive(false);
+        timeMachineButton.gameObject.SetActive(false);
+        collectionButton.gameObject.SetActive(false);
+    }
+    
     public void ShowMainPanel(bool show)
     {
         mainPanel.SetActive(show);
@@ -95,6 +133,15 @@ public class UIManager : MonoBehaviour
     {
         gameOverPanel.SetActive(show);
     }
+
+    public void ShowFinalCountdown()
+    {
+        // 切换到最后3秒的倒计时显示
+        finalCountdownUI.SetActive(true);
+        
+        // 可以在这里添加倒计时动画效果
+        // 例如：缩放动画、颜色变化等
+    }
     
     // 切换到游戏状态时调用此方法
     public void SwitchToMainState()
@@ -111,6 +158,9 @@ public class UIManager : MonoBehaviour
         ShowGamePanel(true);
         ShowPausePanel(false);
         ShowGameOverPanel(false);
+
+        // 初始显示普通计时器
+        finalCountdownUI.SetActive(false);
     }
     
     // 切换到暂停状态时调用此方法
@@ -153,24 +203,111 @@ public class UIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (restartButton != null)
+        restartButton.onClick.RemoveListener(OnRestartButtonClicked);
+        startButton.onClick.RemoveListener(OnStartButtonClicked);
+        pauseButton.onClick.RemoveListener(OnPauseButtonClicked);
+        resumeButton.onClick.RemoveListener(OnResumeButtonClicked);
+        returnButton.onClick.RemoveAllListeners();
+        futureDayButton.onClick.RemoveAllListeners();
+        timeMachineButton.onClick.RemoveAllListeners();
+        collectionButton.onClick.RemoveAllListeners();
+    }
+
+    public void StartGameEndSequence(float finalCoverage, float winThreshold)
+    {
+        targetCoverage = finalCoverage;
+        displayedCoverage = 0f;
+        isAnimatingCoverage = true;
+        StartCoroutine(AnimateCoverageSequence(winThreshold));
+    }
+    
+    private IEnumerator AnimateCoverageSequence(float winThreshold)
+    {
+        // 等待无效物体消失动画完成
+        yield return StartCoroutine(HandleInvalidObjects());
+        
+        // 动画显示百分比
+        while (isAnimatingCoverage)
         {
-            restartButton.onClick.RemoveListener(OnRestartButtonClicked);
+            displayedCoverage = Mathf.MoveTowards(displayedCoverage, targetCoverage, coverageAnimSpeed * Time.deltaTime);
+            UpdateCoverageDisplay(displayedCoverage);
+            
+            // 检查是否达到胜利阈值
+            if (targetCoverage >= winThreshold && displayedCoverage >= winThreshold)
+            {
+                yield return StartCoroutine(ShowWinSequence());
+            }
+            
+            // 检查是否达到最终分数
+            if (Mathf.Approximately(displayedCoverage, targetCoverage))
+            {
+                isAnimatingCoverage = false;
+                if (targetCoverage < winThreshold)
+                {
+                    yield return StartCoroutine(ShowLoseSequence());
+                }
+            }
+            
+            yield return null;
         }
+    }
 
-        if (startButton != null)
+    private IEnumerator HandleInvalidObjects()
+    {
+        var invalidObjects = DraggableObject.AllDraggableObjects
+            .Where(obj => obj.IsInInvalidPosition() || obj.IsDragging());
+            
+        foreach (var obj in invalidObjects)
         {
-            startButton.onClick.RemoveListener(OnStartButtonClicked);
-        }   
-
-        if (pauseButton != null)
-        {
-            pauseButton.onClick.RemoveListener(OnPauseButtonClicked);
+            // 触发消失动画
+            obj.TriggerDisappearAnimation();
         }
-
-        if (resumeButton != null)
+        
+        yield return new WaitForSeconds(1f);
+    }
+    
+    // private IEnumerator BlinkAndDestroyObject(DraggableObject obj)
+    // {
+    //     SpriteRenderer renderer = obj.GetComponent<SpriteRenderer>();
+    //     float elapsedTime = 0f;
+        
+    //     while (elapsedTime < 1f)
+    //     {
+    //         renderer.enabled = !renderer.enabled;
+    //         yield return new WaitForSeconds(0.1f);
+    //         elapsedTime += 0.1f;
+    //     }
+        
+    //     Destroy(obj.gameObject);
+    // }
+    
+    private IEnumerator ShowWinSequence()
+    {
+        winUI.SetActive(true);
+        resultText.text = "胜利！";
+        // 显示胜利相关按钮
+        returnButton.gameObject.SetActive(true);
+        futureDayButton.gameObject.SetActive(true);
+        collectionButton.gameObject.SetActive(true);
+        yield return null;
+    }
+    
+    private IEnumerator ShowLoseSequence()
+    {
+        loseUI.SetActive(true);
+        resultText.text = "失败...";
+        // 显示失败相关按钮
+        returnButton.gameObject.SetActive(true);
+        timeMachineButton.gameObject.SetActive(true);
+        collectionButton.gameObject.SetActive(true);
+        yield return null;
+    }
+    
+    private void UpdateCoverageDisplay(float coverage)
+    {
+        if (coverageText != null)
         {
-            resumeButton.onClick.RemoveListener(OnResumeButtonClicked);
+            coverageText.text = $"{coverage:F1}%";
         }
     }
 }

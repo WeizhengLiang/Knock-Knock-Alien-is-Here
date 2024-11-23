@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,21 +22,28 @@ public class DraggableObject : MonoBehaviour
     [SerializeField] protected Material normalMaterial;      // 正常状态材质
     [SerializeField] protected Material draggingMaterial;    // 拖拽状态材质
     [SerializeField] protected Material invalidMaterial;     // 无效位置状态材质
+
+    [Header("动画设置")]
+    [SerializeField] protected Animator disappearAnimator;
     
     protected Camera mainCamera;
     protected Rigidbody2D rb;
     protected Collider2D col;
     protected SpriteRenderer spriteRenderer;
     protected bool isDragging = false;
+    public bool IsDragging() => isDragging;
     protected bool isInvalidPosition = false;
+    public bool IsInInvalidPosition() => isInvalidPosition;
     protected Color originalColor;
     private static bool isAnyObjectBeingDragged = false;
     private static bool isGlobalFrozen = false;
+    private static bool hasInvalidPlacement = false;
     private static readonly Vector2 NORMAL_GRAVITY = new Vector2(0, -9.81f);
     private static readonly Vector2 ZERO_GRAVITY = Vector2.zero;
 
     // 静态列表跟踪所有可拖动物体
     private static List<DraggableObject> allDraggableObjects = new List<DraggableObject>();
+    public static List<DraggableObject> AllDraggableObjects => allDraggableObjects;
     
     // 记录冻结前的状态
     private Vector2 frozenVelocity;
@@ -123,6 +131,22 @@ public class DraggableObject : MonoBehaviour
             rb.angularVelocity = frozenAngularVelocity;
             
             wasFrozen = false;
+        }
+    }
+    
+    // 添加静态方法来控制全局冻结状态
+    public static void SetGlobalFrozen(bool frozen)
+    {
+        isGlobalFrozen = frozen;
+        
+        // 如果冻结，停止所有物体的拖拽
+        if (frozen)
+        {
+            FreezeAllObjects();
+        }
+        else
+        {
+            UnfreezeAllObjects();
         }
     }
 
@@ -247,7 +271,15 @@ public class DraggableObject : MonoBehaviour
     
     protected virtual void UpdatePlacementValidation()
     {
+        bool wasInvalid = isInvalidPosition;
         isInvalidPosition = !IsValidPlacement();
+
+        // 更新全局无效放置状态
+        if (wasInvalid != isInvalidPosition)
+        {
+            hasInvalidPlacement = isInvalidPosition;
+        }
+
         if (spriteRenderer != null)
         {
             if (isDragging)
@@ -263,6 +295,18 @@ public class DraggableObject : MonoBehaviour
                 spriteRenderer.material = normalMaterial;
             }
         }
+    }
+
+    // 静态方法检查是否有物体处于无效位置
+    public static bool HasInvalidPlacement()
+    {
+        return hasInvalidPlacement;
+    }
+    
+    // 重置状态
+    public static void ResetInvalidPlacement()
+    {
+        hasInvalidPlacement = false;
     }
     
     private void TryPlaceObject()
@@ -358,7 +402,7 @@ public class DraggableObject : MonoBehaviour
         return true;
     }
 
-        // 添加物体特性检查方法
+    // 添加物体特性检查方法
     protected bool CheckPlacementStrength(Collider2D otherCol)
     {
         DraggableObject otherObject = otherCol.GetComponent<DraggableObject>();
@@ -440,5 +484,23 @@ public class DraggableObject : MonoBehaviour
             }
             // 可以根据需要添加其他类型的碰撞器
         }
+    }
+
+    public void TriggerDisappearAnimation()
+    {
+        // Technical Artist 可以通过这个接口实现消失动画
+        if (disappearAnimator != null)
+        {
+            // animator.SetTrigger("Disappear");  // 动画参数名由 TA 定义
+        }
+        
+        // 1秒后禁用物体
+        StartCoroutine(DisableAfterDelay());
+    }
+    
+    private IEnumerator DisableAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+        gameObject.SetActive(false);
     }
 }
