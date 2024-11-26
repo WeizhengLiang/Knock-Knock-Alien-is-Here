@@ -24,7 +24,7 @@ public class DraggableObject : MonoBehaviour
     [SerializeField] protected Material invalidMaterial;     // 无效位置状态材质
 
     [Header("动画设置")]
-    [SerializeField] protected Animator disappearAnimator;
+    [SerializeField] protected Animator objectAnimator;
     
     protected Camera mainCamera;
     protected Rigidbody2D rb;
@@ -205,7 +205,7 @@ public class DraggableObject : MonoBehaviour
         // 冻结其他物体
         FreezeAllObjects();
         
-        // 设置拖拽物体的状态
+        // 设置拖拽物体的态
         dragAnchor.transform.position = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         dragAnchor.SetActive(true);
         
@@ -274,17 +274,21 @@ public class DraggableObject : MonoBehaviour
         bool wasInvalid = isInvalidPosition;
         isInvalidPosition = !IsValidPlacement();
 
-        // 更新全局无效放置状态
         if (wasInvalid != isInvalidPosition)
         {
             hasInvalidPlacement = isInvalidPosition;
         }
 
+        UpdateMaterials();
+    }
+
+    private void UpdateMaterials()
+    {
         if (spriteRenderer != null)
         {
             if (isDragging)
             {
-                spriteRenderer.material = draggingMaterial;
+                spriteRenderer.material = isInvalidPosition ? invalidMaterial : draggingMaterial;
             }
             else if (isInvalidPosition)
             {
@@ -337,12 +341,19 @@ public class DraggableObject : MonoBehaviour
         
         // 设置无效位置物体的状态
         col.isTrigger = true;
-        rb.isKinematic = true;  // 改为 true 防止自由落体
+        rb.isKinematic = true;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
+        
         if (spriteRenderer != null)
         {
             spriteRenderer.material = invalidMaterial;
+        }
+        
+        // 触发闪烁动画
+        if (objectAnimator != null)
+        {
+            AnimationManager.Instance.PlayFlickering(objectAnimator);
         }
         
         // 保持其他物体冻结
@@ -488,13 +499,10 @@ public class DraggableObject : MonoBehaviour
 
     public void TriggerDisappearAnimation()
     {
-        // Technical Artist 可以通过这个接口实现消失动画
-        if (disappearAnimator != null)
+        if (objectAnimator != null)
         {
-            // animator.SetTrigger("Disappear");  // 动画参数名由 TA 定义
+            AnimationManager.Instance.PlayFlickering(objectAnimator);
         }
-        
-        // 1秒后禁用物体
         StartCoroutine(DisableAfterDelay());
     }
     
