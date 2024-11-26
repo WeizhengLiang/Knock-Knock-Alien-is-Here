@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
     {
         SetGameState(GameState.Menu);
         // 初始化收集系统
-        CollectibleManager.Instance.LoadCollectionState();
+        //CollectibleManager.Instance.LoadCollectionState();
     }
     
     private void Update()
