@@ -25,7 +25,7 @@ public class DraggableObject : MonoBehaviour
 
     [Header("动画设置")]
     [SerializeField] protected Animator objectAnimator;
-    
+
     protected Camera mainCamera;
     protected Rigidbody2D rb;
     protected Collider2D col;
@@ -44,7 +44,7 @@ public class DraggableObject : MonoBehaviour
     // 静态列表跟踪所有可拖动物体
     private static List<DraggableObject> allDraggableObjects = new List<DraggableObject>();
     public static List<DraggableObject> AllDraggableObjects => allDraggableObjects;
-    
+
     // 记录冻结前的状态
     private Vector2 frozenVelocity;
     private float frozenAngularVelocity;
@@ -53,7 +53,7 @@ public class DraggableObject : MonoBehaviour
     // 拖拽用的铰链关节
     private HingeJoint2D dragJoint;
     private GameObject dragAnchor;
-    
+
     protected virtual void Start()
     {
         mainCamera = Camera.main;
@@ -79,7 +79,7 @@ public class DraggableObject : MonoBehaviour
             StartDragging();
         }
     }
-    
+
     protected virtual void OnDisable()
     {
         allDraggableObjects.Remove(this);
@@ -92,7 +92,7 @@ public class DraggableObject : MonoBehaviour
             obj.FreezeObject();
         }
     }
-    
+
     private static void UnfreezeAllObjects()
     {
         foreach (var obj in allDraggableObjects)
@@ -100,27 +100,27 @@ public class DraggableObject : MonoBehaviour
             obj.UnfreezeObject();
         }
     }
-    
+
     private void FreezeObject()
     {
         if (this.isInvalidPosition || this.isDragging)
         {
             return;
         }
-        
+
         if (!wasFrozen)
         {
             frozenVelocity = rb.velocity;
             frozenAngularVelocity = rb.angularVelocity;
-            
+
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
             rb.isKinematic = true;
-            
+
             wasFrozen = true;
         }
     }
-    
+
     private void UnfreezeObject()
     {
         if (wasFrozen)
@@ -129,16 +129,16 @@ public class DraggableObject : MonoBehaviour
             rb.isKinematic = false;
             rb.velocity = frozenVelocity;
             rb.angularVelocity = frozenAngularVelocity;
-            
+
             wasFrozen = false;
         }
     }
-    
+
     // 添加静态方法来控制全局冻结状态
     public static void SetGlobalFrozen(bool frozen)
     {
         isGlobalFrozen = frozen;
-        
+
         // 如果冻结，停止所有物体的拖拽
         if (frozen)
         {
@@ -157,10 +157,10 @@ public class DraggableObject : MonoBehaviour
             // 质量越大，速度越慢
             float massMultiplier = 1f / (1f + (rb.mass * massInfluence));
             dragSpeed = baseDragSpeed * massMultiplier;
-            
+
             // 限制在最小和最大速度范围内
             dragSpeed = Mathf.Clamp(dragSpeed, minDragSpeed, maxDragSpeed);
-            
+
             // 输出调试信息
             Debug.Log($"{gameObject.name} 的质量: {rb.mass}, 拖拽速度: {dragSpeed}");
         }
@@ -177,7 +177,7 @@ public class DraggableObject : MonoBehaviour
         anchorRb.bodyType = RigidbodyType2D.Kinematic;
         dragAnchor.SetActive(false);
     }
-    
+
     private void OnMouseDown()
     {
         if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
@@ -196,27 +196,27 @@ public class DraggableObject : MonoBehaviour
             }
         }
     }
-    
+
     private void StartDragging()
     {
         isDragging = true;
         isAnyObjectBeingDragged = true;
-        
+
         // 冻结其他物体
         FreezeAllObjects();
-        
+
         // 设置拖拽物体的态
         dragAnchor.transform.position = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         dragAnchor.SetActive(true);
-        
+
         if (dragJoint != null) Destroy(dragJoint);
-        
+
         // 确保可以拖动
         rb.isKinematic = false;  // 临时设为非运动学以便拖动
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
         col.isTrigger = true;
-        
+
         // 设置铰链关节
         dragJoint = gameObject.AddComponent<HingeJoint2D>();
         dragJoint.connectedBody = dragAnchor.GetComponent<Rigidbody2D>();
@@ -225,7 +225,7 @@ public class DraggableObject : MonoBehaviour
         dragJoint.anchor = transform.InverseTransformPoint(dragAnchor.transform.position);
 
     }
-    
+
     private void OnMouseUp()
     {
         if (isDragging)
@@ -233,7 +233,7 @@ public class DraggableObject : MonoBehaviour
             TryPlaceObject();
         }
     }
-    
+
     protected virtual void Update()
     {
         if (isDragging && dragJoint != null)
@@ -241,6 +241,7 @@ public class DraggableObject : MonoBehaviour
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             UpdateDragPosition();
             DoUpdatePlacementValidation();
+            rb.angularVelocity = Mathf.Clamp(rb.angularVelocity, -50f, 50f);
         }
         else if (isInvalidPosition && !isDragging)
         {
@@ -249,26 +250,26 @@ public class DraggableObject : MonoBehaviour
             rb.angularVelocity = 0f;
         }
     }
-    
+
     // 基础实现
     private void DoUpdatePlacementValidation()
     {
         UpdatePlacementValidation();  // 调用虚方法
     }
-    
+
     private void UpdateDragPosition()
     {
         if (dragAnchor != null)
         {
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 currentAnchorPos = dragAnchor.transform.position;
-            
+
             // 使用 dragSpeed 来插值移动锚点
             Vector2 newPosition = Vector2.Lerp(currentAnchorPos, mousePos, dragSpeed * Time.deltaTime);
             dragAnchor.transform.position = newPosition;
         }
     }
-    
+
     protected virtual void UpdatePlacementValidation()
     {
         bool wasInvalid = isInvalidPosition;
@@ -306,13 +307,13 @@ public class DraggableObject : MonoBehaviour
     {
         return hasInvalidPlacement;
     }
-    
+
     // 重置状态
     public static void ResetInvalidPlacement()
     {
         hasInvalidPlacement = false;
     }
-    
+
     private void TryPlaceObject()
     {
         if (!isInvalidPosition)
@@ -331,59 +332,59 @@ public class DraggableObject : MonoBehaviour
         isDragging = false;
         isAnyObjectBeingDragged = false;
         isGlobalFrozen = true;
-        
+
         if (dragJoint != null)
         {
             Destroy(dragJoint);
             dragJoint = null;
         }
         dragAnchor.SetActive(false);
-        
+
         // 设置无效位置物体的状态
         col.isTrigger = true;
         rb.isKinematic = true;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
-        
+
         if (spriteRenderer != null)
         {
             spriteRenderer.material = invalidMaterial;
         }
-        
+
         // 触发闪烁动画
         if (objectAnimator != null)
         {
             AnimationManager.Instance.PlayFlickering(objectAnimator);
         }
-        
+
         // 保持其他物体冻结
         FreezeAllObjects();
     }
-    
+
     private void CompletePlace()
     {
         isDragging = false;
         isAnyObjectBeingDragged = false;
         isGlobalFrozen = false;
         isInvalidPosition = false;  // 确保重置无效状态
-        
+
         if (dragJoint != null)
         {
             Destroy(dragJoint);
             dragJoint = null;
         }
         dragAnchor.SetActive(false);
-        
+
         col.isTrigger = false;
         if (spriteRenderer != null)
         {
             spriteRenderer.material = normalMaterial;
         }
-        
+
         // 解冻所有物体
         UnfreezeAllObjects();
     }
-    
+
     protected virtual bool IsValidPlacement()
     {
         // 获取当前区域内的所有碰撞器
@@ -393,14 +394,14 @@ public class DraggableObject : MonoBehaviour
             transform.rotation.eulerAngles.z,
             collisionLayer
         );
-        
+
         foreach (Collider2D otherCol in colliders)
         {
             if (otherCol != col && otherCol.gameObject != gameObject)
             {
                 // 使用 Distance 获取两个碰撞器之间的最小距离
                 ColliderDistance2D distance = Physics2D.Distance(col, otherCol);
-                
+
                 // distance.distance 小于 0 表示有重叠
                 if (distance.distance <= 0.01f)  // 添加一个小的容差值
                 {
@@ -427,7 +428,7 @@ public class DraggableObject : MonoBehaviour
                     return false;
                 }
             }
-            
+
             // 检查易碎物品
             if (otherObject.IsFragile() && GetWeight() > 1f)
             {
@@ -436,7 +437,8 @@ public class DraggableObject : MonoBehaviour
         }
         return true;
     }
-    private void OnDestroy() {
+    private void OnDestroy()
+    {
         // 清理拖拽锚点
         if (dragAnchor != null)
         {
@@ -454,7 +456,7 @@ public class DraggableObject : MonoBehaviour
         isGlobalFrozen = false;
         Physics2D.gravity = NORMAL_GRAVITY;
     }
-     
+
     // 检查是否应该暂停重力
     private static bool ShouldPauseGravity()
     {
@@ -473,7 +475,7 @@ public class DraggableObject : MonoBehaviour
         {
             // 显示碰撞器的实际形状
             Gizmos.color = isInvalidPosition ? Color.red : Color.yellow;
-            
+
             if (col is BoxCollider2D boxCol)
             {
                 // 为BoxCollider2D绘制旋转后的边界
@@ -505,7 +507,7 @@ public class DraggableObject : MonoBehaviour
         }
         StartCoroutine(DisableAfterDelay());
     }
-    
+
     private IEnumerator DisableAfterDelay()
     {
         yield return new WaitForSeconds(1f);

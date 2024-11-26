@@ -19,14 +19,27 @@ public class CameraScroller : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
-        animLeft = leftScreenEdge.GetComponent<Animator>();
-        animRight = rightScreenEdge.GetComponent<Animator>();
+        if (leftScreenEdge != null) animLeft = leftScreenEdge.GetComponent<Animator>();
+        if (rightScreenEdge != null) animRight = rightScreenEdge.GetComponent<Animator>();
         currentScrollSpeed = baseScrollSpeed; // Initialize the current speed to the base speed
     }
 
     void Update()
     {
-        if (shouldScrollLeft)
+        // Check for A and D key inputs to determine scroll direction
+        if (Input.GetKey(KeyCode.A))
+        {
+            AccelerateScrollSpeed(); // Gradually increase speed
+            scrollDirection = Vector3.left; // Set the direction to left
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            AccelerateScrollSpeed(); // Gradually increase speed
+            scrollDirection = Vector3.right; // Set the direction to right
+        }
+        // Mouse hover logic (commented out to disable it)
+        /*
+        else if (shouldScrollLeft)
         {
             AccelerateScrollSpeed(); // Gradually increase speed
             scrollDirection = Vector3.left; // Set the direction to left
@@ -36,6 +49,7 @@ public class CameraScroller : MonoBehaviour
             AccelerateScrollSpeed(); // Gradually increase speed
             scrollDirection = Vector3.right; // Set the direction to right
         }
+        */
         else
         {
             DecelerateScrollSpeed(); // Gradually decrease speed
@@ -80,17 +94,19 @@ public class CameraScroller : MonoBehaviour
         }
     }
 
+    // Mouse hover logic (commented out to disable it)
+    /*
     public void PointerEnter(string side)
     {
         if (side == "left")
         {
             shouldScrollLeft = true;
-            animLeft.SetBool("Show", true);
+            if (animLeft != null) animLeft.SetBool("Show", true);
         }
         else if (side == "right")
         {
             shouldScrollRight = true;
-            animRight.SetBool("Show", true);
+            if (animRight != null) animRight.SetBool("Show", true);
         }
     }
 
@@ -99,12 +115,13 @@ public class CameraScroller : MonoBehaviour
         if (side == "left")
         {
             shouldScrollLeft = false;
-            animLeft.SetBool("Show", false);
+            if (animLeft != null) animLeft.SetBool("Show", false);
         }
         else if (side == "right")
         {
             shouldScrollRight = false;
-            animRight.SetBool("Show", false);
+            if (animRight != null) animRight.SetBool("Show", false);
         }
     }
+    */
 }
