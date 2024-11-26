@@ -234,7 +234,7 @@ public class DraggableObject : MonoBehaviour
         }
     }
     
-    private void Update()
+    protected virtual void Update()
     {
         if (isDragging && dragJoint != null)
         {

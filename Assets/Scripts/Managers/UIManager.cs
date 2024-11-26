@@ -39,6 +39,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject finalCountdownUI;   // 最后3秒倒计时UI
     [SerializeField] private TextMeshProUGUI countdownText;
 
+    [Header("Collection UI")]
+    [SerializeField] private GameObject collectionPanel;  // 收藏品展示面板
+
     private float displayedCoverage;
     private float targetCoverage;
     private bool isAnimatingCoverage;
@@ -106,6 +109,11 @@ public class UIManager : MonoBehaviour
         
         // Collection按钮
         collectionButton.onClick.AddListener(() => Debug.Log("open Collection"));
+        // Collection按钮
+        collectionButton.onClick.AddListener(() => {
+            collectionPanel.SetActive(true);
+            CollectibleManager.Instance.ShowCollectionPanel();
+        });
         
         // 初始时隐藏所有结算按钮
         returnButton.gameObject.SetActive(false);
@@ -309,5 +317,11 @@ public class UIManager : MonoBehaviour
         {
             coverageText.text = $"{coverage:F1}%";
         }
+    }
+
+    // 添加关闭收藏面板的方法
+    public void CloseCollectionPanel()
+    {
+        collectionPanel.SetActive(false);
     }
 }
