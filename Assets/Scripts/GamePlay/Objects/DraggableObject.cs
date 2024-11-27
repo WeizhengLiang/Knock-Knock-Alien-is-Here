@@ -12,7 +12,7 @@ public class DraggableObject : MonoBehaviour
     [SerializeField] protected float massInfluence = 0.5f;   // 质量对拖拽速度的影响程度
     [SerializeField] protected float minDragSpeed = 0.5f;      // 最小拖拽速度
     [SerializeField] protected float maxDragSpeed = 15f;     // 最大拖拽速度
-    [SerializeField] private LayerMask collisionLayer;
+    [SerializeField] protected LayerMask collisionLayer;
 
     [Header("基础物体属性")]
     [SerializeField] protected float baseWeight = 1f;
@@ -514,5 +514,13 @@ public class DraggableObject : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         gameObject.SetActive(false);
+    }
+
+    protected bool IsMouseOver()
+    {
+        if (!enabled || !gameObject.activeInHierarchy) return false;
+        
+        Vector2 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        return col.OverlapPoint(mousePosition);
     }
 }

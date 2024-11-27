@@ -6,7 +6,6 @@ public class LaserPointerCollectible : CollectibleObject
 {
     [SerializeField] private Transform powerSourceSocket;
     [SerializeField] private float checkRadius = 0.5f;
-    [SerializeField] private LayerMask powerSourceLayer;
     
     protected override void Update()
     {
@@ -19,10 +18,14 @@ public class LaserPointerCollectible : CollectibleObject
     
     private void CheckPowerSource()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(powerSourceSocket.position, checkRadius, powerSourceLayer);
-        if (colliders.Length > 0)
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(powerSourceSocket.position, checkRadius);
+        foreach (Collider2D collider in colliders)
         {
-            Unlock();
+            if (collider.CompareTag("PowerSource"))
+            {
+                Unlock();
+                break;
+            }
         }
     }
 }

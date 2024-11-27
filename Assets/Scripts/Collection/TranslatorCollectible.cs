@@ -2,10 +2,8 @@ using UnityEngine;
 
 public class TranslatorCollectible : CollectibleObject
 {
-    [SerializeField] private LayerMask diskLayer;
     [SerializeField] private float checkRadius = 0.5f;
     [SerializeField] private Transform diskSlot;
-    [SerializeField] private ParticleSystem processingEffect;
     
     private bool isDiskInserted = false;
     private float processingTime = 0f;
@@ -29,13 +27,13 @@ public class TranslatorCollectible : CollectibleObject
     
     private void CheckDiskInsertion()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(diskSlot.position, checkRadius, diskLayer);
-        if (colliders.Length > 0)
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(diskSlot.position, checkRadius);
+        foreach (Collider2D collider in colliders)
         {
-            isDiskInserted = true;
-            if (processingEffect != null)
+            if (collider.CompareTag("Disk"))
             {
-                processingEffect.Play();
+                isDiskInserted = true;
+                break;
             }
         }
     }
