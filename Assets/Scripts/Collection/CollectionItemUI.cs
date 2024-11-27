@@ -7,8 +7,8 @@ public class CollectionItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
 {
     [Header("Item Visuals")]
     [SerializeField] private Image itemImage;
-    [SerializeField] private Sprite unlockedSprite;
-    [SerializeField] private Sprite lockedSprite;
+    [SerializeField] private Material unlockedMaterial;
+    [SerializeField] private Material lockedMaterial;
     
     [Header("Item Data")]
     private CollectibleData itemData;
@@ -24,7 +24,7 @@ public class CollectionItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
         parentPanel = panel;
         
         // 设置显示状态
-        itemImage.sprite = isUnlocked ? unlockedSprite : lockedSprite;
+        itemImage.material = isUnlocked ? unlockedMaterial : lockedMaterial;
     }
     
     public void OnPointerEnter(PointerEventData eventData)
