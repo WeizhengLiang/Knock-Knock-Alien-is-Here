@@ -22,6 +22,8 @@ public class DraggableObject : MonoBehaviour
     [SerializeField] protected Material normalMaterial;      // 正常状态材质
     [SerializeField] protected Material draggingMaterial;    // 拖拽状态材质
     [SerializeField] protected Material invalidMaterial;     // 无效位置状态材质
+    [SerializeField] protected Material canMergeMaterial;  // 可合并状态材质
+    [SerializeField] protected Material canPickupMaterial;  // 可拾取状态材质
 
     [Header("动画设置")]
     [SerializeField] protected Animator objectAnimator;

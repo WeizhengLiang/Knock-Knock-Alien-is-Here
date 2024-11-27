@@ -10,11 +10,17 @@ public class PrefabGeneratorWindow : EditorWindow
     private const string NORMAL_MATERIAL_PATH = "Assets/Art/Material/Mat_Default.mat";
     private const string DRAGGING_MATERIAL_PATH = "Assets/Art/Material/Mat_Pickup.mat";
     private const string INVALID_MATERIAL_PATH = "Assets/Art/Material/Mat_Red.mat";
+    private const string CAN_MERGE_MATERIAL_PATH = "Assets/Art/Material/Mat_Green.mat";
+    private const string CAN_PICKUP_MATERIAL_PATH = "Assets/Art/Material/Mat_CanPickup.mat";
+    private const string OBJECT_ANIMATOR_PATH = "Assets/Art/Animation/ObjectAnim.controller";
     
     // 缓存材质引用
     private Material normalMaterial;
     private Material draggingMaterial;
     private Material invalidMaterial;
+    private Material canMergeMaterial;
+    private Material canPickupMaterial;
+    private RuntimeAnimatorController objectAnimController;
 
     private class ObjectTemplate
     {
@@ -44,10 +50,14 @@ public class PrefabGeneratorWindow : EditorWindow
         normalMaterial = AssetDatabase.LoadAssetAtPath<Material>(NORMAL_MATERIAL_PATH);
         draggingMaterial = AssetDatabase.LoadAssetAtPath<Material>(DRAGGING_MATERIAL_PATH);
         invalidMaterial = AssetDatabase.LoadAssetAtPath<Material>(INVALID_MATERIAL_PATH);
+        canMergeMaterial = AssetDatabase.LoadAssetAtPath<Material>(CAN_MERGE_MATERIAL_PATH);
+        canPickupMaterial = AssetDatabase.LoadAssetAtPath<Material>(CAN_PICKUP_MATERIAL_PATH);
+        objectAnimController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(OBJECT_ANIMATOR_PATH);
         
-        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null)
+        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null || 
+            canMergeMaterial == null || canPickupMaterial == null || objectAnimController == null)
         {
-            Debug.LogError("无法加载材质！请确保材质文件存在于正确的路径中。");
+            Debug.LogError("无法加载材质或动画控制器！请确保文件存在于正确的路径中。");
         }
     }
 
@@ -93,9 +103,9 @@ public class PrefabGeneratorWindow : EditorWindow
     private void GeneratePrefabs()
     {
         // 确保材质已加载
-        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null)
+        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null || canMergeMaterial == null || canPickupMaterial == null || objectAnimController == null)
         {
-            Debug.LogError("材质未正确加载！");
+            Debug.LogError("材质或动画控制器未正确加载！");
             return;
         }
 
@@ -128,10 +138,14 @@ public class PrefabGeneratorWindow : EditorWindow
                 SerializedProperty normalMatProp = serializedDraggable.FindProperty("normalMaterial");
                 SerializedProperty draggingMatProp = serializedDraggable.FindProperty("draggingMaterial");
                 SerializedProperty invalidMatProp = serializedDraggable.FindProperty("invalidMaterial");
+                SerializedProperty canMergeMatProp = serializedDraggable.FindProperty("canMergeMaterial");
+                SerializedProperty canPickupMatProp = serializedDraggable.FindProperty("canPickupMaterial");
                 
                 normalMatProp.objectReferenceValue = normalMaterial;
                 draggingMatProp.objectReferenceValue = draggingMaterial;
                 invalidMatProp.objectReferenceValue = invalidMaterial;
+                canMergeMatProp.objectReferenceValue = canMergeMaterial;
+                canPickupMatProp.objectReferenceValue = canPickupMaterial;
                 
                 serializedDraggable.ApplyModifiedProperties();
             }
@@ -166,6 +180,19 @@ public class PrefabGeneratorWindow : EditorWindow
 
                 // 再移除旧的碰撞体
                 DestroyImmediate(oldCollider);
+            }
+
+            // 添加并设置 Animator
+            Animator animator = newObject.AddComponent<Animator>();
+            animator.runtimeAnimatorController = objectAnimController;
+
+            // 将 Animator 赋值给 DraggableObject
+            if (draggable != null)
+            {
+                SerializedObject serializedDraggable = new SerializedObject(draggable);
+                SerializedProperty animatorProp = serializedDraggable.FindProperty("objectAnimator");
+                animatorProp.objectReferenceValue = animator;
+                serializedDraggable.ApplyModifiedProperties();
             }
 
             string localPath = "Assets/Prefabs/" + template.prefabName + ".prefab";
