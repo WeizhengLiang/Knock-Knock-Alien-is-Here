@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpecimenCollectible : CollectibleObject
 {
-    [SerializeField] private float breakForce = 8f;
+    [SerializeField] public float breakForce = 8f;
     [SerializeField] private ParticleSystem glassBreakEffect;
     
     protected override void OnCollisionEnter2D(Collision2D collision)

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94509e7e8d0ac413388929b8901608de, type: 3}
   m_Name: translatorData
   m_EditorClassIdentifier: 
-  type: 3
-  itemName: 
-  description: 
-  alienResponse: 
-  unlockMethod: 3
-  icon: {fileID: 21300000, guid: 4b40fc0f65c85f14fbc9c7c5f40ca686, type: 3}
-  unlockedSprite: {fileID: 21300000, guid: ab4465ab72ca5544da8e8dd1110b6973, type: 3}
-  lockedSprite: {fileID: 21300000, guid: f96aebb9bcd1e3b44bafbb23b1bdac88, type: 3}
-  comicSprite: {fileID: 21300000, guid: 253ade5030af1b643bf9a54cceb26f01, type: 3}
+  type: 0
+  itemName: translator
+  description: translatordesc
+  alienResponse: translatorresp
+  unlockMethod: 0
+  icon: {fileID: 671407976, guid: 1f8ae5033693bee429f7260cadb20530, type: 3}
+  unlockedSprite: {fileID: 0}
+  lockedSprite: {fileID: 0}
+  comicSprite: {fileID: 1673642878, guid: dc1a708147892b846bc0aaaa4f09a3e6, type: 3}
   unlockEffectPrefab: {fileID: 0}
   unlockSound: {fileID: 0}

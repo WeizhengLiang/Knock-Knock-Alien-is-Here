@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class PrefabGeneratorWindow : EditorWindow
 {
-    private enum ObjectType { Normal, Heavy, Fragile }
+    private enum ObjectType { Normal, Heavy, Fragile, Collectible }
 
     // 预设材质路径
     private const string NORMAL_MATERIAL_PATH = "Assets/Art/Material/Mat_Default.mat";
@@ -31,7 +31,34 @@ public class PrefabGeneratorWindow : EditorWindow
         public float mass = 1f;
     }
 
+    private class CollectibleTemplate
+    {
+        // 基础属性 (来自 ObjectTemplate)
+        public string prefabName = "NewCollectible";
+        public Sprite objectSprite;
+        public float mass = 1f;
+        
+        // 收集物特有属性
+        public CollectibleType collectibleType = CollectibleType.Declaration;
+        public UnlockMethod unlockMethod = UnlockMethod.Drop;
+        
+        // 基本信息
+        public string itemName = "";
+        public string description = "";
+        public string alienResponse = "";
+        
+        // 视觉元素
+        public Sprite comicSprite;
+        
+        // 特殊设置
+        public float checkRadius = 0.5f;
+        public float breakForce = 8f;
+    }
+
     private List<ObjectTemplate> templates = new List<ObjectTemplate>();
+    private List<CollectibleTemplate> collectibleTemplates = new List<CollectibleTemplate>();
+
+    private Vector2 scrollPosition;
 
     [MenuItem("Tools/Prefab Generator")]
     public static void ShowWindow()
@@ -65,11 +92,23 @@ public class PrefabGeneratorWindow : EditorWindow
     {
         GUILayout.Label("Item Prefab Generator", EditorStyles.boldLabel);
 
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Add Item Template"))
         {
             templates.Add(new ObjectTemplate());
         }
 
+        if (GUILayout.Button("Add Collectible Template"))
+        {
+            collectibleTemplates.Add(new CollectibleTemplate());
+        }
+
+        EditorGUILayout.EndHorizontal();
+
+        // 开始滚动视图
+        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+
+        // 显示普通物品模板
         for (int i = 0; i < templates.Count; i++)
         {
             GUILayout.BeginVertical("box");
@@ -94,6 +133,39 @@ public class PrefabGeneratorWindow : EditorWindow
             GUILayout.EndVertical();
         }
 
+        // 显示收集物模板
+        for (int i = 0; i < collectibleTemplates.Count; i++)
+        {
+            GUILayout.BeginVertical("box");
+            GUILayout.Label($"Collectible Template {i + 1}", EditorStyles.boldLabel);
+
+            collectibleTemplates[i].prefabName = EditorGUILayout.TextField("Prefab Name", collectibleTemplates[i].prefabName);
+            collectibleTemplates[i].objectSprite = (Sprite)EditorGUILayout.ObjectField("Item Sprite", collectibleTemplates[i].objectSprite, typeof(Sprite), false);
+            collectibleTemplates[i].mass = EditorGUILayout.Slider("Mass", collectibleTemplates[i].mass, 1f, 18f);
+
+            collectibleTemplates[i].collectibleType = (CollectibleType)EditorGUILayout.EnumPopup("Collectible Type", collectibleTemplates[i].collectibleType);
+            collectibleTemplates[i].unlockMethod = (UnlockMethod)EditorGUILayout.EnumPopup("Unlock Method", collectibleTemplates[i].unlockMethod);
+
+            collectibleTemplates[i].itemName = EditorGUILayout.TextField("Item Name", collectibleTemplates[i].itemName);
+            collectibleTemplates[i].description = EditorGUILayout.TextField("Description", collectibleTemplates[i].description);
+            collectibleTemplates[i].alienResponse = EditorGUILayout.TextField("Alien Response", collectibleTemplates[i].alienResponse);
+
+            collectibleTemplates[i].comicSprite = (Sprite)EditorGUILayout.ObjectField("Comic Sprite", collectibleTemplates[i].comicSprite, typeof(Sprite), false);
+
+            collectibleTemplates[i].checkRadius = EditorGUILayout.Slider("Check Radius", collectibleTemplates[i].checkRadius, 0.1f, 2f);
+            collectibleTemplates[i].breakForce = EditorGUILayout.Slider("Break Force", collectibleTemplates[i].breakForce, 1f, 20f);
+
+            if (GUILayout.Button("Remove Template"))
+            {
+                collectibleTemplates.RemoveAt(i);
+                i--; // Adjust index after removal
+            }
+
+            GUILayout.EndVertical();
+        }
+
+        EditorGUILayout.EndScrollView();
+
         if (GUILayout.Button("Generate All Prefabs"))
         {
             GeneratePrefabs();
@@ -103,15 +175,18 @@ public class PrefabGeneratorWindow : EditorWindow
     private void GeneratePrefabs()
     {
         // 确保材质已加载
-        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null || canMergeMaterial == null || canPickupMaterial == null || objectAnimController == null)
+        if (normalMaterial == null || draggingMaterial == null || invalidMaterial == null || 
+            canMergeMaterial == null || canPickupMaterial == null || objectAnimController == null)
         {
             Debug.LogError("材质或动画控制器未正确加载！");
             return;
         }
 
+        // 生成普通物品预制体
         foreach (var template in templates)
         {
-            if (string.IsNullOrEmpty(template.prefabName) || template.objectSprite == null || (template.selectedType == ObjectType.Fragile && template.brokenPrefab == null))
+            if (string.IsNullOrEmpty(template.prefabName) || template.objectSprite == null || 
+                (template.selectedType == ObjectType.Fragile && template.brokenPrefab == null))
             {
                 Debug.LogError("Please ensure all required fields are filled in!");
                 return;
@@ -129,39 +204,10 @@ public class PrefabGeneratorWindow : EditorWindow
             GameObject newObject = Instantiate(templatePrefab);
             newObject.name = template.prefabName;
 
-            // 设置材质
-            DraggableObject draggable = newObject.GetComponent<DraggableObject>();
-            if (draggable != null)
-            {
-                SerializedObject serializedDraggable = new SerializedObject(draggable);
-                
-                SerializedProperty normalMatProp = serializedDraggable.FindProperty("normalMaterial");
-                SerializedProperty draggingMatProp = serializedDraggable.FindProperty("draggingMaterial");
-                SerializedProperty invalidMatProp = serializedDraggable.FindProperty("invalidMaterial");
-                SerializedProperty canMergeMatProp = serializedDraggable.FindProperty("canMergeMaterial");
-                SerializedProperty canPickupMatProp = serializedDraggable.FindProperty("canPickupMaterial");
-                
-                normalMatProp.objectReferenceValue = normalMaterial;
-                draggingMatProp.objectReferenceValue = draggingMaterial;
-                invalidMatProp.objectReferenceValue = invalidMaterial;
-                canMergeMatProp.objectReferenceValue = canMergeMaterial;
-                canPickupMatProp.objectReferenceValue = canPickupMaterial;
-                
-                serializedDraggable.ApplyModifiedProperties();
-            }
+            // 设置基础组件
+            SetupBasicComponents(newObject, template);
 
-            SpriteRenderer sr = newObject.GetComponent<SpriteRenderer>();
-            if (sr != null)
-            {
-                sr.sprite = template.objectSprite;
-            }
-
-            Rigidbody2D rb = newObject.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                rb.mass = template.mass;
-            }
-
+            // 设置特殊组件
             if (template.selectedType == ObjectType.Fragile)
             {
                 FragileObject fragile = newObject.GetComponent<FragileObject>();
@@ -171,36 +217,89 @@ public class PrefabGeneratorWindow : EditorWindow
                 }
             }
 
-            // 重新生成碰撞体
-            PolygonCollider2D oldCollider = newObject.GetComponent<PolygonCollider2D>();
-            if (oldCollider != null)
-            {
-                // 先添加新的碰撞体
-                PolygonCollider2D newCollider = newObject.AddComponent<PolygonCollider2D>();
-
-                // 再移除旧的碰撞体
-                DestroyImmediate(oldCollider);
-            }
-
-            // 添加并设置 Animator
-            Animator animator = newObject.AddComponent<Animator>();
-            animator.runtimeAnimatorController = objectAnimController;
-
-            // 将 Animator 赋值给 DraggableObject
-            if (draggable != null)
-            {
-                SerializedObject serializedDraggable = new SerializedObject(draggable);
-                SerializedProperty animatorProp = serializedDraggable.FindProperty("objectAnimator");
-                animatorProp.objectReferenceValue = animator;
-                serializedDraggable.ApplyModifiedProperties();
-            }
-
             string localPath = "Assets/Prefabs/" + template.prefabName + ".prefab";
             PrefabUtility.SaveAsPrefabAsset(newObject, localPath);
             DestroyImmediate(newObject);
 
             Debug.Log("Prefab generated successfully: " + localPath);
         }
+
+        // 生成收集物预制体
+        foreach (var template in collectibleTemplates)
+        {
+            GenerateCollectiblePrefab(template);
+        }
+    }
+
+    private void SetupBasicComponents(GameObject obj, ObjectTemplate template)
+    {
+        // 设置材质
+        DraggableObject draggable = obj.GetComponent<DraggableObject>();
+        if (draggable != null)
+        {
+            SerializedObject serializedDraggable = new SerializedObject(draggable);
+            SetMaterialProperties(serializedDraggable);
+            serializedDraggable.ApplyModifiedProperties();
+        }
+
+        // 设置精灵
+        SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.sprite = template.objectSprite;
+        }
+
+        // 设置刚体
+        Rigidbody2D rb = obj.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.mass = template.mass;
+        }
+
+        // 重新生成碰撞体
+        RegenerateCollider(obj);
+
+        // 设置动画控制器
+        SetupAnimator(obj, draggable);
+    }
+
+    private void RegenerateCollider(GameObject obj)
+    {
+        PolygonCollider2D oldCollider = obj.GetComponent<PolygonCollider2D>();
+        if (oldCollider != null)
+        {
+            PolygonCollider2D newCollider = obj.AddComponent<PolygonCollider2D>();
+            DestroyImmediate(oldCollider);
+        }
+    }
+
+    private void SetupAnimator(GameObject obj, DraggableObject draggable)
+    {
+        Animator animator = obj.AddComponent<Animator>();
+        animator.runtimeAnimatorController = objectAnimController;
+
+        if (draggable != null)
+        {
+            SerializedObject serializedDraggable = new SerializedObject(draggable);
+            SerializedProperty animatorProp = serializedDraggable.FindProperty("objectAnimator");
+            animatorProp.objectReferenceValue = animator;
+            serializedDraggable.ApplyModifiedProperties();
+        }
+    }
+
+    private void SetMaterialProperties(SerializedObject serializedObject)
+    {
+        SerializedProperty normalMatProp = serializedObject.FindProperty("normalMaterial");
+        SerializedProperty draggingMatProp = serializedObject.FindProperty("draggingMaterial");
+        SerializedProperty invalidMatProp = serializedObject.FindProperty("invalidMaterial");
+        SerializedProperty canMergeMatProp = serializedObject.FindProperty("canMergeMaterial");
+        SerializedProperty canPickupMatProp = serializedObject.FindProperty("canPickupMaterial");
+        
+        normalMatProp.objectReferenceValue = normalMaterial;
+        draggingMatProp.objectReferenceValue = draggingMaterial;
+        invalidMatProp.objectReferenceValue = invalidMaterial;
+        canMergeMatProp.objectReferenceValue = canMergeMaterial;
+        canPickupMatProp.objectReferenceValue = canPickupMaterial;
     }
 
     private string GetTemplatePath(ObjectType type)
@@ -216,5 +315,106 @@ public class PrefabGeneratorWindow : EditorWindow
             default:
                 return null;
         }
+    }
+
+    private void GenerateCollectiblePrefab(CollectibleTemplate template)
+    {
+        if (string.IsNullOrEmpty(template.prefabName) || template.objectSprite == null)
+        {
+            Debug.LogError($"收集物 {template.prefabName} 缺少必要属性！");
+            return;
+        }
+
+        // 创建收集物数据
+        CollectibleData collectibleData = ScriptableObject.CreateInstance<CollectibleData>();
+        collectibleData.type = template.collectibleType;
+        collectibleData.unlockMethod = template.unlockMethod;
+        collectibleData.itemName = template.itemName;
+        collectibleData.description = template.description;
+        collectibleData.alienResponse = template.alienResponse;
+        collectibleData.icon = template.objectSprite;
+        collectibleData.comicSprite = template.comicSprite;
+
+        // 保存收集物数据
+        string dataPath = $"Assets/Data/{template.prefabName}Data.asset";
+        AssetDatabase.CreateAsset(collectibleData, dataPath);
+
+        // 创建预制体对象
+        GameObject newObject = new GameObject(template.prefabName);
+        newObject.layer = LayerMask.NameToLayer("Draggable");
+
+        // 添加基础组件
+        SpriteRenderer sr = newObject.AddComponent<SpriteRenderer>();
+        sr.sprite = template.objectSprite;
+        sr.material = normalMaterial;
+        
+        Rigidbody2D rb = newObject.AddComponent<Rigidbody2D>();
+        rb.mass = template.mass;
+        
+        PolygonCollider2D col = newObject.AddComponent<PolygonCollider2D>();
+
+        // 添加收集物脚本
+        CollectibleObject collectible = null;
+        switch (template.collectibleType)
+        {
+            case CollectibleType.Declaration:
+                collectible = newObject.AddComponent<DeclarationCollectible>();
+                break;
+            case CollectibleType.LaserPointer:
+                collectible = newObject.AddComponent<LaserPointerCollectible>();
+                break;
+            case CollectibleType.LaunchPad:
+                collectible = newObject.AddComponent<LaunchPadCollectible>();
+                break;
+            case CollectibleType.Specimen:
+                var specimen = newObject.AddComponent<SpecimenCollectible>();
+                specimen.breakForce = template.breakForce;
+                collectible = specimen;
+                break;
+            case CollectibleType.Translator:
+                collectible = newObject.AddComponent<TranslatorCollectible>();
+                break;
+            case CollectibleType.Wiretapper:
+                collectible = newObject.AddComponent<WiretapperCollectible>();
+                break;
+        }
+
+        // 如果解锁方式是Drop，添加DropUnlockChecker脚本
+        if (template.unlockMethod == UnlockMethod.Drop)
+        {
+            newObject.AddComponent<DropUnlockChecker>();
+        }
+
+        // 设置收集物属性
+        SerializedObject serializedCollectible = new SerializedObject(collectible);
+        
+        // 设置材质
+        SetMaterialProperties(serializedCollectible);
+        
+        // 设置数据引用
+        SerializedProperty dataProp = serializedCollectible.FindProperty("data");
+        dataProp.objectReferenceValue = collectibleData;
+        
+        // 设置碰撞层
+        SerializedProperty collisionLayerProp = serializedCollectible.FindProperty("collisionLayer");
+        collisionLayerProp.intValue = LayerMask.NameToLayer("Draggable");
+        
+        // 设置动画控制器
+        Animator animator = newObject.AddComponent<Animator>();
+        animator.runtimeAnimatorController = objectAnimController;
+        
+        // 设置动画器引用
+        SerializedProperty animatorProp = serializedCollectible.FindProperty("objectAnimator");
+        animatorProp.objectReferenceValue = animator;
+        
+        serializedCollectible.ApplyModifiedProperties();
+
+        // 保存预制体
+        string prefabPath = $"Assets/Prefabs/Collectibles/{template.prefabName}.prefab";
+        PrefabUtility.SaveAsPrefabAsset(newObject, prefabPath);
+        DestroyImmediate(newObject);
+
+        Debug.Log($"收集物预制体生成成功: {prefabPath}");
+        Debug.Log($"收集物数据生成成功: {dataPath}");
     }
 }

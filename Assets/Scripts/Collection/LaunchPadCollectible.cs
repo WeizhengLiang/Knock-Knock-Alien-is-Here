@@ -4,8 +4,7 @@ public class LaunchPadCollectible : CollectibleObject
 {
     [SerializeField] private Transform launchPoint;
     [SerializeField] private float checkRadius = 0.5f;
-    [SerializeField] private float launchForce = 10f;
-    
+
     private bool isRocketMounted = false;
     private Rigidbody2D mountedRocket;
     
