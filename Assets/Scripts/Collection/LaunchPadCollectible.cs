@@ -2,34 +2,12 @@ using UnityEngine;
 
 public class LaunchPadCollectible : CollectibleObject
 {
-    [SerializeField] private Transform launchPoint;
-    [SerializeField] private float checkRadius = 0.5f;
-
-    private bool isRocketMounted = false;
-    private Rigidbody2D mountedRocket;
-    
-    protected override void Update()
+    protected override bool CheckTriggerInteraction(GameObject other)
     {
-        base.Update();
-        if (!isUnlocked)
+        if (!isUnlocked && data.unlockMethod == UnlockMethod.Rocket)
         {
-            if (!isRocketMounted)
-            {
-                CheckRocketMount();
-            }
+            return other.CompareTag("Rocket");
         }
-    }
-    
-    private void CheckRocketMount()
-    {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(launchPoint.position, checkRadius);
-        foreach (var collider in colliders)
-        {
-            if (collider.CompareTag("Rocket"))
-            {
-                isRocketMounted = true;
-                break;
-            }
-        }
+        return false;
     }
 }

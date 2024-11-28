@@ -55,8 +55,17 @@ public class PrefabGeneratorWindow : EditorWindow
         public float breakForce = 8f;
     }
 
+    private class CollectibleTriggerTemplate
+    {
+        public string prefabName = "NewTrigger";
+        public Sprite objectSprite;
+        public float mass = 1f;
+        public string triggerTag = "PowerSource"; // 默认为电源标签
+    }
+
     private List<ObjectTemplate> templates = new List<ObjectTemplate>();
     private List<CollectibleTemplate> collectibleTemplates = new List<CollectibleTemplate>();
+    private List<CollectibleTriggerTemplate> triggerTemplates = new List<CollectibleTriggerTemplate>();
 
     private Vector2 scrollPosition;
 
@@ -101,6 +110,11 @@ public class PrefabGeneratorWindow : EditorWindow
         if (GUILayout.Button("Add Collectible Template"))
         {
             collectibleTemplates.Add(new CollectibleTemplate());
+        }
+
+        if (GUILayout.Button("Add Trigger Template"))
+        {
+            triggerTemplates.Add(new CollectibleTriggerTemplate());
         }
 
         EditorGUILayout.EndHorizontal();
@@ -158,6 +172,26 @@ public class PrefabGeneratorWindow : EditorWindow
             if (GUILayout.Button("Remove Template"))
             {
                 collectibleTemplates.RemoveAt(i);
+                i--; // Adjust index after removal
+            }
+
+            GUILayout.EndVertical();
+        }
+
+        // 显示触发器模板
+        for (int i = 0; i < triggerTemplates.Count; i++)
+        {
+            GUILayout.BeginVertical("box");
+            GUILayout.Label($"Trigger Template {i + 1}", EditorStyles.boldLabel);
+
+            triggerTemplates[i].prefabName = EditorGUILayout.TextField("Prefab Name", triggerTemplates[i].prefabName);
+            triggerTemplates[i].objectSprite = (Sprite)EditorGUILayout.ObjectField("Item Sprite", triggerTemplates[i].objectSprite, typeof(Sprite), false);
+            triggerTemplates[i].mass = EditorGUILayout.Slider("Mass", triggerTemplates[i].mass, 1f, 18f);
+            triggerTemplates[i].triggerTag = EditorGUILayout.TextField("Trigger Tag", triggerTemplates[i].triggerTag);
+
+            if (GUILayout.Button("Remove Template"))
+            {
+                triggerTemplates.RemoveAt(i);
                 i--; // Adjust index after removal
             }
 
@@ -228,6 +262,12 @@ public class PrefabGeneratorWindow : EditorWindow
         foreach (var template in collectibleTemplates)
         {
             GenerateCollectiblePrefab(template);
+        }
+
+        // 生成触发器预制体
+        foreach (var template in triggerTemplates)
+        {
+            GenerateTriggerPrefab(template);
         }
     }
 
@@ -325,13 +365,13 @@ public class PrefabGeneratorWindow : EditorWindow
             return;
         }
 
-        // 创建收集物数据
+        // 首先生成收集物数据
         CollectibleData collectibleData = ScriptableObject.CreateInstance<CollectibleData>();
         collectibleData.type = template.collectibleType;
-        collectibleData.unlockMethod = template.unlockMethod;
         collectibleData.itemName = template.itemName;
         collectibleData.description = template.description;
         collectibleData.alienResponse = template.alienResponse;
+        collectibleData.unlockMethod = template.unlockMethod;
         collectibleData.icon = template.objectSprite;
         collectibleData.comicSprite = template.comicSprite;
 
@@ -353,36 +393,30 @@ public class PrefabGeneratorWindow : EditorWindow
         
         PolygonCollider2D col = newObject.AddComponent<PolygonCollider2D>();
 
-        // 添加收集物脚本
+        // 根据解锁方式添加对应的收集物脚本
         CollectibleObject collectible = null;
-        switch (template.collectibleType)
+        switch (template.unlockMethod)
         {
-            case CollectibleType.Declaration:
+            case UnlockMethod.Drop:
                 collectible = newObject.AddComponent<DeclarationCollectible>();
                 break;
-            case CollectibleType.LaserPointer:
-                collectible = newObject.AddComponent<LaserPointerCollectible>();
-                break;
-            case CollectibleType.LaunchPad:
-                collectible = newObject.AddComponent<LaunchPadCollectible>();
-                break;
-            case CollectibleType.Specimen:
+            case UnlockMethod.Break:
                 var specimen = newObject.AddComponent<SpecimenCollectible>();
                 specimen.breakForce = template.breakForce;
                 collectible = specimen;
                 break;
-            case CollectibleType.Translator:
-                collectible = newObject.AddComponent<TranslatorCollectible>();
-                break;
-            case CollectibleType.Wiretapper:
+            case UnlockMethod.Position:
                 collectible = newObject.AddComponent<WiretapperCollectible>();
                 break;
-        }
-
-        // 如果解锁方式是Drop，添加DropUnlockChecker脚本
-        if (template.unlockMethod == UnlockMethod.Drop)
-        {
-            newObject.AddComponent<DropUnlockChecker>();
+            case UnlockMethod.PowerSource:
+                collectible = newObject.AddComponent<LaserPointerCollectible>();
+                break;
+            case UnlockMethod.Disk:
+                collectible = newObject.AddComponent<TranslatorCollectible>();
+                break;
+            case UnlockMethod.Rocket:
+                collectible = newObject.AddComponent<LaunchPadCollectible>();
+                break;
         }
 
         // 设置收集物属性
@@ -402,9 +436,7 @@ public class PrefabGeneratorWindow : EditorWindow
         // 设置动画控制器
         Animator animator = newObject.AddComponent<Animator>();
         animator.runtimeAnimatorController = objectAnimController;
-        
-        // 设置动画器引用
-        SerializedProperty animatorProp = serializedCollectible.FindProperty("objectAnimator");
+        SerializedProperty animatorProp = serializedCollectible.FindProperty("visualAnimator");
         animatorProp.objectReferenceValue = animator;
         
         serializedCollectible.ApplyModifiedProperties();
@@ -416,5 +448,61 @@ public class PrefabGeneratorWindow : EditorWindow
 
         Debug.Log($"收集物预制体生成成功: {prefabPath}");
         Debug.Log($"收集物数据生成成功: {dataPath}");
+    }
+
+    private void GenerateTriggerPrefab(CollectibleTriggerTemplate template)
+    {
+        if (string.IsNullOrEmpty(template.prefabName) || template.objectSprite == null)
+        {
+            Debug.LogError($"触发器 {template.prefabName} 缺少必要属性！");
+            return;
+        }
+
+        // 创建预制体对象
+        GameObject newObject = new GameObject(template.prefabName);
+        newObject.layer = LayerMask.NameToLayer("Draggable");
+        newObject.tag = template.triggerTag;
+
+        // 添加基础组件
+        SpriteRenderer sr = newObject.AddComponent<SpriteRenderer>();
+        sr.sprite = template.objectSprite;
+        sr.material = normalMaterial;
+        
+        Rigidbody2D rb = newObject.AddComponent<Rigidbody2D>();
+        rb.mass = template.mass;
+        
+        PolygonCollider2D col = newObject.AddComponent<PolygonCollider2D>();
+
+        // 添加触发器组件
+        TriggerObject trigger = newObject.AddComponent<TriggerObject>();
+        
+        // 设置属性
+        SerializedObject serializedTrigger = new SerializedObject(trigger);
+        
+        // 设置材质
+        SetMaterialProperties(serializedTrigger);
+        
+        // 设置碰撞层
+        SerializedProperty collisionLayerProp = serializedTrigger.FindProperty("collisionLayer");
+        collisionLayerProp.intValue = LayerMask.NameToLayer("Draggable");
+        
+        // 设置动画控制器
+        Animator animator = newObject.AddComponent<Animator>();
+        animator.runtimeAnimatorController = objectAnimController;
+        SerializedProperty animatorProp = serializedTrigger.FindProperty("objectAnimator");
+        animatorProp.objectReferenceValue = animator;
+        
+        // 设置触发器标签
+        SerializedProperty triggerTagProp = serializedTrigger.FindProperty("triggerTag");
+        triggerTagProp.stringValue = template.triggerTag;
+        
+        serializedTrigger.ApplyModifiedProperties();
+
+        // 保存预制体
+        string prefabPath = $"Assets/Prefabs/CollectibleTriggers/{template.prefabName}.prefab";
+        PrefabUtility.SaveAsPrefabAsset(newObject, prefabPath);
+        DestroyImmediate(newObject);
+
+        Debug.Log($"触发器预制体生成成功: {prefabPath}");
     }
 }

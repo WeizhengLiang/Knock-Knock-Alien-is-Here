@@ -4,28 +4,12 @@ using UnityEngine;
 
 public class LaserPointerCollectible : CollectibleObject
 {
-    [SerializeField] private Transform powerSourceSocket;
-    [SerializeField] private float checkRadius = 0.5f;
-    
-    protected override void Update()
+    protected override bool CheckTriggerInteraction(GameObject other)
     {
-        base.Update();
-        if (!isUnlocked)
+        if (!isUnlocked && data.unlockMethod == UnlockMethod.PowerSource)
         {
-            CheckPowerSource();
+            return other.CompareTag("PowerSource");
         }
-    }
-    
-    private void CheckPowerSource()
-    {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(powerSourceSocket.position, checkRadius);
-        foreach (Collider2D collider in colliders)
-        {
-            if (collider.CompareTag("PowerSource"))
-            {
-                Unlock();
-                break;
-            }
-        }
+        return false;
     }
 }

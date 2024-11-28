@@ -24,7 +24,16 @@ public class CollectionPanel : MonoBehaviour
     {
         rightPanel.SetActive(false);
         closeButton.onClick.AddListener(() => {
-            UIManager.Instance.CloseCollectionPanel();
+            // 检查是否在主菜单场景
+            MainMenuUIManager mainMenuUI = FindObjectOfType<MainMenuUIManager>();
+            if (mainMenuUI != null)
+            {
+                mainMenuUI.CloseCollectionPanel();
+            }
+            else
+            {
+                UIManager.Instance.CloseCollectionPanel();
+            }
         });
     }
     
@@ -70,6 +79,8 @@ public class CollectionPanel : MonoBehaviour
             GameObject itemObj = Instantiate(collectionItemPrefab, itemPositions[i]);
             CollectionItemUI itemUI = itemObj.GetComponent<CollectionItemUI>();
             itemUI.Setup(items[i], unlockedStates[items[i].type], this);
+            itemObj.transform.localPosition = Vector3.zero;
+            itemObj.SetActive(true);
         }
     }
     

@@ -7,15 +7,19 @@ public class SpecimenCollectible : CollectibleObject
     [SerializeField] public float breakForce = 8f;
     [SerializeField] private ParticleSystem glassBreakEffect;
     
-    protected override void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!isUnlocked && collision.relativeVelocity.magnitude > breakForce)
+        if (!isUnlocked && data.unlockMethod == UnlockMethod.Break)
         {
-            if (glassBreakEffect != null)
+            float impactForce = collision.relativeVelocity.magnitude;
+            if (impactForce > breakForce)
             {
-                glassBreakEffect.Play();
+                if (glassBreakEffect != null)
+                {
+                    glassBreakEffect.Play();
+                }
+                Unlock();
             }
-            Unlock();
         }
     }
 }

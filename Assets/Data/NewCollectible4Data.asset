@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94509e7e8d0ac413388929b8901608de, type: 3}
+  m_Name: NewCollectible4Data
+  m_EditorClassIdentifier: 
+  type: 3
+  itemName: 4
+  description: 4
+  alienResponse: 4
+  unlockMethod: 3
+  icon: {fileID: 671407976, guid: 1f8ae5033693bee429f7260cadb20530, type: 3}
+  unlockedSprite: {fileID: 0}
+  lockedSprite: {fileID: 0}
+  comicSprite: {fileID: 671407976, guid: 1f8ae5033693bee429f7260cadb20530, type: 3}
+  unlockEffectPrefab: {fileID: 0}
+  unlockSound: {fileID: 0}

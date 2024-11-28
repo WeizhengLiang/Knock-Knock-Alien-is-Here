@@ -1,20 +1,20 @@
 // 星际友好宣言（摔落解锁）
+
+using UnityEngine;
+
 public class DeclarationCollectible : CollectibleObject
 {
-    private DropUnlockChecker dropChecker;
+    [SerializeField] private float unlockForce = 5f;
     
-    protected override void Start()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        base.Start();
-        dropChecker = GetComponent<DropUnlockChecker>();
-    }
-    
-    protected override void Update()
-    {
-        base.Update();
-        if (!isUnlocked && dropChecker != null && dropChecker.CheckUnlockCondition())
+        if (!isUnlocked && data.unlockMethod == UnlockMethod.Drop)
         {
-            Unlock();
+            float impactForce = collision.relativeVelocity.magnitude;
+            if (impactForce > unlockForce)
+            {
+                Unlock();
+            }
         }
     }
 }

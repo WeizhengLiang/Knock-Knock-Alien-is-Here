@@ -10,7 +10,6 @@ public class CollectibleManager : MonoBehaviour
     [SerializeField] private CollectibleData[] collectibleDatabase;
     
     [Header("UI References")]
-    [SerializeField] private CollectionPanel collectionPanel;
     [SerializeField] private GameObject unlockEffectPrefab;
     [SerializeField] private AudioSource audioSource;
     
@@ -18,10 +17,16 @@ public class CollectibleManager : MonoBehaviour
     
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-        
-        InitializeCollection();
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            InitializeCollection();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     
     private void InitializeCollection()
@@ -38,41 +43,8 @@ public class CollectibleManager : MonoBehaviour
         if (!unlockedCollectibles[type])
         {
             unlockedCollectibles[type] = true;
-            
-            // 播放解锁特效和音效
-            CollectibleData data = GetCollectibleData(type);
-            if (data != null)
-            {
-                if (data.unlockSound != null && audioSource != null)
-                {
-                    audioSource.PlayOneShot(data.unlockSound);
-                }
-                if (data.unlockEffectPrefab != null)
-                {
-                    Instantiate(data.unlockEffectPrefab, transform.position, Quaternion.identity);
-                }
-            }
-            
-            // 更新UI并保存状态
-            UpdateCollectionUI();
+
             SaveCollectionState();
-        }
-    }
-    
-    public void ShowCollectionPanel()
-    {
-        if (collectionPanel != null)
-        {
-            collectionPanel.gameObject.SetActive(true);
-            collectionPanel.SetupCollectionItems(collectibleDatabase, unlockedCollectibles);
-        }
-    }
-    
-    private void UpdateCollectionUI()
-    {
-        if (collectionPanel != null && collectionPanel.gameObject.activeInHierarchy)
-        {
-            collectionPanel.SetupCollectionItems(collectibleDatabase, unlockedCollectibles);
         }
     }
     
@@ -98,4 +70,8 @@ public class CollectibleManager : MonoBehaviour
             unlockedCollectibles[data.type] = state == 1;
         }
     }
+    
+    // 添加公共属性
+    public CollectibleData[] CollectibleDatabase => collectibleDatabase;
+    public Dictionary<CollectibleType, bool> UnlockedCollectibles => unlockedCollectibles;
 }

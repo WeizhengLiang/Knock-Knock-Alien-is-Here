@@ -12,13 +12,7 @@ public class CollectibleData : ScriptableObject
     
     [Header("Visual Elements")]
     public Sprite icon;                    // 书架上显示的图标
-    public Sprite unlockedSprite;          // 解锁状态的图片
-    public Sprite lockedSprite;            // 未解锁状态的图片
     public Sprite comicSprite;             // 右侧显示的漫画图片
-    
-    [Header("Effects")]
-    public GameObject unlockEffectPrefab;
-    public AudioClip unlockSound;
 }
 
 public enum CollectibleType

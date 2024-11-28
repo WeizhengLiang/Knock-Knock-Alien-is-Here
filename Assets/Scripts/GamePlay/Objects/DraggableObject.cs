@@ -250,6 +250,10 @@ public class DraggableObject : MonoBehaviour
             // 确保无效位置的物体保持静止
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
+        }else{
+            if(spriteRenderer != null && spriteRenderer.material != normalMaterial){
+                spriteRenderer.material = normalMaterial;
+            }
         }
     }
 
@@ -285,7 +289,7 @@ public class DraggableObject : MonoBehaviour
         UpdateMaterials();
     }
 
-    private void UpdateMaterials()
+    protected virtual void UpdateMaterials()
     {
         if (spriteRenderer != null)
         {
@@ -316,7 +320,7 @@ public class DraggableObject : MonoBehaviour
         hasInvalidPlacement = false;
     }
 
-    private void TryPlaceObject()
+    protected virtual void TryPlaceObject()
     {
         if (!isInvalidPosition)
         {
@@ -363,7 +367,7 @@ public class DraggableObject : MonoBehaviour
         FreezeAllObjects();
     }
 
-    private void CompletePlace()
+    protected virtual void CompletePlace()
     {
         isDragging = false;
         isAnyObjectBeingDragged = false;

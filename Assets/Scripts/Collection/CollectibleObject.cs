@@ -8,53 +8,11 @@ public class CollectibleObject : DraggableObject
     [SerializeField] protected Animator visualAnimator;
     
     protected bool isUnlocked = false;
-    protected Vector2 originalPosition;
     protected GameObject currentMergeTarget;
-    
-    protected override void Start()
-    {
-        base.Start();
-        originalPosition = transform.position;
-    }
-    
-    protected virtual void UpdateMaterials()
-    {
-        if (spriteRenderer != null)
-        {
-            if (isDragging)
-            {
-                if (isInvalidPosition)
-                {
-                    spriteRenderer.material = invalidMaterial;
-                }
-                else if (CheckMergeTarget())
-                {
-                    spriteRenderer.material = canMergeMaterial;
-                    UpdateTargetMaterial();
-                }
-                else
-                {
-                    spriteRenderer.material = draggingMaterial;
-                }
-            }
-            else if (isInvalidPosition)
-            {
-                spriteRenderer.material = invalidMaterial;
-            }
-            else if (IsMouseOver())
-            {
-                spriteRenderer.material = canPickupMaterial;
-            }
-            else
-            {
-                spriteRenderer.material = normalMaterial;
-            }
-        }
-    }
 
-    protected virtual bool CheckMergeTarget()
+    protected override bool IsValidPlacement()
     {
-        if (!isDragging || isUnlocked) return false;
+        if (isUnlocked) return true;
 
         Collider2D[] colliders = Physics2D.OverlapBoxAll(
             transform.position,
@@ -67,30 +25,83 @@ public class CollectibleObject : DraggableObject
         {
             if (otherCol != col && otherCol.gameObject != gameObject)
             {
-                if (IsValidTriggerObject(otherCol.gameObject))
+                // 检查是否是有效的触发组合
+                if (CheckTriggerInteraction(otherCol.gameObject))
                 {
                     currentMergeTarget = otherCol.gameObject;
                     return true;
                 }
+
+                // 如果不是有效组合，检查普通碰撞
+                ColliderDistance2D distance = Physics2D.Distance(col, otherCol);
+                if (distance.distance <= 0.01f)
+                {
+                    return false;
+                }
             }
         }
-
+        
         currentMergeTarget = null;
-        return false;
+        return true;
     }
 
-    protected virtual bool IsValidTriggerObject(GameObject trigger)
+    protected virtual bool CheckTriggerInteraction(GameObject other)
     {
-        switch (data.unlockMethod)
+        return false; // 基类默认不处理触发
+    }
+
+    protected override void CompletePlace()
+    {
+        if (currentMergeTarget != null && !isInvalidPosition)
         {
-            case UnlockMethod.PowerSource:
-                return trigger.CompareTag("PowerSource");
-            case UnlockMethod.Disk:
-                return trigger.CompareTag("Disk");
-            case UnlockMethod.Rocket:
-                return trigger.CompareTag("Rocket");
-            default:
-                return false;
+            HandleTriggerEffect();
+        }
+        base.CompletePlace();
+    }
+
+    public void HandleTriggerEffect()
+    {
+        if (currentMergeTarget != null)
+        {
+            currentMergeTarget.SetActive(false);
+            Unlock();
+        }
+    }
+
+    protected virtual void Unlock()
+    {
+        isUnlocked = true;
+        if (unlockVisualEffect != null)
+        {
+            unlockVisualEffect.SetActive(true);
+        }
+        CollectibleManager.Instance.UnlockCollectible(data.type);
+    }
+
+    protected override void UpdateMaterials()
+    {
+        if (spriteRenderer != null)
+        {
+            if (isDragging)
+            {
+                if (isInvalidPosition)
+                {
+                    spriteRenderer.material = invalidMaterial;
+                }
+                else if (currentMergeTarget != null)
+                {
+                    spriteRenderer.material = canMergeMaterial;
+                    UpdateTargetMaterial();
+                }
+                else
+                {
+                    spriteRenderer.material = draggingMaterial;
+                }
+            }
+            else
+            {
+                base.UpdateMaterials();
+            }
         }
     }
 
@@ -105,26 +116,7 @@ public class CollectibleObject : DraggableObject
             }
         }
     }
-    
-    protected virtual void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (!isUnlocked && data.unlockMethod == UnlockMethod.Drop)
-        {
-            float impactForce = collision.relativeVelocity.magnitude;
-            if (impactForce > 5f) // 可调整的阈值
-            {
-                Unlock();
-            }
-        }
-    }
-    
-    protected virtual void Unlock()
-    {
-        isUnlocked = true;
-        if (unlockVisualEffect != null)
-        {
-            unlockVisualEffect.SetActive(true);
-        }
-        CollectibleManager.Instance.UnlockCollectible(data.type);
-    }
+
+    public bool IsUnlocked() => isUnlocked;
+    public UnlockMethod GetUnlockMethod() => data.unlockMethod;
 }

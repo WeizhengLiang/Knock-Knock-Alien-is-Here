@@ -40,7 +40,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI countdownText;
 
     [Header("Collection UI")]
-    [SerializeField] private GameObject collectionPanel;  // 收藏品展示面板
+    [SerializeField] private CollectionPanel collectionPanel;  // 收藏品展示面板
 
     private float displayedCoverage;
     private float targetCoverage;
@@ -63,10 +63,11 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         // 初始化时隐藏所有面板
-        mainPanel.SetActive(true);
-        gamePanel.SetActive(false);
-        pausePanel.SetActive(false);
-        gameOverPanel.SetActive(false);
+        mainPanel?.SetActive(true);
+        gamePanel?.SetActive(false);
+        pausePanel?.SetActive(false);
+        gameOverPanel?.SetActive(false);
+        collectionPanel?.gameObject.SetActive(false);
     }
     
     private void Update()
@@ -94,32 +95,27 @@ public class UIManager : MonoBehaviour
 
     private void SetupButtons()
     {
-        restartButton.onClick.AddListener(OnRestartButtonClicked);
-        startButton.onClick.AddListener(OnStartButtonClicked);
-        pauseButton.onClick.AddListener(OnPauseButtonClicked);
-        resumeButton.onClick.AddListener(OnResumeButtonClicked);
+        restartButton?.onClick.AddListener(OnRestartButtonClicked);
+        startButton?.onClick.AddListener(OnStartButtonClicked);
+        pauseButton?.onClick.AddListener(OnPauseButtonClicked);
+        resumeButton?.onClick.AddListener(OnResumeButtonClicked);
         // Return按钮
-        returnButton.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
+        returnButton?.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
         
         // 胜利场景按钮
-        futureDayButton.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
+        futureDayButton?.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
         
         // 失败场景按钮
-        timeMachineButton.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
+        timeMachineButton?.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
         
         // Collection按钮
-        collectionButton.onClick.AddListener(() => Debug.Log("open Collection"));
-        // Collection按钮
-        collectionButton.onClick.AddListener(() => {
-            collectionPanel.SetActive(true);
-            CollectibleManager.Instance.ShowCollectionPanel();
-        });
+        collectionButton?.onClick.AddListener(() => OpenCollectionPanel());
         
         // 初始时隐藏所有结算按钮
-        returnButton.gameObject.SetActive(false);
-        futureDayButton.gameObject.SetActive(false);
-        timeMachineButton.gameObject.SetActive(false);
-        collectionButton.gameObject.SetActive(false);
+        returnButton?.gameObject.SetActive(false);
+        futureDayButton?.gameObject.SetActive(false);
+        timeMachineButton?.gameObject.SetActive(false);
+        collectionButton?.gameObject.SetActive(false);
     }
     
     public void ShowMainPanel(bool show)
@@ -211,14 +207,14 @@ public class UIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        restartButton.onClick.RemoveListener(OnRestartButtonClicked);
-        startButton.onClick.RemoveListener(OnStartButtonClicked);
-        pauseButton.onClick.RemoveListener(OnPauseButtonClicked);
-        resumeButton.onClick.RemoveListener(OnResumeButtonClicked);
-        returnButton.onClick.RemoveAllListeners();
-        futureDayButton.onClick.RemoveAllListeners();
-        timeMachineButton.onClick.RemoveAllListeners();
-        collectionButton.onClick.RemoveAllListeners();
+        restartButton?.onClick.RemoveListener(OnRestartButtonClicked);
+        startButton?.onClick.RemoveListener(OnStartButtonClicked);
+        pauseButton?.onClick.RemoveListener(OnPauseButtonClicked);
+        resumeButton?.onClick.RemoveListener(OnResumeButtonClicked);
+        returnButton?.onClick.RemoveAllListeners();
+        futureDayButton?.onClick.RemoveAllListeners();
+        timeMachineButton?.onClick.RemoveAllListeners();
+        collectionButton?.onClick.RemoveAllListeners();
     }
 
     public void StartGameEndSequence(float finalCoverage, float winThreshold)
@@ -322,6 +318,21 @@ public class UIManager : MonoBehaviour
     // 添加关闭收藏面板的方法
     public void CloseCollectionPanel()
     {
-        collectionPanel.SetActive(false);
+        if (collectionPanel != null)
+        {
+            collectionPanel.gameObject.SetActive(false);
+        }
+    }
+
+    public void OpenCollectionPanel()
+    {
+        if (CollectibleManager.Instance != null && collectionPanel != null)
+        {
+            collectionPanel.gameObject.SetActive(true);
+            collectionPanel.SetupCollectionItems(
+                CollectibleManager.Instance.CollectibleDatabase,
+                CollectibleManager.Instance.UnlockedCollectibles
+            );
+        }
     }
 }

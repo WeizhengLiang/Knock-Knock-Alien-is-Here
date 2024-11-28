@@ -16,12 +16,13 @@ public class CollectionItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExi
     
     // 引用CollectionPanel来更新右侧信息
     private CollectionPanel parentPanel;
-    
+
     public void Setup(CollectibleData data, bool unlocked, CollectionPanel panel)
     {
         itemData = data;
         isUnlocked = unlocked;
         parentPanel = panel;
+        itemImage.sprite = data.icon;
         
         // 设置显示状态
         itemImage.material = isUnlocked ? unlockedMaterial : lockedMaterial;
