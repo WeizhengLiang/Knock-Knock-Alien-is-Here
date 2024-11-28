@@ -95,27 +95,27 @@ public class UIManager : MonoBehaviour
 
     private void SetupButtons()
     {
-        restartButton?.onClick.AddListener(OnRestartButtonClicked);
-        startButton?.onClick.AddListener(OnStartButtonClicked);
-        pauseButton?.onClick.AddListener(OnPauseButtonClicked);
-        resumeButton?.onClick.AddListener(OnResumeButtonClicked);
+        restartButton.onClick.AddListener(OnRestartButtonClicked);
+        startButton.onClick.AddListener(OnStartButtonClicked);
+        pauseButton.onClick.AddListener(OnPauseButtonClicked);
+        resumeButton.onClick.AddListener(OnResumeButtonClicked);
         // Return按钮
-        returnButton?.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
+        returnButton.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
         
         // 胜利场景按钮
-        futureDayButton?.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
+        futureDayButton.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
         
         // 失败场景按钮
-        timeMachineButton?.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
+        timeMachineButton.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
         
         // Collection按钮
-        collectionButton?.onClick.AddListener(() => OpenCollectionPanel());
+        collectionButton.onClick.AddListener(() => OpenCollectionPanel());
         
         // 初始时隐藏所有结算按钮
-        returnButton?.gameObject.SetActive(false);
-        futureDayButton?.gameObject.SetActive(false);
-        timeMachineButton?.gameObject.SetActive(false);
-        collectionButton?.gameObject.SetActive(false);
+        returnButton.gameObject.SetActive(false);
+        futureDayButton.gameObject.SetActive(false);
+        timeMachineButton.gameObject.SetActive(false);
+        collectionButton.gameObject.SetActive(false);
     }
     
     public void ShowMainPanel(bool show)
@@ -207,14 +207,14 @@ public class UIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        restartButton?.onClick.RemoveListener(OnRestartButtonClicked);
-        startButton?.onClick.RemoveListener(OnStartButtonClicked);
-        pauseButton?.onClick.RemoveListener(OnPauseButtonClicked);
-        resumeButton?.onClick.RemoveListener(OnResumeButtonClicked);
-        returnButton?.onClick.RemoveAllListeners();
-        futureDayButton?.onClick.RemoveAllListeners();
-        timeMachineButton?.onClick.RemoveAllListeners();
-        collectionButton?.onClick.RemoveAllListeners();
+        restartButton.onClick.RemoveListener(OnRestartButtonClicked);
+        startButton.onClick.RemoveListener(OnStartButtonClicked);
+        pauseButton.onClick.RemoveListener(OnPauseButtonClicked);
+        resumeButton.onClick.RemoveListener(OnResumeButtonClicked);
+        returnButton.onClick.RemoveAllListeners();
+        futureDayButton.onClick.RemoveAllListeners();
+        timeMachineButton.onClick.RemoveAllListeners();
+        collectionButton.onClick.RemoveAllListeners();
     }
 
     public void StartGameEndSequence(float finalCoverage, float winThreshold)
