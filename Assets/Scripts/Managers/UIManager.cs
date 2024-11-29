@@ -8,15 +8,16 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-    
+
     [Header("UI Panels")]
     [SerializeField] private GameObject mainPanel;
-    [SerializeField] private GameObject gamePanel;   
+    [SerializeField] private GameObject gamePanel;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject gameOverPanel;
-    
+
     [Header("Game UI Elements")]
     [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private Image HP;
 
     [Header("Buttons")]
     [SerializeField] private Button restartButton;    // 在 Inspector 中关联重启按钮
@@ -39,13 +40,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject finalCountdownUI;   // 最后3秒倒计时UI
     [SerializeField] private TextMeshProUGUI countdownText;
 
+
     [Header("Collection UI")]
     [SerializeField] private CollectionPanel collectionPanel;  // 收藏品展示面板
 
     private float displayedCoverage;
     private float targetCoverage;
     private bool isAnimatingCoverage;
-    
+
     private void Awake()
     {
         if (Instance == null)
@@ -59,7 +61,7 @@ public class UIManager : MonoBehaviour
 
         SetupButtons();
     }
-    
+
     private void Start()
     {
         // 初始化时隐藏所有面板
@@ -69,7 +71,7 @@ public class UIManager : MonoBehaviour
         gameOverPanel?.SetActive(false);
         collectionPanel?.gameObject.SetActive(false);
     }
-    
+
     private void Update()
     {
         if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
@@ -77,7 +79,7 @@ public class UIManager : MonoBehaviour
             UpdateTimerDisplay();
         }
     }
-    
+
     private void UpdateTimerDisplay()
     {
         float time = GameManager.Instance.GetRemainingTime();
@@ -91,6 +93,9 @@ public class UIManager : MonoBehaviour
             // 显示普通计时器
             timerText.text = $"Time: {time:F1}";
         }
+
+        float fillAmount = Mathf.Clamp01(time / 20f);
+        HP.fillAmount = fillAmount;
     }
 
     private void SetupButtons()
@@ -101,38 +106,38 @@ public class UIManager : MonoBehaviour
         resumeButton.onClick.AddListener(OnResumeButtonClicked);
         // Return按钮
         returnButton.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
-        
+
         // 胜利场景按钮
         futureDayButton.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
-        
+
         // 失败场景按钮
         timeMachineButton.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
-        
+
         // Collection按钮
         collectionButton.onClick.AddListener(() => OpenCollectionPanel());
-        
+
         // 初始时隐藏所有结算按钮
         returnButton.gameObject.SetActive(false);
         futureDayButton.gameObject.SetActive(false);
         timeMachineButton.gameObject.SetActive(false);
         collectionButton.gameObject.SetActive(false);
     }
-    
+
     public void ShowMainPanel(bool show)
     {
         mainPanel.SetActive(show);
     }
-    
+
     public void ShowGamePanel(bool show)
     {
         gamePanel.SetActive(show);
     }
-    
+
     public void ShowPausePanel(bool show)
     {
         pausePanel.SetActive(show);
     }
-    
+
     public void ShowGameOverPanel(bool show)
     {
         gameOverPanel.SetActive(show);
@@ -142,11 +147,11 @@ public class UIManager : MonoBehaviour
     {
         // 切换到最后3秒的倒计时显示
         finalCountdownUI.SetActive(true);
-        
+
         // 可以在这里添加倒计时动画效果
         // 例如：缩放动画、颜色变化等
     }
-    
+
     // 切换到游戏状态时调用此方法
     public void SwitchToMainState()
     {
@@ -155,7 +160,7 @@ public class UIManager : MonoBehaviour
         ShowPausePanel(false);
         ShowGameOverPanel(false);
     }
-    
+
     public void SwitchToGameState()
     {
         ShowMainPanel(false);
@@ -166,7 +171,7 @@ public class UIManager : MonoBehaviour
         // 初始显示普通计时器
         finalCountdownUI.SetActive(false);
     }
-    
+
     // 切换到暂停状态时调用此方法
     public void SwitchToPauseState()
     {
@@ -175,7 +180,7 @@ public class UIManager : MonoBehaviour
         ShowPausePanel(true);
         ShowGameOverPanel(false);
     }
-    
+
     // 切换到游戏结束状态时调用此方法
     public void SwitchToGameOverState()
     {
@@ -224,24 +229,24 @@ public class UIManager : MonoBehaviour
         isAnimatingCoverage = true;
         StartCoroutine(AnimateCoverageSequence(winThreshold));
     }
-    
+
     private IEnumerator AnimateCoverageSequence(float winThreshold)
     {
         // 等待无效物体消失动画完成
         yield return StartCoroutine(HandleInvalidObjects());
-        
+
         // 动画显示百分比
         while (isAnimatingCoverage)
         {
             displayedCoverage = Mathf.MoveTowards(displayedCoverage, targetCoverage, coverageAnimSpeed * Time.deltaTime);
             UpdateCoverageDisplay(displayedCoverage);
-            
+
             // 检查是否达到胜利阈值
             if (targetCoverage >= winThreshold && displayedCoverage >= winThreshold)
             {
                 yield return StartCoroutine(ShowWinSequence());
             }
-            
+
             // 检查是否达到最终分数
             if (Mathf.Approximately(displayedCoverage, targetCoverage))
             {
@@ -251,7 +256,7 @@ public class UIManager : MonoBehaviour
                     yield return StartCoroutine(ShowLoseSequence());
                 }
             }
-            
+
             yield return null;
         }
     }
@@ -260,31 +265,31 @@ public class UIManager : MonoBehaviour
     {
         var invalidObjects = DraggableObject.AllDraggableObjects
             .Where(obj => obj.IsInInvalidPosition() || obj.IsDragging());
-            
+
         foreach (var obj in invalidObjects)
         {
             // 触发消失动画
             obj.TriggerDisappearAnimation();
         }
-        
+
         yield return new WaitForSeconds(1f);
     }
-    
+
     // private IEnumerator BlinkAndDestroyObject(DraggableObject obj)
     // {
     //     SpriteRenderer renderer = obj.GetComponent<SpriteRenderer>();
     //     float elapsedTime = 0f;
-        
+
     //     while (elapsedTime < 1f)
     //     {
     //         renderer.enabled = !renderer.enabled;
     //         yield return new WaitForSeconds(0.1f);
     //         elapsedTime += 0.1f;
     //     }
-        
+
     //     Destroy(obj.gameObject);
     // }
-    
+
     private IEnumerator ShowWinSequence()
     {
         winUI.SetActive(true);
@@ -295,7 +300,7 @@ public class UIManager : MonoBehaviour
         collectionButton.gameObject.SetActive(true);
         yield return null;
     }
-    
+
     private IEnumerator ShowLoseSequence()
     {
         loseUI.SetActive(true);
@@ -306,7 +311,7 @@ public class UIManager : MonoBehaviour
         collectionButton.gameObject.SetActive(true);
         yield return null;
     }
-    
+
     private void UpdateCoverageDisplay(float coverage)
     {
         if (coverageText != null)
