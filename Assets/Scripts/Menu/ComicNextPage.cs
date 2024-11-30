@@ -25,7 +25,8 @@ public class ComicNextPage : MonoBehaviour
         currentPageNum++;
         if (currentPageNum == comicsList.Count)
         {
-            SceneManager.LoadScene("MainScene");
+            SceneController.Instance.StartGameFromComic();
+            return;
         }
 
         comicsList[currentPageNum].SetActive(true);
