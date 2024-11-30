@@ -456,13 +456,14 @@ public class DraggableObject : MonoBehaviour
         }
         return true;
     }
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         // 清理拖拽锚点
         if (dragAnchor != null)
         {
             Destroy(dragAnchor);
         }
+        allDraggableObjects.Remove(this);
     }
     public static bool IsGlobalFrozen()
     {
@@ -554,5 +555,14 @@ public class DraggableObject : MonoBehaviour
     {
         isMouseOver = false;
         UpdateMaterials();
+    }
+
+    // 添加静态清理方法
+    public static void ClearStaticReferences()
+    {
+        isAnyObjectBeingDragged = false;
+        isGlobalFrozen = false;
+        hasInvalidPlacement = false;
+        allDraggableObjects.Clear();
     }
 }

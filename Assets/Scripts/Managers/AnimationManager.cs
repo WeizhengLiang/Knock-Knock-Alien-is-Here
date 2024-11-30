@@ -27,4 +27,11 @@ public class AnimationManager : MonoBehaviour
             animator.Play("Flickering");
         }
     }
+
+    private void OnDestroy() {
+        StopAllCoroutines();
+        if (instance == this) {
+            instance = null;
+        }
+    }
 }

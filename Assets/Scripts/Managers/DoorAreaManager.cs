@@ -23,4 +23,11 @@ public class DoorAreaManager : MonoBehaviour
     {
         return doorCoverageCalculator != null ? doorCoverageCalculator.GetCurrentCoverage() : 0f;
     }
+
+    private void OnDestroy() {
+        StopAllCoroutines();
+        if (Instance == this) {
+            Instance = null;
+        }
+    }
 }

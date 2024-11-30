@@ -74,4 +74,11 @@ public class CollectibleManager : MonoBehaviour
     // 添加公共属性
     public CollectibleData[] CollectibleDatabase => collectibleDatabase;
     public Dictionary<CollectibleType, bool> UnlockedCollectibles => unlockedCollectibles;
+
+    private void OnDestroy() {
+        StopAllCoroutines();
+        if (Instance == this) {
+            Instance = null;
+        }
+    }
 }

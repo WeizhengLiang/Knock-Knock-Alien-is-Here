@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class FragileObject : DraggableObject
 {
@@ -16,6 +17,8 @@ public class FragileObject : DraggableObject
     private float accumulatedForce = 0f;    // 累积受力
     private float lastForceTime;            // 上次受力时间
     private bool isBroken = false;          // 是否已破碎
+    
+    private static List<GameObject> brokenPieces = new List<GameObject>();
     
     protected override void Start()
     {
@@ -101,13 +104,12 @@ public class FragileObject : DraggableObject
         if (isBroken) return;
         isBroken = true;
         
-        // 输出破碎信息
         Debug.Log($"{gameObject.name}已破碎");
         
-        // 生成破碎模型
         if (brokenPrefab != null)
         {
             GameObject broken = Instantiate(brokenPrefab, transform.position, transform.rotation);
+            brokenPieces.Add(broken); // 添加到列表中追踪
             
             // 如果破碎模型有Rigidbody2D，传递原物体的速度
             if (rb != null && broken.TryGetComponent<Rigidbody2D>(out var brokenRb))
@@ -117,7 +119,6 @@ public class FragileObject : DraggableObject
             }
         }
         
-        // 销毁原物体
         Destroy(gameObject);
     }
     
@@ -126,10 +127,32 @@ public class FragileObject : DraggableObject
     {
         if (Application.isPlaying && accumulatedForce > 0)
         {
-            // 显示累积力的大小
             float radius = accumulatedForce / breakForceThreshold * 0.5f;
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, radius);
         }
+    }
+    
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();  // 调用基类的OnDestroy
+        
+        // 清理引用
+        brokenPrefab = null;
+        isBroken = false;
+        accumulatedForce = 0f;
+    }
+
+    // 添加静态清理方法
+    public static void CleanupBrokenPieces()
+    {
+        foreach (var piece in brokenPieces)
+        {
+            if (piece != null)
+            {
+                Destroy(piece);
+            }
+        }
+        brokenPieces.Clear();
     }
 }

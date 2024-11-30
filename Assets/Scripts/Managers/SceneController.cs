@@ -25,7 +25,7 @@ public class SceneController : MonoBehaviour
 
     [Header("Scene Settings")]
     [SerializeField] private SceneData[] sceneData;
-    [SerializeField] private float transitionTime = 1f;
+    [SerializeField] private float transitionTime = 0f;
     
     private Dictionary<SceneType, string> sceneMap;
 
@@ -57,6 +57,7 @@ public class SceneController : MonoBehaviour
     {
         if (sceneMap.TryGetValue(sceneType, out string sceneName))
         {
+            GameManager.Instance.CleanupBeforeSceneChange();
             StartCoroutine(LoadSceneRoutine(sceneName));
         }
         else
@@ -111,4 +112,23 @@ public class SceneController : MonoBehaviour
     }
     
     #endregion
+
+    private void OnDisable()
+    {
+        // 清理所有静态引用
+        DraggableObject.ClearStaticReferences();
+        // 其他管理器的清理...
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+        // 确保在场景切换时也清理
+        DraggableObject.ClearStaticReferences();
+        // 其他管理器的清理...
+    }
 }

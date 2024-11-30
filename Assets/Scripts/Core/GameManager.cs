@@ -9,10 +9,10 @@ public class GameManager : MonoBehaviour
     // 游戏状态枚举
     public enum GameState
     {
-        Menu,
-        Playing,
-        Paused,
-        GameOver
+        Menu,       // MainMenuScene
+        Ready,      // MainScene - 准备开始状态
+        Playing,    // MainScene - 游戏进行中
+        GameOver    // MainScene - 游戏结束
     }
     
     // 游戏状态变量
@@ -20,15 +20,14 @@ public class GameManager : MonoBehaviour
     private float remainingTime;
 
     [Header("游戏设置")]
-    [SerializeField] private float levelCompleteDelay = 1f;    // 完成后的延迟时间    
-    [SerializeField] private float totalGameTime = 20f;    // 总游戏时间
-    [SerializeField] private float finalCountdownTime = 3f; // 最后的倒计时时间
+    [SerializeField] private float levelCompleteDelay = 1f;
+    [SerializeField] private float totalGameTime = 20f;
+    [SerializeField] private float finalCountdownTime = 3f;
     [SerializeField] private float winThreshold = 70f;
     private bool isFinalCountdown = false;
     
     private void Awake()
     {
-        // 单例模式实现
         if (Instance == null)
         {
             Instance = this;
@@ -43,8 +42,12 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         SetGameState(GameState.Menu);
-        // 初始化收集系统
-        //CollectibleManager.Instance.LoadCollectionState();
+    }
+    
+    // 当加载到MainScene时调用
+    public void EnterMainScene()
+    {
+        SetGameState(GameState.Ready);
     }
     
     private void Update()
@@ -58,11 +61,14 @@ public class GameManager : MonoBehaviour
     private void UpdateGameTimer()
     {
         remainingTime -= Time.deltaTime;
-        // 检查是否进入最后3秒
+        
         if (!isFinalCountdown && remainingTime <= finalCountdownTime)
         {
             isFinalCountdown = true;
-            UIManager.Instance.ShowFinalCountdown();
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowFinalCountdown();
+            }
         }
         
         if (remainingTime <= 0)
@@ -78,18 +84,6 @@ public class GameManager : MonoBehaviour
         SetGameState(GameState.Playing);
     }
     
-    public void PauseGame()
-    {
-        SetGameState(GameState.Paused);
-        Time.timeScale = 0;
-    }
-    
-    public void ResumeGame()
-    {
-        SetGameState(GameState.Playing);
-        Time.timeScale = 1;
-    }
-    
     public void EndGame()
     {
         remainingTime = 0;
@@ -99,41 +93,35 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        // 重置游戏时间
         remainingTime = totalGameTime;
-        
-        // 重置时间缩放（以防游戏在暂停状态重启）
         Time.timeScale = 1;
-
         DraggableObject.ResetGlobalState();
         
-        // 重新加载当前场景
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
         
-        // 设置游戏状态为开始
-        SetGameState(GameState.Playing);
+        SetGameState(GameState.Ready);  // 重启后回到Ready状态
     }
     
     private void SetGameState(GameState newState)
     {
         CurrentState = newState;
         
-        // 更新UI显示
-        switch (newState)
+        // 只在MainScene中更新UI
+        if (UIManager.Instance != null)
         {
-            case GameState.Menu:
-                UIManager.Instance.SwitchToMainState();
-                break;
-            case GameState.Playing:
-                UIManager.Instance.SwitchToGameState();
-                break;
-            case GameState.Paused:
-                UIManager.Instance.SwitchToPauseState();
-                break;
-            case GameState.GameOver:
-                UIManager.Instance.SwitchToGameOverState();
-                break;
+            switch (newState)
+            {
+                case GameState.Ready:
+                    UIManager.Instance.SwitchToReadyState();
+                    break;
+                case GameState.Playing:
+                    UIManager.Instance.SwitchToGameState();
+                    break;
+                case GameState.GameOver:
+                    UIManager.Instance.SwitchToGameOverState();
+                    break;
+            }
         }
     }
     
@@ -149,18 +137,43 @@ public class GameManager : MonoBehaviour
     
     private IEnumerator LevelCompleteSequence()
     {
-        // 禁用所有物体的拖拽
         DraggableObject.SetGlobalFrozen(true);
-        
-        // 等待一段时间
         yield return new WaitForSeconds(levelCompleteDelay);
-
-        // 可以在这里添加其他胜利效果
-        // 例如：播放音效、粒子效果等
     }
+
     public void OnCountdownComplete()
     {
         float finalCoverage = DoorAreaManager.Instance.GetCurrentCoverage();
-        UIManager.Instance.StartGameEndSequence(finalCoverage, winThreshold);
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.StartGameEndSequence(finalCoverage, winThreshold);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+            
+            // 清理所有管理器的静态引用
+            UIManager.ClearStaticReferences();
+            DraggableObject.ClearStaticReferences();
+            CollectibleObject.ClearStaticReferences();
+            
+            StopAllCoroutines();
+        }
+    }
+
+    public void CleanupBeforeSceneChange()
+    {
+        // 优先清理破碎物
+        FragileObject.CleanupBrokenPieces();
+        
+        StopAllCoroutines();
+        
+        // 重置游戏状态
+        CurrentState = GameState.Menu;  // 返回到Menu状态
+        Time.timeScale = 1f;
     }
 }

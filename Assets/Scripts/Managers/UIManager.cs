@@ -12,7 +12,6 @@ public class UIManager : MonoBehaviour
     [Header("UI Panels")]
     [SerializeField] private GameObject mainPanel;
     [SerializeField] private GameObject gamePanel;
-    [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject gameOverPanel;
 
     [Header("Game UI Elements")]
@@ -22,8 +21,6 @@ public class UIManager : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private Button restartButton;    // 在 Inspector 中关联重启按钮
     [SerializeField] private Button startButton;    // 在 Inspector 中关联开始按钮
-    [SerializeField] private Button pauseButton;    // 在 Inspector 中关联暂停按钮
-    [SerializeField] private Button resumeButton;    // 在 Inspector 中关联继续按钮
 
     [Header("End Game UI")]
     [SerializeField] private TextMeshProUGUI coverageText;
@@ -67,7 +64,6 @@ public class UIManager : MonoBehaviour
         // 初始化时隐藏所有面板
         mainPanel?.SetActive(true);
         gamePanel?.SetActive(false);
-        pausePanel?.SetActive(false);
         gameOverPanel?.SetActive(false);
         collectionPanel?.gameObject.SetActive(false);
     }
@@ -102,8 +98,6 @@ public class UIManager : MonoBehaviour
     {
         restartButton.onClick.AddListener(OnRestartButtonClicked);
         startButton.onClick.AddListener(OnStartButtonClicked);
-        pauseButton.onClick.AddListener(OnPauseButtonClicked);
-        resumeButton.onClick.AddListener(OnResumeButtonClicked);
         // Return按钮
         returnButton.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
 
@@ -133,11 +127,6 @@ public class UIManager : MonoBehaviour
         gamePanel.SetActive(show);
     }
 
-    public void ShowPausePanel(bool show)
-    {
-        pausePanel.SetActive(show);
-    }
-
     public void ShowGameOverPanel(bool show)
     {
         gameOverPanel.SetActive(show);
@@ -153,11 +142,10 @@ public class UIManager : MonoBehaviour
     }
 
     // 切换到游戏状态时调用此方法
-    public void SwitchToMainState()
+    public void SwitchToReadyState()
     {
         ShowMainPanel(true);
         ShowGamePanel(false);
-        ShowPausePanel(false);
         ShowGameOverPanel(false);
     }
 
@@ -165,20 +153,10 @@ public class UIManager : MonoBehaviour
     {
         ShowMainPanel(false);
         ShowGamePanel(true);
-        ShowPausePanel(false);
         ShowGameOverPanel(false);
 
         // 初始显示普通计时器
         finalCountdownUI.SetActive(false);
-    }
-
-    // 切换到暂停状态时调用此方法
-    public void SwitchToPauseState()
-    {
-        ShowMainPanel(false);
-        ShowGamePanel(false);
-        ShowPausePanel(true);
-        ShowGameOverPanel(false);
     }
 
     // 切换到游戏结束状态时调用此方法
@@ -186,7 +164,6 @@ public class UIManager : MonoBehaviour
     {
         ShowMainPanel(false);
         ShowGamePanel(false);
-        ShowPausePanel(false);
         ShowGameOverPanel(true);
     }
 
@@ -200,26 +177,31 @@ public class UIManager : MonoBehaviour
         GameManager.Instance.StartGame();
     }
 
-    private void OnPauseButtonClicked()
-    {
-        GameManager.Instance.PauseGame();
-    }
-
-    private void OnResumeButtonClicked()
-    {
-        GameManager.Instance.ResumeGame();
-    }
-
     private void OnDestroy()
     {
+        StopAllCoroutines();
+
         restartButton.onClick.RemoveListener(OnRestartButtonClicked);
         startButton.onClick.RemoveListener(OnStartButtonClicked);
-        pauseButton.onClick.RemoveListener(OnPauseButtonClicked);
-        resumeButton.onClick.RemoveListener(OnResumeButtonClicked);
         returnButton.onClick.RemoveAllListeners();
         futureDayButton.onClick.RemoveAllListeners();
         timeMachineButton.onClick.RemoveAllListeners();
         collectionButton.onClick.RemoveAllListeners();
+
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+
+        // 清理UI面板引用
+        mainPanel = null;
+        gamePanel = null;
+        gameOverPanel = null;
+    }
+
+    public static void ClearStaticReferences()
+    {
+        Instance = null;
     }
 
     public void StartGameEndSequence(float finalCoverage, float winThreshold)

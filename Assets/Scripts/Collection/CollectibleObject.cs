@@ -119,4 +119,30 @@ public class CollectibleObject : DraggableObject
 
     public bool IsUnlocked() => isUnlocked;
     public UnlockMethod GetUnlockMethod() => data.unlockMethod;
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        
+        // 清理引用和事件监听
+        if (data != null)
+        {
+            data = null;
+        }
+        
+        if (unlockVisualEffect != null)
+        {
+            Destroy(unlockVisualEffect);
+            unlockVisualEffect = null;
+        }
+        
+        currentMergeTarget = null;
+        isUnlocked = false;
+    }
+
+    // public static void ClearStaticReferences()
+    // {
+    //     // 清理任何静态引用
+    //     allCollectibles.Clear();
+    // }
 }
