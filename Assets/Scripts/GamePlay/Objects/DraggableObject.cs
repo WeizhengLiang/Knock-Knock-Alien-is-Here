@@ -56,6 +56,8 @@ public class DraggableObject : MonoBehaviour
     private HingeJoint2D dragJoint;
     private GameObject dragAnchor;
 
+    protected bool isMouseOver = false;
+
     protected virtual void Start()
     {
         mainCamera = Camera.main;
@@ -251,7 +253,7 @@ public class DraggableObject : MonoBehaviour
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }else{
-            if(spriteRenderer != null && spriteRenderer.material != normalMaterial){
+            if(spriteRenderer != null && spriteRenderer.material != normalMaterial && !isMouseOver){
                 spriteRenderer.material = normalMaterial;
             }
         }
@@ -295,11 +297,22 @@ public class DraggableObject : MonoBehaviour
         {
             if (isDragging)
             {
-                spriteRenderer.material = isInvalidPosition ? invalidMaterial : draggingMaterial;
+                if (isInvalidPosition)
+                {
+                    spriteRenderer.material = invalidMaterial;
+                }
+                else
+                {
+                    spriteRenderer.material = draggingMaterial;
+                }
             }
             else if (isInvalidPosition)
             {
                 spriteRenderer.material = invalidMaterial;
+            }
+            else if (isMouseOver)
+            {
+                spriteRenderer.material = canPickupMaterial;
             }
             else
             {
@@ -526,5 +539,20 @@ public class DraggableObject : MonoBehaviour
         
         Vector2 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         return col.OverlapPoint(mousePosition);
+    }
+
+    protected virtual void OnMouseEnter()
+    {
+        if (!isDragging && !isInvalidPosition && !isGlobalFrozen)
+        {
+            isMouseOver = true;
+            UpdateMaterials();
+        }
+    }
+
+    protected virtual void OnMouseExit()
+    {
+        isMouseOver = false;
+        UpdateMaterials();
     }
 }
