@@ -26,7 +26,6 @@ public class ComicNextPage : MonoBehaviour
         {
             comicsList[i].SetActive(true);
         }
-
     }
 
 }
