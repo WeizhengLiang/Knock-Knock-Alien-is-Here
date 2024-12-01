@@ -30,7 +30,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button returnButton;
     [SerializeField] private Button futureDayButton;    // 胜利时显示
     [SerializeField] private Button timeMachineButton;  // 失败时显示
-    [SerializeField] private Button collectionButton;
     [SerializeField] private float coverageAnimSpeed = 50f;
 
     [Header("Countdown UI")]
@@ -40,6 +39,9 @@ public class UIManager : MonoBehaviour
 
     [Header("Collection UI")]
     [SerializeField] private CollectionPanel collectionPanel;  // 收藏品展示面板
+
+    [Header("Collection Button")]
+    [SerializeField] private GameObject newCollectibleIcon; // 感叹号图标
 
     private float displayedCoverage;
     private float targetCoverage;
@@ -98,23 +100,14 @@ public class UIManager : MonoBehaviour
     {
         restartButton.onClick.AddListener(OnRestartButtonClicked);
         startButton.onClick.AddListener(OnStartButtonClicked);
-        // Return按钮
         returnButton.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
-
-        // 胜利场景按钮
         futureDayButton.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
-
-        // 失败场景按钮
         timeMachineButton.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
-
-        // Collection按钮
-        collectionButton.onClick.AddListener(() => OpenCollectionPanel());
 
         // 初始时隐藏所有结算按钮
         returnButton.gameObject.SetActive(false);
         futureDayButton.gameObject.SetActive(false);
         timeMachineButton.gameObject.SetActive(false);
-        collectionButton.gameObject.SetActive(false);
     }
 
     public void ShowMainPanel(bool show)
@@ -186,7 +179,6 @@ public class UIManager : MonoBehaviour
         returnButton.onClick.RemoveAllListeners();
         futureDayButton.onClick.RemoveAllListeners();
         timeMachineButton.onClick.RemoveAllListeners();
-        collectionButton.onClick.RemoveAllListeners();
 
         if (Instance == this)
         {
@@ -279,7 +271,6 @@ public class UIManager : MonoBehaviour
         // 显示胜利相关按钮
         returnButton.gameObject.SetActive(true);
         futureDayButton.gameObject.SetActive(true);
-        collectionButton.gameObject.SetActive(true);
         yield return null;
     }
 
@@ -290,7 +281,6 @@ public class UIManager : MonoBehaviour
         // 显示失败相关按钮
         returnButton.gameObject.SetActive(true);
         timeMachineButton.gameObject.SetActive(true);
-        collectionButton.gameObject.SetActive(true);
         yield return null;
     }
 
@@ -320,6 +310,14 @@ public class UIManager : MonoBehaviour
                 CollectibleManager.Instance.CollectibleDatabase,
                 CollectibleManager.Instance.UnlockedCollectibles
             );
+        }
+    }
+
+    private void UpdateNewCollectibleIcon()
+    {
+        if (newCollectibleIcon != null)
+        {
+            newCollectibleIcon.SetActive(CollectibleManager.Instance.HasNewCollectible());
         }
     }
 }

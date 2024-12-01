@@ -12,6 +12,7 @@ public class SceneController : MonoBehaviour
         MainMenu,       // 开始界面
         OpeningComic,   // 开场漫画
         GameScene,      // 游戏主界面
+        Collection,     // 收藏品界面
         WinAnimation,   // 胜利动画
         LoseAnimation   // 失败动画
     }
@@ -28,6 +29,8 @@ public class SceneController : MonoBehaviour
     [SerializeField] private float transitionTime = 0f;
     
     private Dictionary<SceneType, string> sceneMap;
+    private SceneType previousScene;  // 记录进入Collection前的场景
+    private bool isReturningFromCollection = false;  // 标记是否从Collection返回
 
     private void Awake()
     {
@@ -111,14 +114,20 @@ public class SceneController : MonoBehaviour
         LoadScene(SceneType.OpeningComic);
     }
     
-    #endregion
-
-    private void OnDisable()
+    // 从主菜单进入收藏品界面
+    public void EnterCollection()
     {
-        // 清理所有静态引用
-        DraggableObject.ClearStaticReferences();
-        // 其他管理器的清理...
+        PlayerPrefs.SetInt("HasNewCollectible", 0);  // 清除新收藏品标记
+        LoadScene(SceneType.Collection);
     }
+    
+    // 从收藏品界面返回主菜单
+    public void ExitCollection()
+    {
+        LoadScene(SceneType.MainMenu);
+    }
+    
+    #endregion
 
     private void OnDestroy()
     {
@@ -128,6 +137,30 @@ public class SceneController : MonoBehaviour
             Instance = null;
         }
         // 确保在场景切换时也清理
+        DraggableObject.ClearStaticReferences();
+        // 其他管理器的清理...
+    }
+
+    // 当加载到MainScene时调用
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 只处理进入GameScene的情况
+        if (scene.name == sceneMap[SceneType.GameScene])
+        {
+            GameManager.Instance?.EnterMainScene();
+        }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        
+        // 清理所有静态引用
         DraggableObject.ClearStaticReferences();
         // 其他管理器的清理...
     }

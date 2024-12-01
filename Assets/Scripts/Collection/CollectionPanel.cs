@@ -28,7 +28,7 @@ public class CollectionPanel : MonoBehaviour
             MainMenuUIManager mainMenuUI = FindObjectOfType<MainMenuUIManager>();
             if (mainMenuUI != null)
             {
-                mainMenuUI.CloseCollectionPanel();
+                // mainMenuUI.CloseCollectionPanel();
             }
             else
             {

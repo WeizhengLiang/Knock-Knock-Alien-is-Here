@@ -6,37 +6,25 @@ public class MainMenuUIManager : MonoBehaviour
     [Header("Main Menu UI")]
     [SerializeField] private Button startButton;
     [SerializeField] private Button collectionButton;
-    [SerializeField] private CollectionPanel collectionPanel;
+    [SerializeField] private GameObject newCollectibleIcon;
 
     private void Start()
     {
         SetupButtons();
-        collectionPanel?.gameObject.SetActive(false);
+        UpdateNewCollectibleIcon();
     }
 
     private void SetupButtons()
     {
         startButton?.onClick.AddListener(() => SceneController.Instance.StartGameFromMenu());
-        collectionButton?.onClick.AddListener(OpenCollectionPanel);
+        collectionButton?.onClick.AddListener(() => SceneController.Instance.EnterCollection());
     }
 
-    public void OpenCollectionPanel()
+    private void UpdateNewCollectibleIcon()
     {
-        if (CollectibleManager.Instance != null && collectionPanel != null)
+        if (newCollectibleIcon != null)
         {
-            collectionPanel.gameObject.SetActive(true);
-            collectionPanel.SetupCollectionItems(
-                CollectibleManager.Instance.CollectibleDatabase,
-                CollectibleManager.Instance.UnlockedCollectibles
-            );
-        }
-    }
-
-    public void CloseCollectionPanel()
-    {
-        if (collectionPanel != null)
-        {
-            collectionPanel.gameObject.SetActive(false);
+            newCollectibleIcon.SetActive(CollectibleManager.Instance.HasNewCollectible());
         }
     }
 }

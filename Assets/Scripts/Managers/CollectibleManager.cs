@@ -9,10 +9,6 @@ public class CollectibleManager : MonoBehaviour
     [Header("Collection Data")]
     [SerializeField] private CollectibleData[] collectibleDatabase;
     
-    [Header("UI References")]
-    [SerializeField] private GameObject unlockEffectPrefab;
-    [SerializeField] private AudioSource audioSource;
-    
     private Dictionary<CollectibleType, bool> unlockedCollectibles = new Dictionary<CollectibleType, bool>();
     
     private void Awake()
@@ -29,7 +25,7 @@ public class CollectibleManager : MonoBehaviour
         }
     }
     
-    private void InitializeCollection()
+    public void InitializeCollection()
     {
         foreach (var data in collectibleDatabase)
         {
@@ -38,19 +34,25 @@ public class CollectibleManager : MonoBehaviour
         LoadCollectionState();
     }
     
+    // 解锁收集物并设置新收集物标记
     public void UnlockCollectible(CollectibleType type)
     {
         if (!unlockedCollectibles[type])
         {
             unlockedCollectibles[type] = true;
-
+            PlayerPrefs.SetInt("HasNewCollectible", 1);
             SaveCollectionState();
         }
     }
     
-    private CollectibleData GetCollectibleData(CollectibleType type)
+    public bool IsCollectibleUnlocked(CollectibleType type)
     {
-        return collectibleDatabase.FirstOrDefault(data => data.type == type);
+        return unlockedCollectibles.ContainsKey(type) && unlockedCollectibles[type];
+    }
+    
+    public bool HasNewCollectible()
+    {
+        return PlayerPrefs.GetInt("HasNewCollectible", 0) == 1;
     }
     
     private void SaveCollectionState()
@@ -62,7 +64,7 @@ public class CollectibleManager : MonoBehaviour
         PlayerPrefs.Save();
     }
     
-    public void LoadCollectionState()
+    private void LoadCollectionState()
     {
         foreach (var data in collectibleDatabase)
         {
@@ -71,14 +73,13 @@ public class CollectibleManager : MonoBehaviour
         }
     }
     
-    // 添加公共属性
+    // 获取收集物数据
+    public CollectibleData GetCollectibleData(CollectibleType type)
+    {
+        return collectibleDatabase.FirstOrDefault(data => data.type == type);
+    }
+    
+    // 公共属性
     public CollectibleData[] CollectibleDatabase => collectibleDatabase;
     public Dictionary<CollectibleType, bool> UnlockedCollectibles => unlockedCollectibles;
-
-    private void OnDestroy() {
-        StopAllCoroutines();
-        if (Instance == this) {
-            Instance = null;
-        }
-    }
 }
