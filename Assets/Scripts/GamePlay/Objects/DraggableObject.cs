@@ -28,6 +28,13 @@ public class DraggableObject : MonoBehaviour
     [Header("动画设置")]
     [SerializeField] protected Animator objectAnimator;
 
+    [Header("物理设置")]
+    protected float dragInertiaMultiplier = 0.3f;  // 拖拽惯性力度倍数
+    protected Vector2 lastDragPosition;
+    protected Vector2 dragVelocity;
+    protected float velocityUpdateInterval = 0.1f;  // 速度更新间隔
+    protected float lastVelocityUpdateTime;
+
     protected Camera mainCamera;
     protected Rigidbody2D rb;
     protected Collider2D col;
@@ -184,6 +191,10 @@ public class DraggableObject : MonoBehaviour
 
     private void OnMouseDown()
     {
+        lastDragPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        lastVelocityUpdateTime = Time.time;
+        dragVelocity = Vector2.zero;
+        
         if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
         {
             if (isGlobalFrozen)
@@ -244,18 +255,26 @@ public class DraggableObject : MonoBehaviour
         {
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             UpdateDragPosition();
+            
+            // 计算拖拽速度
+            if (Time.time - lastVelocityUpdateTime > velocityUpdateInterval)
+            {
+                dragVelocity = (mousePos - lastDragPosition) / velocityUpdateInterval;
+                lastDragPosition = mousePos;
+                lastVelocityUpdateTime = Time.time;
+            }
+            
             DoUpdatePlacementValidation();
             rb.angularVelocity = Mathf.Clamp(rb.angularVelocity, -50f, 50f);
         }
         else if (isInvalidPosition && !isDragging)
         {
-            // 确保无效位置的物体保持静止
             rb.velocity = Vector2.zero;
             rb.angularVelocity = 0f;
-        }else{
-            if(spriteRenderer != null && spriteRenderer.material != normalMaterial && !isMouseOver){
-                spriteRenderer.material = normalMaterial;
-            }
+        }
+        else if(spriteRenderer != null && spriteRenderer.material != normalMaterial && !isMouseOver)
+        {
+            spriteRenderer.material = normalMaterial;
         }
     }
 
@@ -385,7 +404,7 @@ public class DraggableObject : MonoBehaviour
         isDragging = false;
         isAnyObjectBeingDragged = false;
         isGlobalFrozen = false;
-        isInvalidPosition = false;  // 确保重置无效状态
+        isInvalidPosition = false;
 
         if (dragJoint != null)
         {
@@ -400,6 +419,9 @@ public class DraggableObject : MonoBehaviour
             spriteRenderer.material = normalMaterial;
         }
 
+        // 应用惯性
+        rb.velocity = dragVelocity * dragInertiaMultiplier;
+        
         // 解冻所有物体
         UnfreezeAllObjects();
     }
