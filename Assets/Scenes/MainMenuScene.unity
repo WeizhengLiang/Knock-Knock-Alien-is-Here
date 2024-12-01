@@ -654,7 +654,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startButton: {fileID: 900450053}
   collectionButton: {fileID: 1683264569}
-  newCollectibleIcon: {fileID: 0}
+  newCollectibleIcon: {fileID: 1228344151}
 --- !u!1 &1311915336
 GameObject:
   m_ObjectHideFlags: 0
@@ -706,9 +706,9 @@ MonoBehaviour:
     sceneName: OpeningScene
   - sceneType: 2
     sceneName: MainScene
-  - sceneType: 3
-    sceneName: WinScene
   - sceneType: 4
+    sceneName: WinScene
+  - sceneType: 5
     sceneName: LoseScene
   - sceneType: 3
     sceneName: Collection
@@ -1707,7 +1707,7 @@ MonoBehaviour:
   levelCompleteDelay: 1
   totalGameTime: 50
   finalCountdownTime: 3
-  winThreshold: 70
+  winThreshold: 60
 --- !u!4 &1878425535
 Transform:
   m_ObjectHideFlags: 0
