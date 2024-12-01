@@ -7,13 +7,13 @@ public class FragileObject : DraggableObject
     [SerializeField] private float fragileStrength = 0.5f;
     
     [Header("破碎条件")]
-    [SerializeField] private float breakImpactThreshold = 10f;  // 瞬时冲击阈值
-    [SerializeField] private float breakForceThreshold = 15f;   // 持续受力阈值
-    [SerializeField] private float forceResetTime = 0.5f;       // 重置累积力的时间
+    [SerializeField] private float breakImpactThreshold = 2f;    // 瞬时冲击阈值
+    [SerializeField] private float breakForceThreshold = 5f;     // 持续受力阈值
+    [SerializeField] private float forceResetTime = 0.5f;        // 重置累积力的时间
     
     [Header("破碎效果")]
-    [SerializeField] public GameObject brokenPrefab;           // 破碎预制体
-
+    [SerializeField] public GameObject brokenPrefab;            // 破碎预制体
+    
     private float accumulatedForce = 0f;    // 累积受力
     private float lastForceTime;            // 上次受力时间
     private bool isBroken = false;          // 是否已破碎
@@ -36,12 +36,20 @@ public class FragileObject : DraggableObject
     {
         if (isBroken || isDragging) return;  // 拖拽时不检测破碎
         
-        // 计算冲击力（考虑质量和速度）
-        float impactForce = collision.relativeVelocity.magnitude * 
-            (collision.rigidbody?.mass ?? 1f);
-            
+        // 获取碰撞点相对于易碎物的位置
+        Vector2 relativePoint = collision.GetContact(0).point - (Vector2)transform.position;
+        bool isTopCollision = relativePoint.y > 0;
+        
+        float impactForce = collision.GetContact(0).normalImpulse;
+        if (isTopCollision)
+        {
+            // 如果是从上方碰撞，考虑碰撞物体的质量
+            impactForce *= (collision.rigidbody?.mass ?? 1f);
+        }
+                
         // 输出调试信息
-        Debug.Log($"Impact force: {impactForce} on {gameObject.name}");
+        Debug.Log($"Impact force: {impactForce} on {gameObject.name} from {collision.gameObject.name}" +
+                  $" (TopCollision: {isTopCollision}, NormalImpulse: {collision.GetContact(0).normalImpulse})");
         
         // 检查是否超过瞬时破碎阈值
         if (impactForce >= breakImpactThreshold)
@@ -52,39 +60,34 @@ public class FragileObject : DraggableObject
     
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (isBroken || isDragging) return;  // 拖拽时不检测破碎
+        if (isBroken || isDragging) return;
         
-        // 只检查来自上方的碰撞
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            // 如果接触点在物体上方，且有其他物体在上面
+            // 检查是否有物体在上方施加压力
             if (contact.point.y > transform.position.y && 
                 collision.gameObject.transform.position.y > transform.position.y)
             {
-                // 计算上方物体施加的压力（仅考虑物体质量）
-                float appliedForce = (collision.rigidbody?.mass ?? 1f) * Physics2D.gravity.magnitude;
+                // 直接使用接触点的法向力
+                float appliedForce = contact.normalImpulse;
                 
-                // 检查时间间隔，决定是累积还是重置
                 float currentTime = Time.time;
                 if (currentTime - lastForceTime > forceResetTime)
                 {
                     accumulatedForce = 0f;
                 }
                 
-                // 累积受力
                 accumulatedForce += appliedForce * Time.deltaTime;
                 lastForceTime = currentTime;
                 
-                // 输出调试信息
-                Debug.Log($"Pressure force: {accumulatedForce} on {gameObject.name} from {collision.gameObject.name}");
+                Debug.Log($"Pressure force: {accumulatedForce} on {gameObject.name} from {collision.gameObject.name}" +
+                         $" (NormalForce: {contact.normalImpulse})");
                 
-                // 检查是否超过持续受力阈值
                 if (accumulatedForce >= breakForceThreshold)
                 {
                     Break(contact.point);
                 }
-                
-                break; // 找到一个有效的压力点就退出循环
+                break;
             }
         }
     }
