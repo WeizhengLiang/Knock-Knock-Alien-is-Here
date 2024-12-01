@@ -147,7 +147,7 @@ MonoBehaviour:
   breakImpactThreshold: 10
   breakForceThreshold: 15
   forceResetTime: 0.5
-  brokenPrefab: {fileID: 7214898741721446962, guid: 456e8341b08031e49ae012d55ec4074d, type: 3}
+  brokenPrefab: {fileID: 1977640971341032384, guid: c2830098792aa79419dd7ab668c52cb8, type: 3}
 --- !u!60 &988433106803114007
 PolygonCollider2D:
   m_ObjectHideFlags: 0
