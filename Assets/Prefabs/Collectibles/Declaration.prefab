@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -270,6 +270,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 2e891e1c8cd614ae08b020669208e958, type: 2}
   unlockVisualEffect: {fileID: 0}
   visualAnimator: {fileID: 0}
+  unlockForce: 5
 --- !u!114 &5361949592340967823
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -69,19 +69,11 @@ public class TriggerObject : DraggableObject
                         return true;
                     }
                 }
-
-                // 如果不是有效组合，检查普通碰撞
-                ColliderDistance2D distance = Physics2D.Distance(col, otherCol);
-                if (distance.distance <= 0.01f)
-                {
-                    currentTarget = null;
-                    return false;
-                }
             }
         }
         
         currentTarget = null;
-        return true;
+        return base.IsValidPlacement();  // 如果不是有效组合或物品已解锁，使用基类的碰撞检测
     }
 
     protected override void CompletePlace()

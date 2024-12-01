@@ -12,7 +12,8 @@ public class CollectibleObject : DraggableObject
 
     protected override bool IsValidPlacement()
     {
-        if (isUnlocked) return true;
+        if (IsUnlocked()) 
+            return base.IsValidPlacement();
 
         Collider2D[] colliders = Physics2D.OverlapBoxAll(
             transform.position,
@@ -25,24 +26,21 @@ public class CollectibleObject : DraggableObject
         {
             if (otherCol != col && otherCol.gameObject != gameObject)
             {
-                // 检查是否是有效的触发组合
-                if (CheckTriggerInteraction(otherCol.gameObject))
+                TriggerObject trigger = otherCol.GetComponent<TriggerObject>();
+                if (trigger != null && !IsUnlocked())
                 {
-                    currentMergeTarget = otherCol.gameObject;
-                    return true;
-                }
-
-                // 如果不是有效组合，检查普通碰撞
-                ColliderDistance2D distance = Physics2D.Distance(col, otherCol);
-                if (distance.distance <= 0.01f)
-                {
-                    return false;
+                    // 检查是否匹配的触发组合
+                    if (trigger.CompareTag(data.unlockMethod.ToString()))
+                    {
+                        currentMergeTarget = otherCol.gameObject;
+                        return true;
+                    }
                 }
             }
         }
         
         currentMergeTarget = null;
-        return true;
+        return base.IsValidPlacement();
     }
 
     protected virtual bool CheckTriggerInteraction(GameObject other)
@@ -64,8 +62,8 @@ public class CollectibleObject : DraggableObject
         if (currentMergeTarget != null)
         {
             currentMergeTarget.SetActive(false);
-            Unlock();
         }
+        Unlock();
     }
 
     protected virtual void Unlock()
@@ -117,7 +115,10 @@ public class CollectibleObject : DraggableObject
         }
     }
 
-    public bool IsUnlocked() => isUnlocked;
+    public bool IsUnlocked()
+    {
+        return PlayerPrefs.GetInt($"Collectible_{data.type}", 0) == 1;
+    }
     public UnlockMethod GetUnlockMethod() => data.unlockMethod;
 
     protected override void OnDestroy()
