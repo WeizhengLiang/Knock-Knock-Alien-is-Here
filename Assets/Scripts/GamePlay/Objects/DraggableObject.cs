@@ -2,69 +2,90 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Base class for all draggable objects in the game
+/// Handles drag and drop mechanics, physics, and visual feedback
+/// </summary>
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 public class DraggableObject : MonoBehaviour
 {
-    [Header("拖拽设置")]
-    [SerializeField] protected float dragSpeed = 5f;
-    [SerializeField] protected float baseDragSpeed = 5f;    // 基础拖拽速度
-    [SerializeField] protected float massInfluence = 0.5f;   // 质量对拖拽速度的影响程度
-    [SerializeField] protected float minDragSpeed = 0.5f;      // 最小拖拽速度
-    [SerializeField] protected float maxDragSpeed = 15f;     // 最大拖拽速度
-    [SerializeField] protected LayerMask collisionLayer;
+    #region Serialized Fields
+    [Header("Drag Settings")]
+    [SerializeField] protected float dragSpeed = 5f;                  // Current drag speed
+    [SerializeField] protected float baseDragSpeed = 5f;             // Base drag speed before mass influence
+    [SerializeField] protected float massInfluence = 0.5f;           // How much mass affects drag speed
+    [SerializeField] protected float minDragSpeed = 0.5f;            // Minimum possible drag speed
+    [SerializeField] protected float maxDragSpeed = 15f;             // Maximum possible drag speed
+    [SerializeField] protected LayerMask collisionLayer;             // Layers to check for collisions
 
-    [Header("基础物体属性")]
-    [SerializeField] protected float baseWeight = 1f;
-    [SerializeField] protected float baseStrength = 1f;
+    [Header("Base Object Properties")]
+    [SerializeField] protected float baseWeight = 1f;                // Base weight of the object
+    [SerializeField] protected float baseStrength = 1f;              // Base strength/durability
 
-    [Header("材质设置")]
-    [SerializeField] protected Material normalMaterial;      // 正常状态材质
-    [SerializeField] protected Material draggingMaterial;    // 拖拽状态材质
-    [SerializeField] protected Material invalidMaterial;     // 无效位置状态材质
-    [SerializeField] protected Material canMergeMaterial;  // 可合并状态材质
-    [SerializeField] protected Material canPickupMaterial;  // 可拾取状态材质
+    [Header("Material Settings")]
+    [SerializeField] protected Material normalMaterial;              // Default material
+    [SerializeField] protected Material draggingMaterial;            // Material when being dragged
+    [SerializeField] protected Material invalidMaterial;             // Material when in invalid position
+    [SerializeField] protected Material canMergeMaterial;            // Material when can be merged
+    [SerializeField] protected Material canPickupMaterial;           // Material when can be picked up
 
-    [Header("动画设置")]
-    [SerializeField] protected Animator objectAnimator;
+    [Header("Animation Settings")]
+    [SerializeField] protected Animator objectAnimator;              // Object's animator component
+    #endregion
 
-    [Header("物理设置")]
-    protected float dragInertiaMultiplier = 0.3f;  // 拖拽惯性力度倍数
-    protected Vector2 lastDragPosition;
-    protected Vector2 dragVelocity;
-    protected float velocityUpdateInterval = 0.1f;  // 速度更新间隔
-    protected float lastVelocityUpdateTime;
+    #region Physics Settings
+    protected float dragInertiaMultiplier = 0.3f;                    // Inertia force multiplier after drag
+    protected Vector2 lastDragPosition;                              // Last recorded drag position
+    protected Vector2 dragVelocity;                                  // Current drag velocity
+    protected float velocityUpdateInterval = 0.1f;                   // How often to update velocity
+    protected float lastVelocityUpdateTime;                          // Time of last velocity update
+    #endregion
 
-    protected Camera mainCamera;
-    protected Rigidbody2D rb;
-    protected Collider2D col;
-    protected SpriteRenderer spriteRenderer;
+    #region Component References
+    protected Camera mainCamera;                                     // Main camera reference
+    protected Rigidbody2D rb;                                       // Rigidbody component
+    protected Collider2D col;                                       // Collider component
+    protected SpriteRenderer spriteRenderer;                        // Sprite renderer component
+    #endregion
+
+    #region State Variables
     protected bool isDragging = false;
-    public bool IsDragging() => isDragging;
     protected bool isInvalidPosition = false;
-    public bool IsInInvalidPosition() => isInvalidPosition;
     protected Color originalColor;
+    protected bool isMouseOver = false;
     private static bool isAnyObjectBeingDragged = false;
     private static bool isGlobalFrozen = false;
     private static bool hasInvalidPlacement = false;
+    #endregion
+
+    #region Constants
     private static readonly Vector2 NORMAL_GRAVITY = new Vector2(0, -9.81f);
     private static readonly Vector2 ZERO_GRAVITY = Vector2.zero;
+    #endregion
 
-    // 静态列表跟踪所有可拖动物体
+    #region Object Tracking
+    // Static list to track all draggable objects
     private static List<DraggableObject> allDraggableObjects = new List<DraggableObject>();
     public static List<DraggableObject> AllDraggableObjects => allDraggableObjects;
+    #endregion
 
-    // 记录冻结前的状态
+    #region Frozen State
+    // Store state before freezing
     private Vector2 frozenVelocity;
     private float frozenAngularVelocity;
     private bool wasFrozen = false;
+    #endregion
 
-    // 拖拽用的铰链关节
+    #region Drag Joint
     private HingeJoint2D dragJoint;
     private GameObject dragAnchor;
+    #endregion
 
-    protected bool isMouseOver = false;
-
+    #region Unity Lifecycle Methods
+    /// <summary>
+    /// Initialize components and settings
+    /// </summary>
     protected virtual void Start()
     {
         mainCamera = Camera.main;
@@ -73,45 +94,162 @@ public class DraggableObject : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;
 
-        // 初始化时设置碰撞器为非触发器
         col.isTrigger = false;
-        // 创建拖拽锚点对象
         CreateDragAnchor();
-        // 根据质量计算拖拽速度
         CalculateDragSpeed();
     }
 
+    /// <summary>
+    /// Add object to tracking list when enabled
+    /// </summary>
     protected virtual void OnEnable()
     {
         allDraggableObjects.Add(this);
-        // 如果物体在无效位置被启用，自动进入拖拽状态
         if (isInvalidPosition)
         {
             StartDragging();
         }
     }
 
+    /// <summary>
+    /// Remove object from tracking list when disabled
+    /// </summary>
     protected virtual void OnDisable()
     {
         allDraggableObjects.Remove(this);
     }
 
-    private static void FreezeAllObjects()
+    /// <summary>
+    /// Update drag position and visual feedback
+    /// </summary>
+    protected virtual void Update()
     {
-        foreach (var obj in allDraggableObjects)
+        if (isDragging && dragJoint != null)
         {
-            obj.FreezeObject();
+            Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            UpdateDragPosition();
+
+            // Calculate drag velocity
+            if (Time.time - lastVelocityUpdateTime > velocityUpdateInterval)
+            {
+                dragVelocity = (mousePos - lastDragPosition) / velocityUpdateInterval;
+                lastDragPosition = mousePos;
+                lastVelocityUpdateTime = Time.time;
+            }
+
+            DoUpdatePlacementValidation();
+            rb.angularVelocity = Mathf.Clamp(rb.angularVelocity, -50f, 50f);
+        }
+        else if (isInvalidPosition && !isDragging)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+        else if (spriteRenderer != null && spriteRenderer.material != normalMaterial && !isMouseOver)
+        {
+            spriteRenderer.material = normalMaterial;
+        }
+    }
+    #endregion
+
+    #region Drag System Methods
+    /// <summary>
+    /// Calculate drag speed based on object mass
+    /// </summary>
+    protected virtual void CalculateDragSpeed()
+    {
+        if (rb != null)
+        {
+            float massMultiplier = 1f / (1f + (rb.mass * massInfluence));
+            dragSpeed = baseDragSpeed * massMultiplier;
+            dragSpeed = Mathf.Clamp(dragSpeed, minDragSpeed, maxDragSpeed);
+            Debug.Log($"{gameObject.name} mass: {rb.mass}, drag speed: {dragSpeed}");
+        }
+        else
+        {
+            dragSpeed = baseDragSpeed;
         }
     }
 
-    private static void UnfreezeAllObjects()
+    /// <summary>
+    /// Create anchor point for drag joint
+    /// </summary>
+    private void CreateDragAnchor()
     {
-        foreach (var obj in allDraggableObjects)
+        dragAnchor = new GameObject("DragAnchor_" + gameObject.name);
+        Rigidbody2D anchorRb = dragAnchor.AddComponent<Rigidbody2D>();
+        anchorRb.bodyType = RigidbodyType2D.Kinematic;
+        dragAnchor.SetActive(false);
+    }
+
+    /// <summary>
+    /// Handle mouse down event
+    /// </summary>
+    private void OnMouseDown()
+    {
+        lastDragPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        lastVelocityUpdateTime = Time.time;
+        dragVelocity = Vector2.zero;
+
+        if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
         {
-            obj.UnfreezeObject();
+            if (isGlobalFrozen)
+            {
+                if (isInvalidPosition)
+                {
+                    StartDragging();
+                }
+            }
+            else if (!isAnyObjectBeingDragged)
+            {
+                StartDragging();
+            }
         }
     }
 
+    /// <summary>
+    /// Initialize dragging state
+    /// </summary>
+    private void StartDragging()
+    {
+        isDragging = true;
+        isAnyObjectBeingDragged = true;
+
+        FreezeAllObjects();
+
+        dragAnchor.transform.position = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        dragAnchor.SetActive(true);
+
+        if (dragJoint != null) Destroy(dragJoint);
+
+        rb.isKinematic = false;
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        col.isTrigger = true;
+
+        dragJoint = gameObject.AddComponent<HingeJoint2D>();
+        dragJoint.connectedBody = dragAnchor.GetComponent<Rigidbody2D>();
+        dragJoint.autoConfigureConnectedAnchor = false;
+        dragJoint.connectedAnchor = Vector2.zero;
+        dragJoint.anchor = transform.InverseTransformPoint(dragAnchor.transform.position);
+    }
+
+    /// <summary>
+    /// Handle mouse up event
+    /// </summary>
+    private void OnMouseUp()
+    {
+        if (isDragging)
+        {
+            TryPlaceObject();
+        }
+    }
+    #endregion
+
+    #region Object State Management
+    /// <summary>
+    /// Freeze object's physics state
+    /// </summary>
     private void FreezeObject()
     {
         if (this.isInvalidPosition || this.isDragging)
@@ -132,11 +270,13 @@ public class DraggableObject : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Restore object's physics state
+    /// </summary>
     private void UnfreezeObject()
     {
         if (wasFrozen)
         {
-            // 恢复物体状态
             rb.isKinematic = false;
             rb.velocity = frozenVelocity;
             rb.angularVelocity = frozenAngularVelocity;
@@ -144,13 +284,38 @@ public class DraggableObject : MonoBehaviour
             wasFrozen = false;
         }
     }
+    #endregion
 
-    // 添加静态方法来控制全局冻结状态
+    #region Static Methods
+    /// <summary>
+    /// Freeze all draggable objects in the scene
+    /// </summary>
+    private static void FreezeAllObjects()
+    {
+        foreach (var obj in allDraggableObjects)
+        {
+            obj.FreezeObject();
+        }
+    }
+
+    /// <summary>
+    /// Unfreeze all draggable objects in the scene
+    /// </summary>
+    private static void UnfreezeAllObjects()
+    {
+        foreach (var obj in allDraggableObjects)
+        {
+            obj.UnfreezeObject();
+        }
+    }
+
+    /// <summary>
+    /// Set global frozen state for all objects
+    /// </summary>
     public static void SetGlobalFrozen(bool frozen)
     {
         isGlobalFrozen = frozen;
 
-        // 如果冻结，停止所有物体的拖拽
         if (frozen)
         {
             FreezeAllObjects();
@@ -161,129 +326,27 @@ public class DraggableObject : MonoBehaviour
         }
     }
 
-    protected virtual void CalculateDragSpeed()
+    /// <summary>
+    /// Check if any object has invalid placement
+    /// </summary>
+    public static bool HasInvalidPlacement()
     {
-        if (rb != null)
-        {
-            // 质量越大，速度越慢
-            float massMultiplier = 1f / (1f + (rb.mass * massInfluence));
-            dragSpeed = baseDragSpeed * massMultiplier;
-
-            // 限制在最小和最大速度范围内
-            dragSpeed = Mathf.Clamp(dragSpeed, minDragSpeed, maxDragSpeed);
-
-            // 输出调试信息
-            Debug.Log($"{gameObject.name} 的质量: {rb.mass}, 拖拽速度: {dragSpeed}");
-        }
-        else
-        {
-            dragSpeed = baseDragSpeed;
-        }
+        return hasInvalidPlacement;
     }
 
-    private void CreateDragAnchor()
+    /// <summary>
+    /// Reset invalid placement state
+    /// </summary>
+    public static void ResetInvalidPlacement()
     {
-        dragAnchor = new GameObject("DragAnchor_" + gameObject.name);
-        Rigidbody2D anchorRb = dragAnchor.AddComponent<Rigidbody2D>();
-        anchorRb.bodyType = RigidbodyType2D.Kinematic;
-        dragAnchor.SetActive(false);
+        hasInvalidPlacement = false;
     }
+    #endregion
 
-    private void OnMouseDown()
-    {
-        lastDragPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        lastVelocityUpdateTime = Time.time;
-        dragVelocity = Vector2.zero;
-        
-        if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
-        {
-            if (isGlobalFrozen)
-            {
-                if (isInvalidPosition)
-                {
-                    // 即使是运动学状态也可以开始拖动
-                    StartDragging();
-                }
-            }
-            else if (!isAnyObjectBeingDragged)
-            {
-                StartDragging();
-            }
-        }
-    }
-
-    private void StartDragging()
-    {
-        isDragging = true;
-        isAnyObjectBeingDragged = true;
-
-        // 冻结其他物体
-        FreezeAllObjects();
-
-        // 设置拖拽物体的态
-        dragAnchor.transform.position = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        dragAnchor.SetActive(true);
-
-        if (dragJoint != null) Destroy(dragJoint);
-
-        // 确保可以拖动
-        rb.isKinematic = false;  // 临时设为非运动学以便拖动
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-        col.isTrigger = true;
-
-        // 设置铰链关节
-        dragJoint = gameObject.AddComponent<HingeJoint2D>();
-        dragJoint.connectedBody = dragAnchor.GetComponent<Rigidbody2D>();
-        dragJoint.autoConfigureConnectedAnchor = false;
-        dragJoint.connectedAnchor = Vector2.zero;
-        dragJoint.anchor = transform.InverseTransformPoint(dragAnchor.transform.position);
-
-    }
-
-    private void OnMouseUp()
-    {
-        if (isDragging)
-        {
-            TryPlaceObject();
-        }
-    }
-
-    protected virtual void Update()
-    {
-        if (isDragging && dragJoint != null)
-        {
-            Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            UpdateDragPosition();
-            
-            // 计算拖拽速度
-            if (Time.time - lastVelocityUpdateTime > velocityUpdateInterval)
-            {
-                dragVelocity = (mousePos - lastDragPosition) / velocityUpdateInterval;
-                lastDragPosition = mousePos;
-                lastVelocityUpdateTime = Time.time;
-            }
-            
-            DoUpdatePlacementValidation();
-            rb.angularVelocity = Mathf.Clamp(rb.angularVelocity, -50f, 50f);
-        }
-        else if (isInvalidPosition && !isDragging)
-        {
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-        }
-        else if(spriteRenderer != null && spriteRenderer.material != normalMaterial && !isMouseOver)
-        {
-            spriteRenderer.material = normalMaterial;
-        }
-    }
-
-    // 基础实现
-    private void DoUpdatePlacementValidation()
-    {
-        UpdatePlacementValidation();  // 调用虚方法
-    }
-
+    #region Placement and Movement
+    /// <summary>
+    /// Update drag anchor position
+    /// </summary>
     private void UpdateDragPosition()
     {
         if (dragAnchor != null)
@@ -291,12 +354,118 @@ public class DraggableObject : MonoBehaviour
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 currentAnchorPos = dragAnchor.transform.position;
 
-            // 使用 dragSpeed 来插值移动锚点
             Vector2 newPosition = Vector2.Lerp(currentAnchorPos, mousePos, dragSpeed * Time.deltaTime);
             dragAnchor.transform.position = newPosition;
         }
     }
 
+    /// <summary>
+    /// Check if current placement is valid
+    /// </summary>
+    protected virtual bool IsValidPlacement()
+    {
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(
+            transform.position,
+            col.bounds.size,
+            transform.rotation.eulerAngles.z,
+            collisionLayer
+        );
+
+        foreach (Collider2D otherCol in colliders)
+        {
+            if (otherCol != col && otherCol.gameObject != gameObject)
+            {
+                ColliderDistance2D distance = Physics2D.Distance(col, otherCol);
+                if (distance.distance <= 0.01f)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Try to place the object and handle the result
+    /// </summary>
+    protected virtual void TryPlaceObject()
+    {
+        if (!isInvalidPosition)
+        {
+            CompletePlace();
+        }
+        else
+        {
+            FreezeInvalidPosition();
+        }
+    }
+
+    /// <summary>
+    /// Complete object placement
+    /// </summary>
+    protected virtual void CompletePlace()
+    {
+        isDragging = false;
+        isAnyObjectBeingDragged = false;
+        isGlobalFrozen = false;
+        isInvalidPosition = false;
+
+        if (dragJoint != null)
+        {
+            Destroy(dragJoint);
+            dragJoint = null;
+        }
+        dragAnchor.SetActive(false);
+
+        col.isTrigger = false;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.material = normalMaterial;
+        }
+
+        // Apply inertia
+        rb.velocity = dragVelocity * dragInertiaMultiplier;
+        
+        UnfreezeAllObjects();
+    }
+
+    /// <summary>
+    /// Handle invalid position state
+    /// </summary>
+    private void FreezeInvalidPosition()
+    {
+        isDragging = false;
+        isAnyObjectBeingDragged = false;
+        isGlobalFrozen = true;
+
+        if (dragJoint != null)
+        {
+            Destroy(dragJoint);
+            dragJoint = null;
+        }
+        dragAnchor.SetActive(false);
+
+        col.isTrigger = true;
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.material = invalidMaterial;
+        }
+
+        if (objectAnimator != null)
+        {
+            AnimationManager.Instance.PlayFlickering(objectAnimator);
+        }
+    }
+    #endregion
+
+    #region Visual Feedback
+    /// <summary>
+    /// Update placement validation and visual feedback
+    /// </summary>
     protected virtual void UpdatePlacementValidation()
     {
         bool wasInvalid = isInvalidPosition;
@@ -310,6 +479,9 @@ public class DraggableObject : MonoBehaviour
         UpdateMaterials();
     }
 
+    /// <summary>
+    /// Base implementation for updating materials
+    /// </summary>
     protected virtual void UpdateMaterials()
     {
         if (spriteRenderer != null)
@@ -340,158 +512,41 @@ public class DraggableObject : MonoBehaviour
         }
     }
 
-    // 静态方法检查是否有物体处于无效位置
-    public static bool HasInvalidPlacement()
+    /// <summary>
+    /// Wrapper method for placement validation update
+    /// </summary>
+    private void DoUpdatePlacementValidation()
     {
-        return hasInvalidPlacement;
+        UpdatePlacementValidation();
     }
+    #endregion
 
-    // 重置状态
-    public static void ResetInvalidPlacement()
-    {
-        hasInvalidPlacement = false;
-    }
-
-    protected virtual void TryPlaceObject()
-    {
-        if (!isInvalidPosition)
-        {
-            // 放置成功
-            CompletePlace();
-        }
-        else
-        {
-            FreezeInvalidPosition();
-        }
-    }
-
-    private void FreezeInvalidPosition()
-    {
-        isDragging = false;
-        isAnyObjectBeingDragged = false;
-        isGlobalFrozen = true;
-
-        if (dragJoint != null)
-        {
-            Destroy(dragJoint);
-            dragJoint = null;
-        }
-        dragAnchor.SetActive(false);
-
-        // 设置无效位置物体的状态
-        col.isTrigger = true;
-        rb.isKinematic = true;
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.material = invalidMaterial;
-        }
-
-        // 触发闪烁动画
-        if (objectAnimator != null)
-        {
-            AnimationManager.Instance.PlayFlickering(objectAnimator);
-        }
-
-        // 保持其他物体冻结
-        FreezeAllObjects();
-    }
-
-    protected virtual void CompletePlace()
-    {
-        isDragging = false;
-        isAnyObjectBeingDragged = false;
-        isGlobalFrozen = false;
-        isInvalidPosition = false;
-
-        if (dragJoint != null)
-        {
-            Destroy(dragJoint);
-            dragJoint = null;
-        }
-        dragAnchor.SetActive(false);
-
-        col.isTrigger = false;
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.material = normalMaterial;
-        }
-
-        // 应用惯性
-        rb.velocity = dragVelocity * dragInertiaMultiplier;
-        
-        // 解冻所有物体
-        UnfreezeAllObjects();
-    }
-
-    protected virtual bool IsValidPlacement()
-    {
-        // 获取当前区域内的所有碰撞器
-        Collider2D[] colliders = Physics2D.OverlapBoxAll(
-            transform.position,
-            col.bounds.size,
-            transform.rotation.eulerAngles.z,
-            collisionLayer
-        );
-
-        foreach (Collider2D otherCol in colliders)
-        {
-            if (otherCol != col && otherCol.gameObject != gameObject)
-            {
-                // 使用 Distance 获取两个碰撞器之间的最小距离
-                ColliderDistance2D distance = Physics2D.Distance(col, otherCol);
-
-                // distance.distance 小于 0 表示有重叠
-                if (distance.distance <= 0.01f)  // 添加一个小的容差值
-                {
-                    // 可以输出调试信息
-                    Debug.DrawLine(distance.pointA, distance.pointB, Color.red, 0.1f);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    // 添加物体特性检查方法
-    protected bool CheckPlacementStrength(Collider2D otherCol)
-    {
-        DraggableObject otherObject = otherCol.GetComponent<DraggableObject>();
-        if (otherObject != null)
-        {
-            // 检查重量限制
-            if (transform.position.y > otherCol.transform.position.y)
-            {
-                if (GetWeight() > otherObject.GetStrength())
-                {
-                    return false;
-                }
-            }
-
-            // 检查易碎物品
-            if (otherObject.IsFragile() && GetWeight() > 1f)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+    #region Cleanup and Utility Methods
+    /// <summary>
+    /// Cleanup when object is destroyed
+    /// </summary>
     protected virtual void OnDestroy()
     {
-        // 清理拖拽锚点
+        // Clean up drag anchor
         if (dragAnchor != null)
         {
             Destroy(dragAnchor);
         }
+
         allDraggableObjects.Remove(this);
     }
+
+    /// <summary>
+    /// Check if objects are globally frozen
+    /// </summary>
     public static bool IsGlobalFrozen()
     {
         return isGlobalFrozen;
     }
 
+    /// <summary>
+    /// Reset all static state variables
+    /// </summary>
     public static void ResetGlobalState()
     {
         isAnyObjectBeingDragged = false;
@@ -499,28 +554,69 @@ public class DraggableObject : MonoBehaviour
         Physics2D.gravity = NORMAL_GRAVITY;
     }
 
-    // 检查是否应该暂停重力
+    /// <summary>
+    /// Check if gravity should be paused
+    /// </summary>
     private static bool ShouldPauseGravity()
     {
         return isAnyObjectBeingDragged || isGlobalFrozen;
     }
 
-    // 虚函数定义
-    public virtual float GetWeight() { return baseWeight; }
-    public virtual float GetStrength() { return baseStrength; }
-    public virtual bool IsFragile() { return false; }
+    /// <summary>
+    /// Get object's base weight
+    /// </summary>
+    public virtual float GetWeight()
+    {
+        return baseWeight;
+    }
 
-    // 可以添加一个辅助方法来在Scene视图中显示检测范围（调试用）
+    /// <summary>
+    /// Get object's base strength
+    /// </summary>
+    public virtual float GetStrength()
+    {
+        return baseStrength;
+    }
+
+    /// <summary>
+    /// Check if object is fragile
+    /// </summary>
+    public virtual bool IsFragile()
+    {
+        return false;
+    }
+
+    /// <summary>
+    /// Check if object is in invalid position
+    /// </summary>
+    public bool IsInInvalidPosition()
+    {
+        return isInvalidPosition;
+    }
+
+    /// <summary>
+    /// Check if object is being dragged
+    /// </summary>
+    public bool IsDragging()
+    {
+        return isDragging;
+    }
+    #endregion
+
+    #region Debug and Development
+    /// <summary>
+    /// Draw debug gizmos in Scene view
+    /// </summary>
     private void OnDrawGizmos()
     {
         if (col != null && isDragging)
         {
-            // 显示碰撞器的实际形状
+            // Show actual collider shape
             Gizmos.color = isInvalidPosition ? Color.red : Color.yellow;
 
             if (col is BoxCollider2D boxCol)
             {
-                // 为BoxCollider2D绘制旋转后的边界
+                // Draw rotated bounds for BoxCollider2D
                 Matrix4x4 rotationMatrix = Matrix4x4.TRS(
                     transform.position,
                     transform.rotation,
@@ -531,39 +627,55 @@ public class DraggableObject : MonoBehaviour
             }
             else if (col is CircleCollider2D circleCol)
             {
-                // 为CircleCollider2D绘制边界
+                // Draw bounds for CircleCollider2D
                 Gizmos.DrawWireSphere(
                     (Vector2)transform.position + circleCol.offset,
                     circleCol.radius
                 );
             }
-            // 可以根据需要添加其他类型的碰撞器
         }
     }
+    #endregion
 
+    #region Visual Effects
+    /// <summary>
+    /// Trigger disappear animation
+    /// </summary>
     public void TriggerDisappearAnimation()
     {
         if (objectAnimator != null)
         {
             AnimationManager.Instance.PlayFlickering(objectAnimator);
         }
+
         StartCoroutine(DisableAfterDelay());
     }
 
+    /// <summary>
+    /// Coroutine to disable object after animation
+    /// </summary>
     private IEnumerator DisableAfterDelay()
     {
         yield return new WaitForSeconds(1f);
         gameObject.SetActive(false);
     }
+    #endregion
 
+    #region Mouse Interaction
+    /// <summary>
+    /// Check if mouse is over the object
+    /// </summary>
     protected bool IsMouseOver()
     {
         if (!enabled || !gameObject.activeInHierarchy) return false;
-        
+
         Vector2 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         return col.OverlapPoint(mousePosition);
     }
 
+    /// <summary>
+    /// Handle mouse enter event
+    /// </summary>
     protected virtual void OnMouseEnter()
     {
         if (!isDragging && !isInvalidPosition && !isGlobalFrozen)
@@ -573,13 +685,20 @@ public class DraggableObject : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handle mouse exit event
+    /// </summary>
     protected virtual void OnMouseExit()
     {
         isMouseOver = false;
         UpdateMaterials();
     }
+    #endregion
 
-    // 添加静态清理方法
+    #region Static Cleanup
+    /// <summary>
+    /// Clear all static references
+    /// </summary>
     public static void ClearStaticReferences()
     {
         isAnyObjectBeingDragged = false;
@@ -587,4 +706,5 @@ public class DraggableObject : MonoBehaviour
         hasInvalidPlacement = false;
         allDraggableObjects.Clear();
     }
+    #endregion
 }
