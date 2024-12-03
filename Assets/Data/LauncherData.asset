@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 94509e7e8d0ac413388929b8901608de, type: 3}
-  m_Name: LaserPointerData
+  m_Name: LauncherData
   m_EditorClassIdentifier: 
-  type: 1
-  itemName: LaserPointer
+  type: 4
+  itemName: Launcher
   description: 1
   alienResponse: 1
-  unlockMethod: 1
-  icon: {fileID: -929845296, guid: 10fe29ec01033984c806de7ad8a0177c, type: 3}
-  comicSprite: {fileID: 1338671445, guid: 10fe29ec01033984c806de7ad8a0177c, type: 3}
+  unlockMethod: 4
+  icon: {fileID: 1115712469, guid: 10fe29ec01033984c806de7ad8a0177c, type: 3}
+  comicSprite: {fileID: -858116829, guid: 10fe29ec01033984c806de7ad8a0177c, type: 3}

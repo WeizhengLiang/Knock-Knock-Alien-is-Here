@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1510282509102322421}
   - component: {fileID: 5004902356255317950}
   m_Layer: 8
-  m_Name: NewCollectible6
+  m_Name: specimen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -654,7 +654,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startButton: {fileID: 900450053}
   collectionButton: {fileID: 1683264569}
-  newCollectibleIcon: {fileID: 1228344151}
+  newCollectibleIcon: {fileID: 2085952268}
 --- !u!1 &1311915336
 GameObject:
   m_ObjectHideFlags: 0
@@ -1844,6 +1844,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1983484753}
   m_CullTransparentMesh: 1
+--- !u!1 &2085952268 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4094086839309747308, guid: c20631897223e064daf0ae6f24aa91c4, type: 3}
+  m_PrefabInstance: {fileID: 1769983869441560398}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1769983869441560398
 PrefabInstance:
   m_ObjectHideFlags: 0
