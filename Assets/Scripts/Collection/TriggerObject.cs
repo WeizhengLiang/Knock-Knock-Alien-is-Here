@@ -51,18 +51,24 @@ public class TriggerObject : DraggableObject
         Collider2D[] colliders = Physics2D.OverlapBoxAll(
             transform.position,
             col.bounds.size,
-            transform.rotation.eulerAngles.z,
-            collisionLayer
+            transform.rotation.eulerAngles.z
         );
 
         foreach (Collider2D otherCol in colliders)
         {
             if (otherCol != col && otherCol.gameObject != gameObject)
             {
-                CollectibleObject collectible = otherCol.GetComponent<CollectibleObject>();
+                var triggerable = otherCol.GetComponent<ITriggerable>();
+                if (triggerable != null && triggerable.CanTrigger(gameObject))
+                {
+                    currentTarget = otherCol.gameObject;
+                    triggerable.OnTriggerStart(gameObject);
+                    return true;
+                }
+
+                var collectible = otherCol.GetComponent<CollectibleObject>();
                 if (collectible != null && !collectible.IsUnlocked())
                 {
-                    // 检查是否匹配的触发组合
                     if (CompareTag(collectible.GetUnlockMethod().ToString()))
                     {
                         currentTarget = otherCol.gameObject;
@@ -72,20 +78,38 @@ public class TriggerObject : DraggableObject
             }
         }
         
-        currentTarget = null;
-        return base.IsValidPlacement();  // 如果不是有效组合或物品已解锁，使用基类的碰撞检测
+        if (currentTarget != null)
+        {
+            var triggerable = currentTarget.GetComponent<ITriggerable>();
+            if (triggerable != null)
+            {
+                triggerable.OnTriggerEnd(gameObject);
+            }
+            currentTarget = null;
+        }
+        
+        return base.IsValidPlacement();
     }
 
     protected override void CompletePlace()
     {
         if (currentTarget != null && !isInvalidPosition)
         {
-            CollectibleObject collectible = currentTarget.GetComponent<CollectibleObject>();
-            if (collectible != null)
+            var triggerable = currentTarget.GetComponent<ITriggerable>();
+            if (triggerable != null)
             {
-                collectible.HandleTriggerEffect();
+                triggerable.OnTriggerComplete(gameObject);
+                gameObject.SetActive(false);
             }
-            gameObject.SetActive(false);
+            else
+            {
+                var collectible = currentTarget.GetComponent<CollectibleObject>();
+                if (collectible != null)
+                {
+                    collectible.HandleTriggerEffect();
+                    gameObject.SetActive(false);
+                }
+            }
         }
         base.CompletePlace();
     }

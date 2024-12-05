@@ -252,7 +252,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!60 &3422762517252958859
 PolygonCollider2D:
@@ -379,10 +379,9 @@ MonoBehaviour:
   invalidMaterial: {fileID: 2100000, guid: cbe041dd9d4155c4ab32912621a24fd2, type: 2}
   canMergeMaterial: {fileID: 2100000, guid: f63ccc27cab37c447923dcf2b40f4af9, type: 2}
   canPickupMaterial: {fileID: 2100000, guid: 002eb4520e3b90a4c91a1c4e8c2c4001, type: 2}
-  objectAnimator: {fileID: 0}
+  objectAnimator: {fileID: 1136483691604184228}
   data: {fileID: 11400000, guid: 7d0af9dad57ca4ff3893a3b521742757, type: 2}
-  unlockVisualEffect: {fileID: 0}
-  visualAnimator: {fileID: 1136483691604184228}
+  unlockVisualEffect: {fileID: 5102475924801897264}
 --- !u!95 &1136483691604184228
 Animator:
   serializedVersion: 5

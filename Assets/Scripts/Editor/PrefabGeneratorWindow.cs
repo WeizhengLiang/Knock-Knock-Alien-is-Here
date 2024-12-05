@@ -415,7 +415,7 @@ public class PrefabGeneratorWindow : EditorWindow
                 collectible = newObject.AddComponent<TranslatorCollectible>();
                 break;
             case UnlockMethod.Rocket:
-                collectible = newObject.AddComponent<LaunchPadCollectible>();
+                Debug.LogError("Rocket unlock method is not implemented! please implement it manually.");
                 break;
         }
 

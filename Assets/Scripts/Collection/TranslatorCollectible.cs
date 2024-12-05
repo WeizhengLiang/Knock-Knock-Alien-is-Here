@@ -10,4 +10,11 @@ public class TranslatorCollectible : CollectibleObject
         }
         return false;
     }
+
+    protected override void Unlock()
+    {
+        var spriteSwitch = GetComponent<SpriteSwitch>();
+        base.Unlock();
+        spriteSwitch.SwitchToSecondList();  
+    }
 }

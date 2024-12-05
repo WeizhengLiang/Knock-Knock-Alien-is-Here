@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -10,7 +11,7 @@ public class CollectibleObject : DraggableObject
     [Header("Collectible Settings")]
     [SerializeField] protected CollectibleData data;              // Data container for collectible properties
     [SerializeField] protected GameObject unlockVisualEffect;     // Visual effect shown when unlocked
-    [SerializeField] protected Animator visualAnimator;           // Animator for visual feedback
+    // [SerializeField] protected Animator visualAnimator;           // Animator for visual feedback
     #endregion
 
     #region Protected Fields
