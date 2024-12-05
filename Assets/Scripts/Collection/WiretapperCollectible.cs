@@ -16,7 +16,7 @@ public class WiretapperCollectible : CollectibleObject
     [SerializeField] private GameObject leftVFX;                 // VFX for left side detection
     [SerializeField] private GameObject rightVFX;                // VFX for right side detection
 
-    private void Start()
+    protected override void Start()
     {
         base.Start();
         // Ensure VFX are initially disabled

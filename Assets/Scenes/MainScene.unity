@@ -606,6 +606,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4889816394000127426, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
+      propertyPath: groundY
+      value: -4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4889816394000127426, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
+      propertyPath: breakForce
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7547536103973951566, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
       propertyPath: m_Name
       value: SceneSetUp
