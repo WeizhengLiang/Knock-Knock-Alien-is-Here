@@ -7,8 +7,11 @@ public class UIButtonActions : MonoBehaviour
 {
     // Start is called before the first frame update
     public string SceneName;
+
     public void LoadScene()
     {
         SceneManager.LoadScene(SceneName);
     }
+
+
 }
