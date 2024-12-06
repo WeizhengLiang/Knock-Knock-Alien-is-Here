@@ -308,7 +308,7 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: ca2088e336793477198827482f2836f1, type: 2}
   unlockVisualEffect: {fileID: 0}
   breakForce: 3
-  brokenPrefab: {fileID: 7214898741721446962, guid: 783348b131c47d742be0c25d741e6f64, type: 3}
+  brokenPrefab: {fileID: 7228108598299158562, guid: ce3f6f5975e2f1248a27129ba2b27543, type: 3}
   groundItemPrefab: {fileID: 8473190256707779439, guid: a5c67997d5abfe04b94a2aeac73a6ca9, type: 3}
   groundY: -4.5
   glassBreakEffect: {fileID: 0}

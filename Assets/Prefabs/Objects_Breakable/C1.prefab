@@ -145,9 +145,9 @@ MonoBehaviour:
   objectAnimator: {fileID: 2652908789258397555}
   fragileStrength: 0.5
   breakImpactThreshold: 2
-  breakForceThreshold: 15
+  breakForceThreshold: 5
   forceResetTime: 0.5
-  brokenPrefab: {fileID: 7214898741721446962, guid: 456e8341b08031e49ae012d55ec4074d, type: 3}
+  brokenPrefab: {fileID: 617659837052119358, guid: 74f8f03d58bff9b46ab9ec1e80be1654, type: 3}
 --- !u!60 &5564440199098049802
 PolygonCollider2D:
   m_ObjectHideFlags: 0

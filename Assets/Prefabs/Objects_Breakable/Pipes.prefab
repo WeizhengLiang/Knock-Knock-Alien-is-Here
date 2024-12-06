@@ -144,10 +144,10 @@ MonoBehaviour:
   canPickupMaterial: {fileID: 2100000, guid: 002eb4520e3b90a4c91a1c4e8c2c4001, type: 2}
   objectAnimator: {fileID: 1906159131202917165}
   fragileStrength: 0.5
-  breakImpactThreshold: 10
-  breakForceThreshold: 15
+  breakImpactThreshold: 2
+  breakForceThreshold: 5
   forceResetTime: 0.5
-  brokenPrefab: {fileID: 7214898741721446962, guid: 456e8341b08031e49ae012d55ec4074d, type: 3}
+  brokenPrefab: {fileID: 4091787389055747474, guid: b9ce7623d042caa46abafe79d8923a7b, type: 3}
 --- !u!60 &1905093997929944548
 PolygonCollider2D:
   m_ObjectHideFlags: 0

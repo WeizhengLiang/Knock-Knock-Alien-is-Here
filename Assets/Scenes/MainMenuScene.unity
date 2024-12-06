@@ -279,8 +279,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 370, y: 181.66}
-  m_SizeDelta: {x: 1079.4, y: 363.3163}
+  m_AnchoredPosition: {x: 369.2, y: 169}
+  m_SizeDelta: {x: 1104.4384, y: 421.33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &539871854
 MonoBehaviour:
@@ -304,8 +304,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: KNOCK KNOCK ALIEN IS HERE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5163fdb2e8e67cc4f807cf576a7cd5e7, type: 2}
-  m_sharedMaterial: {fileID: 6025277876460917292, guid: 5163fdb2e8e67cc4f807cf576a7cd5e7, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6ee3ce70916afbc4c92f4ee718db7e2b, type: 2}
+  m_sharedMaterial: {fileID: 7514510203885039038, guid: 6ee3ce70916afbc4c92f4ee718db7e2b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -329,17 +329,17 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 123.7
+  m_fontSize: 198.05
   m_fontSizeBase: 180
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 200
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: -7.8
+  m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -391,6 +391,8 @@ GameObject:
   - component: {fileID: 900450055}
   - component: {fileID: 900450054}
   - component: {fileID: 900450053}
+  - component: {fileID: 900450057}
+  - component: {fileID: 900450056}
   m_Layer: 5
   m_Name: GameStartButton
   m_TagString: Untagged
@@ -500,6 +502,129 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 900450051}
   m_CullTransparentMesh: 1
+--- !u!114 &900450056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900450051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d0390bd8b8ffd640b34fe25065ff1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateType: 0
+  isSpeedBased: 0
+  hasOnStart: 0
+  hasOnPlay: 0
+  hasOnUpdate: 0
+  hasOnStepComplete: 0
+  hasOnComplete: 0
+  hasOnTweenCreated: 0
+  hasOnRewind: 0
+  onStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onPlay:
+    m_PersistentCalls:
+      m_Calls: []
+  onUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  onStepComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onTweenCreated:
+    m_PersistentCalls:
+      m_Calls: []
+  onRewind:
+    m_PersistentCalls:
+      m_Calls: []
+  targetIsSelf: 1
+  targetGO: {fileID: 0}
+  tweenTargetIsTargetGO: 1
+  delay: 0
+  duration: 2
+  easeType: 24
+  easeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  loopType: 0
+  loops: -1
+  id: 
+  isRelative: 0
+  isFrom: 0
+  isIndependentUpdate: 0
+  autoKill: 0
+  autoGenerate: 1
+  isActive: 1
+  isValid: 1
+  target: {fileID: 900450052}
+  animationType: 10
+  targetType: 11
+  forcedTargetType: 0
+  autoPlay: 1
+  useTargetAsV3: 0
+  endValueFloat: 0
+  endValueV3: {x: 0, y: 0, z: 5}
+  endValueV2: {x: 0, y: 0}
+  endValueColor: {r: 1, g: 1, b: 1, a: 1}
+  endValueString: 
+  endValueRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
+  endValueTransform: {fileID: 0}
+  optionalBool0: 0
+  optionalBool1: 1
+  optionalFloat0: 0.294
+  optionalInt0: 10
+  optionalRotationMode: 0
+  optionalScrambleMode: 0
+  optionalShakeRandomnessMode: 0
+  optionalString: 
+--- !u!114 &900450057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900450051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 40306178, guid: aa0b1eebb5db27a419fa4564bbe5c9c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preset: 0
+  onEnableBehaviour: 2
+  onDisableBehaviour: 2
 --- !u!1 &1028982978
 GameObject:
   m_ObjectHideFlags: 0
@@ -890,8 +1015,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 3.6591034, y: 7.5094986}
-  m_SizeDelta: {x: -66.7232, y: -63.89}
+  m_AnchoredPosition: {x: -0.000030517578, y: 3.4000015}
+  m_SizeDelta: {x: -3.6481, y: -20.999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1598409333
 MonoBehaviour:
@@ -917,8 +1042,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0d4224b6d86872745aa1812fb57f9b79, type: 2}
-  m_sharedMaterial: {fileID: 6025277876460917292, guid: 0d4224b6d86872745aa1812fb57f9b79, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 015e84a5ea5c12d4bb1f95b946916dc0, type: 2}
+  m_sharedMaterial: {fileID: 7514510203885039038, guid: 015e84a5ea5c12d4bb1f95b946916dc0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -942,7 +1067,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 54.95
+  m_fontSize: 103.6
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1426,8 +1551,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000030517578, y: 18}
-  m_SizeDelta: {x: -305.3195, y: -127.808}
+  m_AnchoredPosition: {x: 0, y: 13}
+  m_SizeDelta: {x: -0.000061035, y: -49.5226}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1689603508
 MonoBehaviour:
@@ -1453,8 +1578,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0d4224b6d86872745aa1812fb57f9b79, type: 2}
-  m_sharedMaterial: {fileID: 6025277876460917292, guid: 0d4224b6d86872745aa1812fb57f9b79, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 015e84a5ea5c12d4bb1f95b946916dc0, type: 2}
+  m_sharedMaterial: {fileID: 7514510203885039038, guid: 015e84a5ea5c12d4bb1f95b946916dc0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1478,13 +1603,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 147.55
+  m_fontSize: 243.4
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 200
-  m_fontStyle: 1
+  m_fontSizeMax: 300
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1705,7 +1830,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelCompleteDelay: 1
-  totalGameTime: 20
+  totalGameTime: 300
   finalCountdownTime: 3
   winThreshold: 60
 --- !u!4 &1878425535

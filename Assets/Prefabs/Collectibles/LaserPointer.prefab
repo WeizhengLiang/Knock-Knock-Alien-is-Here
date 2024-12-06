@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2d17aa76bfa688e4ba0938cffbccb986, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 178ce6f8cc4ced747b3a48e198aac578, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -216,7 +216,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -929845296, guid: 10fe29ec01033984c806de7ad8a0177c, type: 3}
+  m_Sprite: {fileID: 40246905, guid: 1cfc4a2f0710efc44afc4220d302cd34, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -290,7 +290,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 6.35, y: 5.01}
+    oldSize: {x: 5.48, y: 4.16}
     newSize: {x: 6.35, y: 5.01}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -382,6 +382,7 @@ MonoBehaviour:
   objectAnimator: {fileID: 1136483691604184228}
   data: {fileID: 11400000, guid: 7d0af9dad57ca4ff3893a3b521742757, type: 2}
   unlockVisualEffect: {fileID: 5102475924801897264}
+  Powered: {fileID: 1415867727, guid: 1cfc4a2f0710efc44afc4220d302cd34, type: 3}
 --- !u!95 &1136483691604184228
 Animator:
   serializedVersion: 5

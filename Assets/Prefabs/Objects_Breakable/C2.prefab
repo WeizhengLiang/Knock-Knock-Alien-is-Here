@@ -144,8 +144,8 @@ MonoBehaviour:
   canPickupMaterial: {fileID: 2100000, guid: 002eb4520e3b90a4c91a1c4e8c2c4001, type: 2}
   objectAnimator: {fileID: 6275263806150145220}
   fragileStrength: 0.5
-  breakImpactThreshold: 10
-  breakForceThreshold: 15
+  breakImpactThreshold: 2
+  breakForceThreshold: 5
   forceResetTime: 0.5
   brokenPrefab: {fileID: 1977640971341032384, guid: c2830098792aa79419dd7ab668c52cb8, type: 3}
 --- !u!60 &988433106803114007

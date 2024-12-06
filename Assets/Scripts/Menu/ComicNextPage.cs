@@ -8,7 +8,7 @@ public class ComicNextPage : MonoBehaviour
 {
 
     public List<GameObject> comicsList;
-    public GameObject skipButton;
+    public GameObject skipButton, nextButton, gameStartButton;
     public float skipTimeStep = .5f;
     private int currentPageNum = 0;
     void Start()
@@ -18,21 +18,24 @@ public class ComicNextPage : MonoBehaviour
             comic.SetActive(false);
         }
         comicsList[0].SetActive(true);
+        gameStartButton.SetActive(false);
+    }
+
+    public void StartGame()
+    {
+        SceneController.Instance.StartGameFromComic();
     }
 
     public void NextPage()
     {
         currentPageNum++;
-        if (currentPageNum == comicsList.Count)
-        {
-            SceneController.Instance.StartGameFromComic();
-            return;
-        }
 
         comicsList[currentPageNum].SetActive(true);
         if (currentPageNum == comicsList.Count - 1)
         {
             skipButton.SetActive(false);
+            nextButton.SetActive(false);
+            gameStartButton.SetActive(true);
         }
 
     }
@@ -40,7 +43,9 @@ public class ComicNextPage : MonoBehaviour
     public void Skip()
     {
         skipButton.SetActive(false);
+        nextButton.SetActive(false);
         StartCoroutine(ActivateComicsGradually());
+        gameStartButton.SetActive(true);
     }
 
     private IEnumerator ActivateComicsGradually()

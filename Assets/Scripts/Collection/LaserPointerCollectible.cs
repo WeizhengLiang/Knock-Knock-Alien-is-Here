@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LaserPointerCollectible : CollectibleObject
 {
+    public Sprite Powered;
     protected override bool CheckTriggerInteraction(GameObject other)
     {
         if (!isUnlocked && data.unlockMethod == UnlockMethod.PowerSource)
