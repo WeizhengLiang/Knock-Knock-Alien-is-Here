@@ -615,7 +615,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1961802735}
         m_TargetAssemblyTypeName: ComicNextPage, Assembly-CSharp
-        m_MethodName: NextPage
+        m_MethodName: StartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
