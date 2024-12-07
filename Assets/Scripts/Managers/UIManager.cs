@@ -168,7 +168,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            // 正常显示游戏结束面板
+            // ���常显示游戏结束面板
             ShowMainPanel(false);
             ShowGamePanel(false);
             ShowGameOverPanel(true);
@@ -194,11 +194,15 @@ public class UIManager : MonoBehaviour
             realEndingBG.SetActive(true);
         }
 
+        // 开始异步加载场景
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("RealEndingScene");
+        asyncLoad.allowSceneActivation = false;  // 暂时不激活新场景
+
         // 等待1秒
         yield return new WaitForSeconds(1f);
 
-        // 加载真结局场景
-        SceneController.Instance.LoadRealEndingScene();
+        // 允许激活新场景
+        asyncLoad.allowSceneActivation = true;
     }
 
     private void OnRestartButtonClicked()
