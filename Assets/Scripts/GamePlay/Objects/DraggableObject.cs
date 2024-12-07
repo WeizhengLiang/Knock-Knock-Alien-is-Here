@@ -276,6 +276,8 @@ public class DraggableObject : MonoBehaviour
                 StartDragging();
             }
         }
+
+        SoundManager.Instance.PlaySoundFromResources("Sound/Pickup", "Pickup", false, 1.0f);
     }
 
     /// <summary>
@@ -479,6 +481,7 @@ public class DraggableObject : MonoBehaviour
                 if (distance.distance < -surfaceIgnoreDistance)  // 使用负值因为重叠时距离为负
                 {
                     isValid = false;
+                    SoundManager.Instance.PlaySoundFromResources("Sound/Error", "Error", false, 1.0f);
                     break;
                 }
             }

@@ -21,6 +21,7 @@ public class EndSceneUI : MonoBehaviour
         // 如果在真结局场景，只处理New图标
         if (SceneManager.GetActiveScene().name == "RealEndingScene")
         {
+            SoundManager.Instance.SetBGMVolume(0f);
             UpdateNewIcon();
             return;
         }

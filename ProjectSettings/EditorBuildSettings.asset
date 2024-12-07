@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Collection.unity
     guid: 62848186e4afeba47a80075c187d0975
+  - enabled: 1
+    path: Assets/Scenes/RealEndingScene.unity
+    guid: a838c69b26b1c334faa6a15cc6d669a5
   m_configObjects: {}

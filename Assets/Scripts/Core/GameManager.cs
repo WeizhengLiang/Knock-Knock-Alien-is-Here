@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
         SmoothCameraScroller.Instance?.SetCameraLocked(true);
         DraggableObject.SetGlobalFrozen(true);
         SetGameState(GameState.Menu);
+        SoundManager.Instance.PlayBGMFromResources("Sound/GameLoopBGMusic", 0.5f);
     }
     
     // 当加载到MainScene时调用
@@ -154,6 +155,9 @@ public class GameManager : MonoBehaviour
         {
             switch (newState)
             {
+                case GameState.Menu:
+                   
+                    break;
                 case GameState.Ready:
                     UIManager.Instance.SwitchToReadyState();
                     break;

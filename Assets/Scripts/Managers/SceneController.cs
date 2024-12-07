@@ -81,12 +81,14 @@ public class SceneController : MonoBehaviour
     // 开始界面 -> 开场漫画
     public void StartGameFromMenu()
     {
+        SoundManager.Instance.SetBGMVolume(0.25f);
         LoadScene(SceneType.OpeningComic);
     }
     
     // 开场漫画 -> 游戏主界面
     public void StartGameFromComic()
     {
+        SoundManager.Instance.SetBGMVolume(0.5f);
         LoadScene(SceneType.GameScene);
     }
     
@@ -99,12 +101,14 @@ public class SceneController : MonoBehaviour
     // 游戏主界面 -> 胜利动画
     public void ShowWinAnimation()
     {
+        SoundManager.Instance.SetBGMVolume(0.25f);
         LoadScene(SceneType.WinAnimation);
     }
     
     // 游戏主界面 -> 失败动画
     public void ShowLoseAnimation()
     {
+        SoundManager.Instance.SetBGMVolume(0.25f);
         LoadScene(SceneType.LoseAnimation);
     }
     

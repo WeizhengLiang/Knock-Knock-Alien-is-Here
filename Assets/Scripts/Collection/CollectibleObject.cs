@@ -105,6 +105,7 @@ public class CollectibleObject : DraggableObject
         {
             unlockVisualEffect.SetActive(true);
         }
+        SoundManager.Instance.PlaySoundFromResources("Sound/UnlockCollection", "UnlockCollection", false, 1.0f);
 
         CollectibleManager.Instance.UnlockCollectible(data.type);
     }

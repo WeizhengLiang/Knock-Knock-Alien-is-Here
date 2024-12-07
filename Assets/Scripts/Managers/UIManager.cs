@@ -168,7 +168,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            // ���常显示游戏结束面板
+            // 常显示游戏结束面板
             ShowMainPanel(false);
             ShowGamePanel(false);
             ShowGameOverPanel(true);
@@ -254,6 +254,9 @@ public class UIManager : MonoBehaviour
         // 等待无效物体消失动画完成
         yield return StartCoroutine(HandleInvalidObjects());
 
+        // 开始播放分数攀升音效
+        SoundManager.Instance.PlaySoundFromResources("Sound/Reveal", "Reveal", true, 1.0f);
+
         // 动画显示百分比
         while (isAnimatingCoverage)
         {
@@ -263,6 +266,8 @@ public class UIManager : MonoBehaviour
             // 检查是否达到胜利阈值
             if (targetCoverage >= winThreshold && displayedCoverage >= winThreshold)
             {
+                // 停止分数攀升音效
+                SoundManager.Instance.StopSound("Reveal");
                 yield return StartCoroutine(ShowWinSequence());
             }
 
@@ -270,6 +275,8 @@ public class UIManager : MonoBehaviour
             if (Mathf.Approximately(displayedCoverage, targetCoverage))
             {
                 isAnimatingCoverage = false;
+                // 停止分数攀升音效
+                SoundManager.Instance.StopSound("Reveal");
                 if (targetCoverage < winThreshold)
                 {
                     yield return StartCoroutine(ShowLoseSequence());
@@ -316,6 +323,7 @@ public class UIManager : MonoBehaviour
         // 显示胜利相关按钮
         returnButton.gameObject.SetActive(true);
         futureDayButton.gameObject.SetActive(true);
+        SoundManager.Instance.PlaySoundFromResources("Sound/Victory", "Victory", false, 1.0f);
         yield return null;
     }
 
@@ -326,6 +334,7 @@ public class UIManager : MonoBehaviour
         // 显示失败相关按钮
         returnButton.gameObject.SetActive(true);
         timeMachineButton.gameObject.SetActive(true);
+        SoundManager.Instance.PlaySoundFromResources("Sound/Defeat", "Defeat", false, 1.0f);
         yield return null;
     }
 

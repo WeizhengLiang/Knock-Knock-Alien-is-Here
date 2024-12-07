@@ -8,12 +8,9 @@ public class LaserPointerCollectible : CollectibleObject
     [SerializeField] private Sprite unpoweredSprite;
     [SerializeField] private Sprite poweredSprite;
 
-    private SpriteRenderer spriteRenderer;
-
     protected override void Start()
     {
         base.Start();
-        spriteRenderer = GetComponent<SpriteRenderer>();
 
         // 根据解锁状态设置初始精灵
         if (IsUnlocked())

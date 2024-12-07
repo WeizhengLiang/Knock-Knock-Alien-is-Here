@@ -151,6 +151,7 @@ public class FragileObject : DraggableObject
         isBroken = true;
 
         Debug.Log($"{gameObject.name} has broken");
+        SoundManager.Instance.PlaySoundFromResources("Sound/1putbreak", "1putbreak", false, 1.0f);
 
         if (brokenPrefab != null)
         {
