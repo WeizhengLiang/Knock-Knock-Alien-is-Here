@@ -32,6 +32,10 @@ public class DraggableObject : MonoBehaviour
 
     [Header("Animation Settings")]
     [SerializeField] protected Animator objectAnimator;              // Object's animator component
+
+    [Header("Sorting Order")]
+    [SerializeField] private int defaultSortingOrder = 0;
+    [SerializeField] private int interactiveSortingOrder = 10;  // 交互时的层级
     #endregion
 
     #region Physics Settings
@@ -105,6 +109,11 @@ public class DraggableObject : MonoBehaviour
         
         CreateDragAnchor();
         CalculateDragSpeed();
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sortingOrder = defaultSortingOrder;
+        }
     }
 
     /// <summary>
@@ -465,6 +474,7 @@ public class DraggableObject : MonoBehaviour
         if (spriteRenderer != null)
         {
             spriteRenderer.material = normalMaterial;
+            spriteRenderer.sortingOrder = defaultSortingOrder;
         }
 
         // Apply inertia
@@ -497,6 +507,7 @@ public class DraggableObject : MonoBehaviour
         if (spriteRenderer != null)
         {
             spriteRenderer.material = invalidMaterial;
+            spriteRenderer.sortingOrder = interactiveSortingOrder;
         }
 
         if (objectAnimator != null)
@@ -532,6 +543,7 @@ public class DraggableObject : MonoBehaviour
         {
             if (isDragging)
             {
+                spriteRenderer.sortingOrder = interactiveSortingOrder;
                 if (isInvalidPosition)
                 {
                     spriteRenderer.material = invalidMaterial;
@@ -543,14 +555,17 @@ public class DraggableObject : MonoBehaviour
             }
             else if (isInvalidPosition)
             {
+                spriteRenderer.sortingOrder = interactiveSortingOrder;
                 spriteRenderer.material = invalidMaterial;
             }
             else if (isMouseOver)
             {
+                spriteRenderer.sortingOrder = defaultSortingOrder;
                 spriteRenderer.material = canPickupMaterial;
             }
             else
             {
+                spriteRenderer.sortingOrder = defaultSortingOrder;
                 spriteRenderer.material = normalMaterial;
             }
         }
