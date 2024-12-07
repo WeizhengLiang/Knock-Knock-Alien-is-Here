@@ -1830,9 +1830,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelCompleteDelay: 1
-  totalGameTime: 300
+  totalGameTime: 20
   finalCountdownTime: 3
   winThreshold: 60
+  startCountdownTime: 3
 --- !u!4 &1878425535
 Transform:
   m_ObjectHideFlags: 0
