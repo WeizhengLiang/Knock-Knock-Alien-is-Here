@@ -381,9 +381,17 @@ MonoBehaviour:
   canMergeMaterial: {fileID: 2100000, guid: f63ccc27cab37c447923dcf2b40f4af9, type: 2}
   canPickupMaterial: {fileID: 2100000, guid: 002eb4520e3b90a4c91a1c4e8c2c4001, type: 2}
   objectAnimator: {fileID: 1136483691604184228}
+  defaultSortingOrder: 0
+  interactiveSortingOrder: 10
+  rotationSpeed: 2
+  rotationDamping: 0.8
+  rotationThreshold: 0.1
+  surfaceIgnoreDistance: 0.3
+  showPlacementDebug: 1
   data: {fileID: 11400000, guid: 7d0af9dad57ca4ff3893a3b521742757, type: 2}
   unlockVisualEffect: {fileID: 5102475924801897264}
-  Powered: {fileID: 1415867727, guid: 1cfc4a2f0710efc44afc4220d302cd34, type: 3}
+  unpoweredSprite: {fileID: -929845296, guid: 10fe29ec01033984c806de7ad8a0177c, type: 3}
+  poweredSprite: {fileID: 1415867727, guid: 1cfc4a2f0710efc44afc4220d302cd34, type: 3}
 --- !u!95 &1136483691604184228
 Animator:
   serializedVersion: 5

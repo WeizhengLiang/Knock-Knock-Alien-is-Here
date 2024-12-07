@@ -85,7 +85,7 @@ public class CollectibleObject : DraggableObject
     /// Handles the effect when successfully triggered
     /// Disables trigger object and unlocks collectible
     /// </summary>
-    public void HandleTriggerEffect()
+    public virtual void HandleTriggerEffect()
     {
         if (currentMergeTarget != null)
         {

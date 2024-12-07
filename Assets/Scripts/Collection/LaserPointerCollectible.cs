@@ -4,13 +4,45 @@ using UnityEngine;
 
 public class LaserPointerCollectible : CollectibleObject
 {
-    public Sprite Powered;
+    [Header("Power Settings")]
+    [SerializeField] private Sprite unpoweredSprite;
+    [SerializeField] private Sprite poweredSprite;
+
+    private SpriteRenderer spriteRenderer;
+
+    protected override void Start()
+    {
+        base.Start();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // 根据解锁状态设置初始精灵
+        if (IsUnlocked())
+        {
+            spriteRenderer.sprite = poweredSprite;
+        }
+        else
+        {
+            spriteRenderer.sprite = unpoweredSprite;
+        }
+    }
+
     protected override bool CheckTriggerInteraction(GameObject other)
     {
-        if (!isUnlocked && data.unlockMethod == UnlockMethod.PowerSource)
+        return data.unlockMethod == UnlockMethod.PowerSource && other.CompareTag("PowerSource");
+    }
+
+    public override void HandleTriggerEffect()
+    {
+        // 播放通电效果
+        if (spriteRenderer != null)
         {
-            return other.CompareTag("PowerSource");
+            spriteRenderer.sprite = poweredSprite;
         }
-        return false;
+
+        // 只在未解锁时更新解锁状态
+        if (!isUnlocked)
+        {
+            base.HandleTriggerEffect();
+        }
     }
 }
