@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Calculates the coverage percentage of a door area using raycasts
@@ -8,23 +9,29 @@ public class DoorCoverageCalculator : MonoBehaviour
 {
     #region Serialized Fields
     [Header("Detection Settings")]
-    [SerializeField] private float requiredCoveragePercent = 90f;  // Required coverage percentage to complete level
-    [SerializeField] private LayerMask coverageLayer;              // Layer mask for raycast detection
-    [SerializeField] private Vector2 doorSize;                     // Size of the door area
-    [SerializeField] private int raycastCount = 20;                // Number of raycasts per axis
-    [SerializeField] private float raycastDistance = 0.1f;         // Distance of each raycast
+    [SerializeField] private float requiredCoveragePercent = 90f;
+    [SerializeField] private LayerMask draggableLayer;
+    [SerializeField] private LayerMask coverageLayer;
+    [SerializeField] private Vector2 doorSize;
+    [SerializeField] private int raycastCount = 20;
+    [SerializeField] private float raycastDistance = 0.1f;
+    [SerializeField] private BoxCollider2D doorArea;
     #endregion
 
     #region Private Fields
-    private float currentCoverage = 0f;                            // Current coverage percentage
-    private bool isLevelComplete = false;                          // Level completion state
+    private float currentCoverage = 0f;
+    private bool isLevelComplete = false;
+    private Vector2[] raycastPoints;  // 缓存射线检测点
+    private float raycastGridSize;    // 每个格子的大小
     #endregion
 
     #region Unity Lifecycle
-    /// <summary>
-    /// Calculates coverage during fixed time intervals
-    /// Only active during gameplay
-    /// </summary>
+    private void Start()
+    {
+        // 预计算所有射线检测点
+        InitializeRaycastPoints();
+    }
+
     private void FixedUpdate()
     {
         if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
@@ -35,96 +42,76 @@ public class DoorCoverageCalculator : MonoBehaviour
     #endregion
 
     #region Coverage Calculation
-    /// <summary>
-    /// Calculates the current coverage percentage using a grid of raycasts
-    /// </summary>
-    private void CalculateCoverage()
+    private void InitializeRaycastPoints()
     {
-        int hitCount = 0;
-        Vector2 startPos = transform.position;
-        
-        // Calculate door boundaries
-        float halfWidth = doorSize.x / 2f;
-        float halfHeight = doorSize.y / 2f;
-        
-        // Create raycast grid
+        raycastPoints = new Vector2[raycastCount * raycastCount];
+        raycastGridSize = doorSize.x / (raycastCount - 1);
+        Vector2 startPos = (Vector2)transform.position - doorSize / 2f;
+
         for (int x = 0; x < raycastCount; x++)
         {
             for (int y = 0; y < raycastCount; y++)
             {
-                // Calculate raycast start position
-                Vector2 rayStart = new Vector2(
-                    startPos.x - halfWidth + (doorSize.x * x / (raycastCount - 1)),
-                    startPos.y - halfHeight + (doorSize.y * y / (raycastCount - 1))
+                raycastPoints[x * raycastCount + y] = new Vector2(
+                    startPos.x + (doorSize.x * x / (raycastCount - 1)),
+                    startPos.y + (doorSize.y * y / (raycastCount - 1))
                 );
-                
-                // Cast ray
-                RaycastHit2D hit = Physics2D.Raycast(rayStart, Vector2.right, raycastDistance, coverageLayer);
-                
-                // Count valid hits (objects not in invalid position or being dragged)
-                if (hit.collider != null)
+            }
+        }
+    }
+
+    private void CalculateCoverage()
+    {
+        int hitCount = 0;
+        int totalPoints = raycastPoints.Length;
+        
+        // 合并两个层的遮罩
+        LayerMask combinedMask = draggableLayer | coverageLayer;
+
+        for (int i = 0; i < totalPoints; i++)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(raycastPoints[i], Vector2.right, raycastDistance, combinedMask);
+            
+            if (hit.collider != null)
+            {
+                // 先检查是否是可拖拽物体
+                DraggableObject obj = hit.collider.GetComponent<DraggableObject>();
+                if (obj != null)
                 {
-                    DraggableObject obj = hit.collider.GetComponent<DraggableObject>();
-                    if (obj != null && !obj.IsInInvalidPosition() && !obj.IsDragging())
+                    // 如果是可拖拽物体，检查其状态
+                    if (!obj.IsInInvalidPosition() && !obj.IsDragging())
                     {
                         hitCount++;
                     }
                 }
-                
-                // Visualize rays (editor only)
-                Debug.DrawRay(rayStart, Vector2.right * raycastDistance, hit.collider != null ? Color.green : Color.red);
+                else
+                {
+                    // 如果不是可拖拽物体（比如碎片），直接计入覆盖
+                    hitCount++;
+                }
             }
+
+            #if UNITY_EDITOR
+            Debug.DrawRay(raycastPoints[i], Vector2.right * raycastDistance, hit.collider != null ? Color.green : Color.red);
+            #endif
         }
-        
-        // Calculate coverage percentage
-        currentCoverage = (hitCount * 100f) / (raycastCount * raycastCount);
-        
-        // Debug output
-        Debug.Log($"Current Coverage: {currentCoverage}%");
-    }
-    #endregion
 
-    #region Level Completion
-    /// <summary>
-    /// Checks if coverage meets win condition
-    /// </summary>
-    private void CheckWinCondition()
-    {
-        if (currentCoverage >= requiredCoveragePercent && !isLevelComplete)
-        {
-            isLevelComplete = true;
-            OnLevelComplete();
-        }
-    }
-
-    /// <summary>
-    /// Handles level completion
-    /// </summary>
-    private void OnLevelComplete()
-    {
-        Debug.Log("Level Complete!");
-        GameManager.Instance.OnLevelComplete();
-    }
-    #endregion
-
-    #region Debug Visualization
-    /// <summary>
-    /// Draws door area in editor
-    /// </summary>
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(transform.position, new Vector3(doorSize.x, doorSize.y, 0.1f));
+        currentCoverage = (hitCount * 100f) / totalPoints;
     }
     #endregion
 
     #region Public Methods
-    /// <summary>
-    /// Gets current coverage percentage
-    /// </summary>
     public float GetCurrentCoverage()
     {
         return currentCoverage;
+    }
+    #endregion
+
+    #region Debug Visualization
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(transform.position, new Vector3(doorSize.x, doorSize.y, 0.1f));
     }
     #endregion
 }

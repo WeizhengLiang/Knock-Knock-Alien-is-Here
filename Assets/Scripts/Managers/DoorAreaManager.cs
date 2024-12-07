@@ -6,7 +6,7 @@ public class DoorAreaManager : MonoBehaviour
     
     [Header("区域设置")]
     [SerializeField] private DoorCoverageCalculator doorCoverageCalculator;
-    
+
     private void Awake()
     {
         if (Instance == null)
@@ -24,9 +24,10 @@ public class DoorAreaManager : MonoBehaviour
         return doorCoverageCalculator != null ? doorCoverageCalculator.GetCurrentCoverage() : 0f;
     }
 
-    private void OnDestroy() {
-        StopAllCoroutines();
-        if (Instance == this) {
+    private void OnDestroy() 
+    {
+        if (Instance == this) 
+        {
             Instance = null;
         }
     }
