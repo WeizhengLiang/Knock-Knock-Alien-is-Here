@@ -208,4 +208,18 @@ public class SceneController : MonoBehaviour
             UIManager.Instance.UpdateNewCollectibleIcons();
         }
     }
+
+    public void LoadRealEndingScene()
+    {
+        StartCoroutine(LoadSceneAsync("RealEndingScene"));
+    }
+
+    private IEnumerator LoadSceneAsync(string sceneName)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
 }

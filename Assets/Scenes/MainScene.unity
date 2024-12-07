@@ -199,6 +199,7 @@ MonoBehaviour:
   startCountdownText: {fileID: 1738109059996747651}
   newCollectibleIcons:
   - {fileID: 400862563}
+  realEndingBG: {fileID: 1738109059996747649}
 --- !u!1 &108998817 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7680850314851295065, guid: 286dfa9b39c4d403a9fd37e644fc9158, type: 3}
@@ -946,6 +947,11 @@ PrefabInstance:
       addedObject: {fileID: 400862562}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 286dfa9b39c4d403a9fd37e644fc9158, type: 3}
+--- !u!1 &1738109059996747649 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2246074909999466186, guid: 286dfa9b39c4d403a9fd37e644fc9158, type: 3}
+  m_PrefabInstance: {fileID: 1738109059996747648}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1738109059996747650 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7335280522974403212, guid: 286dfa9b39c4d403a9fd37e644fc9158, type: 3}

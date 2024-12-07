@@ -2,6 +2,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class EndSceneUI : MonoBehaviour
 {
@@ -10,25 +11,32 @@ public class EndSceneUI : MonoBehaviour
     
     [Header("Unlock Message")]
     [SerializeField] private GameObject messagePanel;
-    [SerializeField] private TextMeshProUGUI[] alienMessages; // 六个TMP对应六个收集物
+    [SerializeField] private TextMeshProUGUI[] alienMessages;
 
     private void Start()
     {
         // 初始化UI状态
-        messagePanel?.SetActive(false);
         newCollectibleIcon?.SetActive(false);
+        
+        // 如果在真结局场景，只处理New图标
+        if (SceneManager.GetActiveScene().name == "RealEndingScene")
+        {
+            UpdateNewIcon();
+            return;
+        }
+        
+        // 普通场景的其他初始化
+        messagePanel?.SetActive(false);
         HideAllMessages();
         
         if (CollectibleManager.Instance != null)
         {
-            // 只在本局有新解锁时显示消息面板
             bool hasNewUnlocksThisSession = CollectibleManager.Instance.HasNewUnlocksThisSession();
-            if (hasNewUnlocksThisSession)
+            if (hasNewUnlocksThisSession && messagePanel != null)
             {
                 ShowUnlockMessage();
             }
             
-            // New图标根据是否有未查看的收集物来显示
             UpdateNewIcon();
         }
     }
@@ -37,7 +45,6 @@ public class EndSceneUI : MonoBehaviour
     {
         if (newCollectibleIcon != null && CollectibleManager.Instance != null)
         {
-            // 使用 HasUnviewedCollectibles 来检查是否有未查看的收集物
             newCollectibleIcon.SetActive(CollectibleManager.Instance.HasUnviewedCollectibles());
         }
     }

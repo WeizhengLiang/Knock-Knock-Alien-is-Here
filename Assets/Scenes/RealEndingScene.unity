@@ -363,6 +363,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7049851045524438887, guid: c20631897223e064daf0ae6f24aa91c4, type: 3}
   m_PrefabInstance: {fileID: 62791065}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &62791067 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4094086839309747308, guid: c20631897223e064daf0ae6f24aa91c4, type: 3}
+  m_PrefabInstance: {fileID: 62791065}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &201831616
 GameObject:
   m_ObjectHideFlags: 0
@@ -968,6 +973,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 790835854}
   m_CullTransparentMesh: 1
+--- !u!1 &823841028
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 823841030}
+  - component: {fileID: 823841029}
+  m_Layer: 0
+  m_Name: EndSceneUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &823841029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823841028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993cde39a30484236acae48abb019e42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  newCollectibleIcon: {fileID: 62791067}
+  messagePanel: {fileID: 0}
+  alienMessages: []
+--- !u!4 &823841030
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823841028}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 930.91455, y: 577.1536, z: -7.94713}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &842800756
 GameObject:
   m_ObjectHideFlags: 0
@@ -2972,3 +3024,4 @@ SceneRoots:
   - {fileID: 292945763}
   - {fileID: 201831618}
   - {fileID: 1722566642}
+  - {fileID: 823841030}

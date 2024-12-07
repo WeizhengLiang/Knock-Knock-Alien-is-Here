@@ -46,6 +46,9 @@ public class UIManager : MonoBehaviour
     [Header("New Collectible Icon")]
     [SerializeField] private GameObject[] newCollectibleIcons; // 所有需要显示new图标的位置
 
+    [Header("Real Ending")]
+    [SerializeField] private GameObject realEndingBG;
+
     private float displayedCoverage;
     private float targetCoverage;
     private bool isAnimatingCoverage;
@@ -158,12 +161,44 @@ public class UIManager : MonoBehaviour
     // 切换到游戏结束状态时调用此方法
     public void SwitchToGameOverState()
     {
+        if (CollectibleManager.Instance != null && IsAllCollectiblesUnlocked())
+        {
+            // 如果所有收集物都已解锁，显示真结局
+            StartCoroutine(ShowRealEndingSequence());
+        }
+        else
+        {
+            // 正常显示游戏结束面板
+            ShowMainPanel(false);
+            ShowGamePanel(false);
+            ShowGameOverPanel(true);
+            UpdateNewCollectibleIcons();
+        }
+    }
+
+    private bool IsAllCollectiblesUnlocked()
+    {
+        return CollectibleManager.Instance.UnlockedCollectibles.All(pair => pair.Value);
+    }
+
+    private IEnumerator ShowRealEndingSequence()
+    {
+        // 隐藏所有其他面板
         ShowMainPanel(false);
         ShowGamePanel(false);
-        ShowGameOverPanel(true);
-        
-        // 更新 New 图标状态
-        UpdateNewCollectibleIcons();
+        ShowGameOverPanel(false);
+
+        // 显示真结局背景
+        if (realEndingBG != null)
+        {
+            realEndingBG.SetActive(true);
+        }
+
+        // 等待1秒
+        yield return new WaitForSeconds(1f);
+
+        // 加载真结局场景
+        SceneController.Instance.LoadRealEndingScene();
     }
 
     private void OnRestartButtonClicked()
