@@ -88,13 +88,21 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     protected virtual void Start()
     {
-        mainCamera = Camera.main;
-        rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        originalColor = spriteRenderer.color;
+        if (mainCamera == null) mainCamera = Camera.main;
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (col == null) col = GetComponent<Collider2D>();
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        if (originalColor == default)
+        {
+            originalColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
+        }
 
-        col.isTrigger = false;
+        if (col != null)
+        {
+            col.isTrigger = false;
+        }
+        
         CreateDragAnchor();
         CalculateDragSpeed();
     }
@@ -104,10 +112,18 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     protected virtual void OnEnable()
     {
-        allDraggableObjects.Add(this);
-        if (isInvalidPosition)
+        if (!allDraggableObjects.Contains(this))
         {
-            StartDragging();
+            allDraggableObjects.Add(this);
+        }
+        
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (col == null) col = GetComponent<Collider2D>();
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        if (isGlobalFrozen)
+        {
+            FreezeObject();
         }
     }
 
@@ -116,7 +132,10 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     protected virtual void OnDisable()
     {
-        allDraggableObjects.Remove(this);
+        if (allDraggableObjects.Contains(this))
+        {
+            allDraggableObjects.Remove(this);
+        }
     }
 
     /// <summary>
@@ -252,6 +271,14 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     private void FreezeObject()
     {
+        if (!gameObject.activeInHierarchy) return;
+        
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody2D>();
+            if (rb == null) return;
+        }
+
         if (this.isInvalidPosition || this.isDragging)
         {
             return;
@@ -275,6 +302,8 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     private void UnfreezeObject()
     {
+        if (rb == null) return;
+        
         if (wasFrozen)
         {
             rb.isKinematic = false;
@@ -292,9 +321,14 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     private static void FreezeAllObjects()
     {
+        if (allDraggableObjects == null) return;
+        
         foreach (var obj in allDraggableObjects)
         {
-            obj.FreezeObject();
+            if (obj != null)
+            {
+                obj.FreezeObject();
+            }
         }
     }
 
@@ -303,9 +337,14 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     private static void UnfreezeAllObjects()
     {
+        if (allDraggableObjects == null) return;
+        
         foreach (var obj in allDraggableObjects)
         {
-            obj.UnfreezeObject();
+            if (obj != null)
+            {
+                obj.UnfreezeObject();
+            }
         }
     }
 
@@ -315,6 +354,11 @@ public class DraggableObject : MonoBehaviour
     public static void SetGlobalFrozen(bool frozen)
     {
         isGlobalFrozen = frozen;
+        
+        if (allDraggableObjects == null || allDraggableObjects.Count == 0)
+        {
+            return;
+        }
 
         if (frozen)
         {
@@ -701,10 +745,8 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     public static void ClearStaticReferences()
     {
-        isAnyObjectBeingDragged = false;
-        isGlobalFrozen = false;
-        hasInvalidPlacement = false;
         allDraggableObjects.Clear();
+        isGlobalFrozen = false;
     }
     #endregion
 }

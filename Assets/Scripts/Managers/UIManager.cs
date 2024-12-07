@@ -43,9 +43,14 @@ public class UIManager : MonoBehaviour
     [Header("Collection Button")]
     [SerializeField] private GameObject newCollectibleIcon; // 感叹号图标
 
+    [Header("Start Countdown UI")]
+    [SerializeField] private GameObject startCountdownUI;    // 开始倒计时UI
+    [SerializeField] private TextMeshProUGUI startCountdownText;
+
     private float displayedCoverage;
     private float targetCoverage;
     private bool isAnimatingCoverage;
+    private Coroutine startCountdownCoroutine;
 
     private void Awake()
     {
@@ -318,6 +323,60 @@ public class UIManager : MonoBehaviour
         if (newCollectibleIcon != null)
         {
             newCollectibleIcon.SetActive(CollectibleManager.Instance.HasNewCollectible());
+        }
+    }
+
+    public void ShowStartCountdown()
+    {
+        if (startCountdownCoroutine != null)
+        {
+            StopCoroutine(startCountdownCoroutine);
+        }
+        startCountdownCoroutine = StartCoroutine(StartCountdownSequence());
+    }
+
+    private IEnumerator StartCountdownSequence()
+    {
+        if (startCountdownUI != null)
+        {
+            startCountdownUI.SetActive(true);
+            
+            for (int i = 3; i > 0; i--)
+            {
+                if (startCountdownText != null)
+                {
+                    startCountdownText.text = i.ToString();
+                }
+                yield return new WaitForSeconds(1f);
+            }
+            
+            startCountdownUI.SetActive(false);
+        }
+    }
+
+    public void SwitchToGamePanel()
+    {
+        mainPanel?.SetActive(false);
+        gamePanel?.SetActive(true);
+    }
+    
+    public IEnumerator ShowStartCountdownAndWait()
+    {
+        if (startCountdownUI != null)
+        {
+            startCountdownUI.SetActive(true);
+            
+            // 3-2-1倒计时
+            for (int i = 3; i > 0; i--)
+            {
+                if (startCountdownText != null)
+                {
+                    startCountdownText.text = i.ToString();
+                }
+                yield return new WaitForSeconds(1f);
+            }
+            
+            startCountdownUI.SetActive(false);
         }
     }
 }
