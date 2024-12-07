@@ -67,13 +67,10 @@ public class TriggerObject : DraggableObject
                 }
 
                 var collectible = otherCol.GetComponent<CollectibleObject>();
-                if (collectible != null && !collectible.IsUnlocked())
+                if (collectible != null && CompareTag(collectible.GetUnlockMethod().ToString()))
                 {
-                    if (CompareTag(collectible.GetUnlockMethod().ToString()))
-                    {
-                        currentTarget = otherCol.gameObject;
-                        return true;
-                    }
+                    currentTarget = otherCol.gameObject;
+                    return true;
                 }
             }
         }

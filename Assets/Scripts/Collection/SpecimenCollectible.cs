@@ -79,8 +79,6 @@ public class SpecimenCollectible : CollectibleObject
 
     private void Break(Vector2 breakPoint)
     {
-        if (isUnlocked) return;
-
         if (glassBreakEffect != null)
         {
             glassBreakEffect.Play();
@@ -103,7 +101,11 @@ public class SpecimenCollectible : CollectibleObject
             Instantiate(groundItemPrefab, groundPosition, Quaternion.identity);
         }
 
-        Unlock();
+        if (!isUnlocked)
+        {
+            Unlock();
+        }
+
         Destroy(gameObject);
     }
 

@@ -26,10 +26,8 @@ public class WiretapperCollectible : CollectibleObject
     protected override void Update()
     {
         base.Update();
-        if (!isUnlocked)
-        {
-            CheckAreaPosition();
-        }
+        // 允许已解锁的窃听器继续检测位置
+        CheckAreaPosition();
     }
 
     /// <summary>
@@ -51,8 +49,8 @@ public class WiretapperCollectible : CollectibleObject
                 // Area is vertically aligned - show both VFX
                 SetVFXState(true, true);
                 
-                // Check if close enough to unlock
-                if (distance <= acceptableDistance)
+                // 只在未解锁且距离合适时解锁
+                if (!isUnlocked && distance <= acceptableDistance)
                 {
                     Unlock();
                 }
