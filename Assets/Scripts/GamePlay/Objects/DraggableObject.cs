@@ -41,6 +41,10 @@ public class DraggableObject : MonoBehaviour
     [SerializeField] protected float rotationSpeed = 2f;        // 降低默认值
     [SerializeField] protected float rotationDamping = 0.8f;    // 增加阻尼
     [SerializeField] protected float rotationThreshold = 0.1f;  // 添加阈值，防止微小旋转
+
+    [Header("Placement Settings")]
+    [SerializeField] protected float surfaceIgnoreDistance = 0.3f;    // 忽略表面检测的距离
+    [SerializeField] protected bool showPlacementDebug = true;
     #endregion
 
     #region Physics Settings
@@ -463,18 +467,23 @@ public class DraggableObject : MonoBehaviour
             collisionLayer
         );
 
+        bool isValid = true;
         foreach (Collider2D otherCol in colliders)
         {
             if (otherCol != col && otherCol.gameObject != gameObject)
             {
+                // 获取两个碰撞体之间的最短距离信息
                 ColliderDistance2D distance = Physics2D.Distance(col, otherCol);
-                if (distance.distance <= 0.01f)
+
+                // 如果距离小于忽略距离，判定为无效放置
+                if (distance.distance < -surfaceIgnoreDistance)  // 使用负值因为重叠时距离为负
                 {
-                    return false;
+                    isValid = false;
+                    break;
                 }
             }
         }
-        return true;
+        return isValid;
     }
 
     /// <summary>
@@ -707,29 +716,75 @@ public class DraggableObject : MonoBehaviour
     /// </summary>
     private void OnDrawGizmos()
     {
-        if (col != null && isDragging)
-        {
-            // Show actual collider shape
-            Gizmos.color = isInvalidPosition ? Color.red : Color.yellow;
+        if (!showPlacementDebug || col == null) return;
 
-            if (col is BoxCollider2D boxCol)
+        // 绘制实际碰撞范围
+        Gizmos.color = Color.yellow;
+        DrawColliderBounds(col);
+
+        // 绘制表面忽略距离
+        Gizmos.color = isInvalidPosition ? Color.red : Color.blue;
+        if (col is PolygonCollider2D poly)
+        {
+            Vector2[] points = poly.points;
+            for (int i = 0; i < points.Length; i++)
             {
-                // Draw rotated bounds for BoxCollider2D
-                Matrix4x4 rotationMatrix = Matrix4x4.TRS(
-                    transform.position,
-                    transform.rotation,
-                    Vector3.one
+                Vector2 current = transform.TransformPoint(points[i]);
+                Vector2 next = transform.TransformPoint(points[(i + 1) % points.Length]);
+                Vector2 dir = (next - current).normalized;
+                Vector2 normal = new Vector2(-dir.y, dir.x);
+                
+                // 绘制表面忽略距离
+                Gizmos.DrawLine(
+                    current + normal * surfaceIgnoreDistance, 
+                    next + normal * surfaceIgnoreDistance
                 );
-                Gizmos.matrix = rotationMatrix;
-                Gizmos.DrawWireCube(boxCol.offset, boxCol.size);
             }
-            else if (col is CircleCollider2D circleCol)
+        }
+
+        // 绘制其他物体的表面忽略距离
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(
+            transform.position,
+            col.bounds.size * 2f,
+            transform.rotation.eulerAngles.z,
+            collisionLayer
+        );
+
+        foreach (Collider2D otherCol in colliders)
+        {
+            if (otherCol != col && otherCol.gameObject != gameObject)
             {
-                // Draw bounds for CircleCollider2D
-                Gizmos.DrawWireSphere(
-                    (Vector2)transform.position + circleCol.offset,
-                    circleCol.radius
-                );
+                // 绘制其他物体的表面忽略距离
+                if (otherCol is PolygonCollider2D otherPoly)
+                {
+                    Vector2[] points = otherPoly.points;
+                    for (int i = 0; i < points.Length; i++)
+                    {
+                        Vector2 current = otherCol.transform.TransformPoint(points[i]);
+                        Vector2 next = otherCol.transform.TransformPoint(points[(i + 1) % points.Length]);
+                        Vector2 dir = (next - current).normalized;
+                        Vector2 normal = new Vector2(-dir.y, dir.x);
+                        
+                        Gizmos.DrawLine(
+                            current + normal * surfaceIgnoreDistance, 
+                            next + normal * surfaceIgnoreDistance
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    private void DrawColliderBounds(Collider2D collider)
+    {
+        if (collider is PolygonCollider2D poly)
+        {
+            Vector2[] points = poly.points;
+            for (int i = 0; i < points.Length; i++)
+            {
+                Vector2 current = transform.TransformPoint(points[i]);
+                Vector2 next = transform.TransformPoint(points[(i + 1) % points.Length]);
+                Gizmos.DrawLine(current, next);
             }
         }
     }
