@@ -36,6 +36,11 @@ public class DraggableObject : MonoBehaviour
     [Header("Sorting Order")]
     [SerializeField] private int defaultSortingOrder = 0;
     [SerializeField] private int interactiveSortingOrder = 10;  // 交互时的层级
+
+    [Header("Rotation Settings")]
+    [SerializeField] protected float rotationSpeed = 2f;        // 降低默认值
+    [SerializeField] protected float rotationDamping = 0.8f;    // 增加阻尼
+    [SerializeField] protected float rotationThreshold = 0.1f;  // 添加阈值，防止微小旋转
     #endregion
 
     #region Physics Settings
@@ -44,6 +49,9 @@ public class DraggableObject : MonoBehaviour
     protected Vector2 dragVelocity;                                  // Current drag velocity
     protected float velocityUpdateInterval = 0.1f;                   // How often to update velocity
     protected float lastVelocityUpdateTime;                          // Time of last velocity update
+    protected Vector2 dragStartPosition;      // 添加：拖动开始位置
+    protected Vector2 lastDragDirection;      // 添加：上一帧的拖动方向
+    protected Vector2 lastPosition;           // 添加：上一帧的位置
     #endregion
 
     #region Component References
@@ -178,6 +186,34 @@ public class DraggableObject : MonoBehaviour
             spriteRenderer.material = normalMaterial;
         }
     }
+
+    /// <summary>
+    /// Update drag position and visual feedback
+    /// </summary>
+    protected virtual void FixedUpdate()
+    {
+        if (GameManager.Instance.CurrentState != GameManager.GameState.Playing)
+        {
+            return;
+        }
+
+        // 处理拖动和旋转
+        HandleDragging();
+
+        // 如果正在拖动，更新拖动位置和速度
+        if (isDragging)
+        {
+            UpdateDragPosition();
+            dragVelocity = (Vector2)transform.position - lastPosition;
+            lastPosition = transform.position;
+        }
+
+        // 更新放置验证
+        if (isDragging || isInvalidPosition)
+        {
+            DoUpdatePlacementValidation();
+        }
+    }
     #endregion
 
     #region Drag System Methods
@@ -216,6 +252,9 @@ public class DraggableObject : MonoBehaviour
     private void OnMouseDown()
     {
         lastDragPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        dragStartPosition = lastDragPosition;  // 初始化开始位置
+        lastDragDirection = Vector2.right;     // 初始化方向
+        lastPosition = transform.position;     // 初始化位置
         lastVelocityUpdateTime = Time.time;
         dragVelocity = Vector2.zero;
 
@@ -764,4 +803,33 @@ public class DraggableObject : MonoBehaviour
         isGlobalFrozen = false;
     }
     #endregion
+
+    protected virtual void HandleDragging()
+    {
+        if (isDragging)
+        {
+            // 获取鼠标位置
+            Vector2 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            
+            // 计算旋转
+            Vector2 direction = mousePosition - dragStartPosition;
+            if (direction.magnitude > 0.01f)  // 防止方向过小时的抖动
+            {
+                float angle = Vector2.SignedAngle(lastDragDirection, direction);
+                
+                // 应用阈值和阻尼
+                if (Mathf.Abs(angle) > rotationThreshold)
+                {
+                    angle *= rotationDamping;
+                    transform.Rotate(0, 0, angle * rotationSpeed * Time.deltaTime);
+                }
+
+                // 更新方向
+                lastDragDirection = direction;
+            }
+            
+            // 更新位置
+            dragStartPosition = mousePosition;
+        }
+    }
 }
