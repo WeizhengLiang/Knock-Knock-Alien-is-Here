@@ -74,6 +74,7 @@ public class SpriteSwitch : MonoBehaviour
         // Switch to the second sprite list
         currentSpriteList = secondSpriteList;
         currentSpriteIndex = 0; // Reset the index
+        GetComponent<AudioSource>().Play();
 
         // Start the coroutine again if the new list has sprites
         if (currentSpriteList.Count > 0)
