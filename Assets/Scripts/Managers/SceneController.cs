@@ -93,7 +93,7 @@ public class SceneController : MonoBehaviour
     // 游戏主界面 -> 开始界面
     public void ReturnToMainMenu()
     {
-        LoadScene(SceneType.MainMenu);
+        StartCoroutine(LoadMainMenuWithUnlockCheck());
     }
     
     // 游戏主界面 -> 胜利动画
@@ -163,5 +163,49 @@ public class SceneController : MonoBehaviour
         // 清理所有静态引用
         DraggableObject.ClearStaticReferences();
         // 其他管理器的清理...
+    }
+
+    public void ShowWinScene()
+    {
+        StartCoroutine(LoadSceneWithUnlockCheck("WinScene"));
+    }
+    
+    public void ShowLoseScene()
+    {
+        StartCoroutine(LoadSceneWithUnlockCheck("LoseScene"));
+    }
+    
+    private IEnumerator LoadSceneWithUnlockCheck(string sceneName)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+        
+        // 场景加载完成后，显示解锁消息和图标
+        var unlockMessageUI = FindObjectOfType<UnlockMessageUI>();
+        unlockMessageUI?.ShowUnlockMessage();
+        
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateNewCollectibleIcons();
+        }
+    }
+    
+    private IEnumerator LoadMainMenuWithUnlockCheck()
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenuScene");
+        
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+        
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateNewCollectibleIcons();
+        }
     }
 }

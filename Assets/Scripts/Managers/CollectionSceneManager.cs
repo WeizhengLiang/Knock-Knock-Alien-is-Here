@@ -77,4 +77,12 @@ public class CollectionSceneManager : MonoBehaviour
     {
         backButton?.onClick.RemoveAllListeners();
     }
+
+    private void OnEnable()
+    {
+        if (CollectibleManager.Instance != null)
+        {
+            CollectibleManager.Instance.MarkCollectiblesAsViewed();
+        }
+    }
 }

@@ -26,14 +26,7 @@ public class CollectionPanel : MonoBehaviour
         closeButton.onClick.AddListener(() => {
             // 检查是否在主菜单场景
             MainMenuUIManager mainMenuUI = FindObjectOfType<MainMenuUIManager>();
-            if (mainMenuUI != null)
-            {
-                // mainMenuUI.CloseCollectionPanel();
-            }
-            else
-            {
-                UIManager.Instance.CloseCollectionPanel();
-            }
+
         });
     }
     

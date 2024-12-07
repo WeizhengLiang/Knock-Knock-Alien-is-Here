@@ -36,16 +36,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject finalCountdownUI;   // 最后3秒倒计时UI
     [SerializeField] private TextMeshProUGUI countdownText;
 
-
-    [Header("Collection UI")]
-    [SerializeField] private CollectionPanel collectionPanel;  // 收藏品展示面板
-
     [Header("Collection Button")]
     [SerializeField] private GameObject newCollectibleIcon; // 感叹号图标
 
     [Header("Start Countdown UI")]
     [SerializeField] private GameObject startCountdownUI;    // 开始倒计时UI
     [SerializeField] private TextMeshProUGUI startCountdownText;
+
+    [Header("New Collectible Icon")]
+    [SerializeField] private GameObject[] newCollectibleIcons; // 所有需要显示new图标的位置
 
     private float displayedCoverage;
     private float targetCoverage;
@@ -72,7 +71,6 @@ public class UIManager : MonoBehaviour
         mainPanel?.SetActive(true);
         gamePanel?.SetActive(false);
         gameOverPanel?.SetActive(false);
-        collectionPanel?.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -139,7 +137,7 @@ public class UIManager : MonoBehaviour
         // 例如：缩放动画、颜色变化等
     }
 
-    // 切换到游戏状态时调用此方法
+    // 换到游戏状态时调用此方法
     public void SwitchToReadyState()
     {
         ShowMainPanel(true);
@@ -163,6 +161,9 @@ public class UIManager : MonoBehaviour
         ShowMainPanel(false);
         ShowGamePanel(false);
         ShowGameOverPanel(true);
+        
+        // 更新 New 图标状态
+        UpdateNewCollectibleIcons();
     }
 
     private void OnRestartButtonClicked()
@@ -297,32 +298,19 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // 添加关闭收藏面板的方法
-    public void CloseCollectionPanel()
+    public void UpdateNewCollectibleIcons()
     {
-        if (collectionPanel != null)
+        if (CollectibleManager.Instance != null)
         {
-            collectionPanel.gameObject.SetActive(false);
-        }
-    }
-
-    public void OpenCollectionPanel()
-    {
-        if (CollectibleManager.Instance != null && collectionPanel != null)
-        {
-            collectionPanel.gameObject.SetActive(true);
-            collectionPanel.SetupCollectionItems(
-                CollectibleManager.Instance.CollectibleDatabase,
-                CollectibleManager.Instance.UnlockedCollectibles
-            );
-        }
-    }
-
-    private void UpdateNewCollectibleIcon()
-    {
-        if (newCollectibleIcon != null)
-        {
-            newCollectibleIcon.SetActive(CollectibleManager.Instance.HasNewCollectible());
+            // 检查是否有未查看的收集物
+            bool hasUnviewedCollectibles = CollectibleManager.Instance.HasUnviewedCollectibles();
+            foreach (var icon in newCollectibleIcons)
+            {
+                if (icon != null)
+                {
+                    icon.SetActive(hasUnviewedCollectibles);
+                }
+            }
         }
     }
 
@@ -378,5 +366,11 @@ public class UIManager : MonoBehaviour
             
             startCountdownUI.SetActive(false);
         }
+    }
+
+    // 在场景加载完成时调用
+    public void OnMainSceneLoaded()
+    {
+        UpdateNewCollectibleIcons();
     }
 }

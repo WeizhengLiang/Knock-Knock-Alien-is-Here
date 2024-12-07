@@ -258,6 +258,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &208043477
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 208043479}
+  - component: {fileID: 208043478}
+  m_Layer: 0
+  m_Name: EndSceneUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &208043478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 208043477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993cde39a30484236acae48abb019e42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  newCollectibleIcon: {fileID: 672596550}
+  messagePanel: {fileID: 1452192870}
+  alienMessages:
+  - {fileID: 799677694550029755}
+  - {fileID: 6131359201984895674}
+  - {fileID: 8984856107967537825}
+  - {fileID: 2732916549633565003}
+  - {fileID: 8970656668562492195}
+  - {fileID: 3691096529448079802}
+--- !u!4 &208043479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 208043477}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 912.9179, y: 995.0325, z: -8.997168}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &440480081
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,6 +543,11 @@ PrefabInstance:
 --- !u!224 &672596549 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7049851045524438887, guid: c20631897223e064daf0ae6f24aa91c4, type: 3}
+  m_PrefabInstance: {fileID: 672596548}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &672596550 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4094086839309747308, guid: c20631897223e064daf0ae6f24aa91c4, type: 3}
   m_PrefabInstance: {fileID: 672596548}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1144863435
@@ -745,12 +803,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7624610761516553469}
-  - {fileID: 5066564259794350977}
-  - {fileID: 5850739184123803207}
-  - {fileID: 5584702626002426515}
-  - {fileID: 8894715861802499627}
   - {fileID: 123565231716811217}
+  - {fileID: 8894715861802499627}
+  - {fileID: 5584702626002426515}
+  - {fileID: 5850739184123803207}
+  - {fileID: 5066564259794350977}
+  - {fileID: 7624610761516553469}
   m_Father: {fileID: 1144863436}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2139,3 +2197,4 @@ SceneRoots:
   - {fileID: 147148180}
   - {fileID: 2103420254}
   - {fileID: 440480083}
+  - {fileID: 208043479}

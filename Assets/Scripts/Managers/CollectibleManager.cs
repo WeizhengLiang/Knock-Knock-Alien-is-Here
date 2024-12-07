@@ -10,6 +10,8 @@ public class CollectibleManager : MonoBehaviour
     [SerializeField] private CollectibleData[] collectibleDatabase;
     
     private Dictionary<CollectibleType, bool> unlockedCollectibles = new Dictionary<CollectibleType, bool>();
+    private HashSet<CollectibleType> newlyUnlockedCollectibles = new HashSet<CollectibleType>();
+    private bool hasViewedNewCollectibles = true;
     
     private void Awake()
     {
@@ -32,16 +34,18 @@ public class CollectibleManager : MonoBehaviour
             unlockedCollectibles[data.type] = false;
         }
         LoadCollectionState();
+        LoadViewedStatus();
     }
     
-    // 解锁收集物并设置新收集物标记
     public void UnlockCollectible(CollectibleType type)
     {
-        if (!unlockedCollectibles[type])
+        if (!IsCollectibleUnlocked(type))
         {
             unlockedCollectibles[type] = true;
-            PlayerPrefs.SetInt("HasNewCollectible", 1);
+            newlyUnlockedCollectibles.Add(type);
+            hasViewedNewCollectibles = false;
             SaveCollectionState();
+            SaveViewedStatus();
         }
     }
     
@@ -50,9 +54,25 @@ public class CollectibleManager : MonoBehaviour
         return unlockedCollectibles.ContainsKey(type) && unlockedCollectibles[type];
     }
     
-    public bool HasNewCollectible()
+    public HashSet<CollectibleType> GetNewlyUnlockedCollectibles()
     {
-        return PlayerPrefs.GetInt("HasNewCollectible", 0) == 1;
+        return newlyUnlockedCollectibles;
+    }
+    
+    public bool HasNewUnlocksThisSession()
+    {
+        return newlyUnlockedCollectibles.Count > 0;
+    }
+    
+    public bool HasUnviewedCollectibles()
+    {
+        return !hasViewedNewCollectibles;
+    }
+    
+    public void MarkCollectiblesAsViewed()
+    {
+        hasViewedNewCollectibles = true;
+        SaveViewedStatus();
     }
     
     private void SaveCollectionState()
@@ -71,6 +91,27 @@ public class CollectibleManager : MonoBehaviour
             int state = PlayerPrefs.GetInt($"Collectible_{data.type}", 0);
             unlockedCollectibles[data.type] = state == 1;
         }
+    }
+    
+    private void SaveViewedStatus()
+    {
+        PlayerPrefs.SetInt("HasViewedNewCollectibles", hasViewedNewCollectibles ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+    
+    public void LoadViewedStatus()
+    {
+        hasViewedNewCollectibles = PlayerPrefs.GetInt("HasViewedNewCollectibles", 1) == 1;
+    }
+    
+    private void OnApplicationQuit()
+    {
+        SaveViewedStatus();
+    }
+    
+    public void ClearNewlyUnlocked()
+    {
+        newlyUnlockedCollectibles.Clear();
     }
     
     // 获取收集物数据

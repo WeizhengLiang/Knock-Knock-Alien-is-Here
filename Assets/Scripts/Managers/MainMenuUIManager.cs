@@ -20,11 +20,11 @@ public class MainMenuUIManager : MonoBehaviour
         collectionButton?.onClick.AddListener(() => SceneController.Instance.EnterCollection());
     }
 
-    private void UpdateNewCollectibleIcon()
+    public void UpdateNewCollectibleIcon()
     {
-        if (newCollectibleIcon != null)
+        if (newCollectibleIcon != null && CollectibleManager.Instance != null)
         {
-            newCollectibleIcon.SetActive(CollectibleManager.Instance.HasNewCollectible());
+            newCollectibleIcon.SetActive(CollectibleManager.Instance.HasUnviewedCollectibles());
         }
     }
 }
