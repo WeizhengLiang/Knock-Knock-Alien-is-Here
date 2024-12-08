@@ -2294,6 +2294,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1722566642}
   - component: {fileID: 1722566641}
+  - component: {fileID: 1722566643}
   m_Layer: 0
   m_Name: Timeline
   m_TagString: Untagged
@@ -2311,7 +2312,7 @@ PlayableDirector:
   m_Enabled: 1
   serializedVersion: 3
   m_PlayableAsset: {fileID: 11400000, guid: f50c00408d542ce4d9a2ebab93a31e8d, type: 2}
-  m_InitialState: 1
+  m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
@@ -2340,6 +2341,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1722566643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722566640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 834d343cdc6bba54f88f9eaaaea2c1a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1817390932
 GameObject:
   m_ObjectHideFlags: 0
