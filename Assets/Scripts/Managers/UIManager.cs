@@ -364,6 +364,9 @@ public class UIManager : MonoBehaviour
         winUI.SetActive(isWin);
         loseUI.SetActive(!isWin);
         
+        // 停止计算音效
+        SoundManager.Instance.StopSound("Computing");
+
         // 播放音效
         if (isWin)
         {
@@ -523,7 +526,7 @@ public class UIManager : MonoBehaviour
             if (messageIndex < messages.Length && messages[messageIndex] != null)
             {
                 messages[messageIndex].gameObject.SetActive(true);
-                yield return StartCoroutine(TypeText(messages[messageIndex], 0.03f));  // 调整打��速度
+                yield return StartCoroutine(TypeText(messages[messageIndex], 0.03f));  // 调整打字速度
             }
             else
             {
