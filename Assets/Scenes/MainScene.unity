@@ -687,6 +687,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5446894965497889291, guid: 58818e433e927ce48bbd6d739d6f2029, type: 3}
     - target: {fileID: 8300356274898907569, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
+      propertyPath: doorSize.x
+      value: 7.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8300356274898907569, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
+      propertyPath: doorSize.y
+      value: 7.61
+      objectReference: {fileID: 0}
+    - target: {fileID: 8300356274898907569, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
       propertyPath: requiredCoveragePercent
       value: 50
       objectReference: {fileID: 0}
@@ -834,6 +842,14 @@ PrefabInstance:
       value: Canvas
       objectReference: {fileID: 0}
     - target: {fileID: 5546846117846979764, guid: 286dfa9b39c4d403a9fd37e644fc9158, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5931397507654480061, guid: 286dfa9b39c4d403a9fd37e644fc9158, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7680850314851295065, guid: 286dfa9b39c4d403a9fd37e644fc9158, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}

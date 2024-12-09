@@ -18,11 +18,6 @@ public class LaunchPadCollectible : MonoBehaviour, ITriggerable
         
         isUnlocked = PlayerPrefs.GetInt($"Collectible_{data.type}", 0) == 1;
 
-        if (isUnlocked && unlockVisualEffect != null)
-        {
-            unlockVisualEffect.SetActive(true);
-        }
-
         var collider = GetComponent<Collider2D>();
         collider.isTrigger = true;
     }

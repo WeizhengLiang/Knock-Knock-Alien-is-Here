@@ -14,7 +14,7 @@ public class SpecimenCollectible : CollectibleObject
     [SerializeField] private float breakForceThreshold = 5f; 
     [SerializeField] private float forceResetTime = 0.5f;    
 
-    private void Start()
+    protected override void Start()
     {
         base.Start();
         lastForceTime = Time.time;
