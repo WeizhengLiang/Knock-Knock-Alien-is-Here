@@ -277,7 +277,7 @@ public class DraggableObject : MonoBehaviour
             }
         }
 
-        SoundManager.Instance.PlaySoundFromResources("Sound/Pickup", "Pickup", false, 1.0f);
+        SoundManager.Instance.PlaySoundFromResources("Sound/Pickup", "Pickup", false, 0.25f);
     }
 
     /// <summary>

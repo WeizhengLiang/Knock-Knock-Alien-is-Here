@@ -80,8 +80,8 @@ public class FragileObject : DraggableObject
         }
 
         // Output debug information
-        Debug.Log($"Impact force: {impactForce} on {gameObject.name} from {collision.gameObject.name}" +
-                  $" (TopCollision: {isTopCollision}, NormalImpulse: {collision.GetContact(0).normalImpulse})");
+        // Debug.Log($"Impact force: {impactForce} on {gameObject.name} from {collision.gameObject.name}" +
+        //           $" (TopCollision: {isTopCollision}, NormalImpulse: {collision.GetContact(0).normalImpulse})");
 
         // Check for instant break threshold
         if (impactForce >= breakImpactThreshold)

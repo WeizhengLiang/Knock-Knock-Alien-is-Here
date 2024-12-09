@@ -72,6 +72,6 @@ public class LaunchPadCollectible : MonoBehaviour, ITriggerable
         {
             Destroy(trigger);
         }
-        SoundManager.Instance.PlaySoundFromResources("Assets/Resources/Sound/3-5launch.wav", "3-5launch", false, 1.0f);
+        SoundManager.Instance.PlaySoundFromResources("Sound/3-5launch", "3-5launch", false, 1.0f);
     }
 }
