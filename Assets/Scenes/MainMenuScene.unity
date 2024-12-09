@@ -1035,6 +1035,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 334029590}
     m_Modifications:
+    - target: {fileID: 1617839265756709853, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4760671321472910834, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
       propertyPath: m_Name
       value: Credit
@@ -1076,6 +1080,18 @@ PrefabInstance:
       value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 5018572272631157866, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5018572272631157866, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5018572272631157866, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5018572272631157866, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1105,7 +1121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5018572272631157866, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 0.0000009536743
       objectReference: {fileID: 0}
     - target: {fileID: 5018572272631157866, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1190,8 +1206,8 @@ MonoBehaviour:
   targetGO: {fileID: 0}
   tweenTargetIsTargetGO: 1
   delay: 0
-  duration: 1
-  easeType: 26
+  duration: 0.45
+  easeType: 4
   easeCurve:
     serializedVersion: 2
     m_Curve:
@@ -1219,7 +1235,7 @@ MonoBehaviour:
   loopType: 0
   loops: 1
   id: 
-  isRelative: 0
+  isRelative: 1
   isFrom: 1
   isIndependentUpdate: 0
   autoKill: 0
@@ -1227,13 +1243,13 @@ MonoBehaviour:
   isActive: 1
   isValid: 1
   target: {fileID: 1476753320}
-  animationType: 2
-  targetType: 11
+  animationType: 9
+  targetType: 5
   forcedTargetType: 0
   autoPlay: 1
   useTargetAsV3: 0
   endValueFloat: 0
-  endValueV3: {x: 0, y: 200, z: 0}
+  endValueV3: {x: 0, y: 40, z: 0}
   endValueV2: {x: 0, y: 0}
   endValueColor: {r: 1, g: 1, b: 1, a: 1}
   endValueString: 
@@ -1246,8 +1262,8 @@ MonoBehaviour:
   endValueTransform: {fileID: 0}
   optionalBool0: 0
   optionalBool1: 0
-  optionalFloat0: 0
-  optionalInt0: 0
+  optionalFloat0: 0.468
+  optionalInt0: 10
   optionalRotationMode: 0
   optionalScrambleMode: 0
   optionalShakeRandomnessMode: 0
