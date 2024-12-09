@@ -208,7 +208,8 @@ public class DraggableObject : MonoBehaviour
         if (isDragging)
         {
             UpdateDragPosition();
-            dragVelocity = (Vector2)transform.position - lastPosition;
+            // 计算当前帧的速度
+            dragVelocity = ((Vector2)transform.position - lastPosition);
             lastPosition = transform.position;
         }
 
@@ -527,8 +528,9 @@ public class DraggableObject : MonoBehaviour
             spriteRenderer.sortingOrder = defaultSortingOrder;
         }
 
-        // Apply inertia
-        rb.velocity = dragVelocity * dragInertiaMultiplier;
+        // 应用惯性
+        Vector2 finalVelocity = dragVelocity / Time.fixedDeltaTime; // 转换为实际速度
+        rb.velocity = finalVelocity * dragInertiaMultiplier;
         
         UnfreezeAllObjects();
     }
