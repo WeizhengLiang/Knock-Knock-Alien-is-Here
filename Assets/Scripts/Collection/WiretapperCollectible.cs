@@ -65,7 +65,7 @@ public class WiretapperCollectible : CollectibleObject
                 // Area is to the right
                 SetVFXState(false, true);
             }
-            SoundManager.Instance.PlaySoundFromResources("Sound/Searching", "Searching", true, 1.0f);
+            // SoundManager.Instance.PlaySoundFromResources("Sound/Searching", "Searching", true, 1.0f);
         }
         else
         {
