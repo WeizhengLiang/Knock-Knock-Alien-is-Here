@@ -161,14 +161,14 @@ public class UIManager : MonoBehaviour
     // 切换到游戏结束状态时调用此方法
     public void SwitchToGameOverState()
     {
-        if (CollectibleManager.Instance != null && IsAllCollectiblesUnlocked())
+        if (CanShowRealEnding())
         {
-            // 如果所有收集物都已解锁，显示真结局
+            // 如果满足条件，显示真结局
             StartCoroutine(ShowRealEndingSequence());
         }
         else
         {
-            // 常显示游戏结束面板
+            // 常规显示游戏结束面板
             ShowMainPanel(false);
             ShowGamePanel(false);
             ShowGameOverPanel(true);
@@ -176,9 +176,17 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private bool IsAllCollectiblesUnlocked()
+    private bool CanShowRealEnding()
     {
-        return CollectibleManager.Instance.UnlockedCollectibles.All(pair => pair.Value);
+        // 检查是否所有收集品都已解锁
+        bool allCollectiblesUnlocked = CollectibleManager.Instance != null && 
+                                     CollectibleManager.Instance.UnlockedCollectibles.All(pair => pair.Value);
+
+        // 检查是否只用标本挡住了门
+        bool onlySpecimenUsed = DoorAreaManager.Instance != null && 
+                               DoorAreaManager.Instance.IsOnlySpecimenUsedForCoverage();
+
+        return allCollectiblesUnlocked && onlySpecimenUsed;
     }
 
     private IEnumerator ShowRealEndingSequence()

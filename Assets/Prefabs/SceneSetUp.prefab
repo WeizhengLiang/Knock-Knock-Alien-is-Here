@@ -1497,6 +1497,7 @@ GameObject:
   - component: {fileID: 5000185584511408662}
   - component: {fileID: 453063229337089773}
   - component: {fileID: 4400598465468729988}
+  - component: {fileID: 5579536793606417305}
   m_Layer: 7
   m_Name: door
   m_TagString: Untagged
@@ -1679,6 +1680,51 @@ MonoBehaviour:
   optionalScrambleMode: 0
   optionalShakeRandomnessMode: 0
   optionalString: 
+--- !u!61 &5579536793606417305
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7583221932145029996}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.04573059, y: -2.6980753}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 25.640001, y: 29.550003}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 20.42677, y: 21.775888}
+  m_EdgeRadius: 0
 --- !u!1 &7879825353427840037
 GameObject:
   m_ObjectHideFlags: 0
@@ -1810,12 +1856,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requiredCoveragePercent: 50
-  coverageLayer:
+  draggableLayer:
     serializedVersion: 2
     m_Bits: 256
-  doorSize: {x: 7.39, y: 7.41}
-  raycastCount: 20
+  coverageLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  doorSize: {x: 7.15, y: 7.61}
+  raycastCount: 40
   raycastDistance: 0.1
+  doorArea: {fileID: 5579536793606417305}
 --- !u!1 &8710500527344514966
 GameObject:
   m_ObjectHideFlags: 0
@@ -3885,7 +3935,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5354447345304419404, guid: 6e2aff1b996bdb249b8b1d40107c7b7c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.28
+      value: -4.27
       objectReference: {fileID: 0}
     - target: {fileID: 5354447345304419404, guid: 6e2aff1b996bdb249b8b1d40107c7b7c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -5337,11 +5387,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8370890468227400393, guid: 6fb883cd7a2c14c1daf886ea8f8af1bf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.48
+      value: -17.56
       objectReference: {fileID: 0}
     - target: {fileID: 8370890468227400393, guid: 6fb883cd7a2c14c1daf886ea8f8af1bf, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.89
+      value: -2.91
       objectReference: {fileID: 0}
     - target: {fileID: 8370890468227400393, guid: 6fb883cd7a2c14c1daf886ea8f8af1bf, type: 3}
       propertyPath: m_LocalPosition.z

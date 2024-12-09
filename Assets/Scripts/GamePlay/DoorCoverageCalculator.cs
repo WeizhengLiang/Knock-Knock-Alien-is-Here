@@ -15,7 +15,7 @@ public class DoorCoverageCalculator : MonoBehaviour
     [SerializeField] private Vector2 doorSize;
     [SerializeField] private int raycastCount = 20;
     [SerializeField] private float raycastDistance = 0.1f;
-    [SerializeField] private BoxCollider2D doorArea;
+    [SerializeField] public BoxCollider2D doorArea;
     #endregion
 
     #region Private Fields
