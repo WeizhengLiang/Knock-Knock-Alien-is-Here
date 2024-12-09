@@ -695,6 +695,18 @@ PrefabInstance:
       value: 7.61
       objectReference: {fileID: 0}
     - target: {fileID: 8300356274898907569, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
+      propertyPath: raycastCount
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 8300356274898907569, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
+      propertyPath: coverageLayer.m_Bits
+      value: 2048
+      objectReference: {fileID: 0}
+    - target: {fileID: 8300356274898907569, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
+      propertyPath: draggableLayer.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 8300356274898907569, guid: 592addc3bae7ab541b568dd98230c48a, type: 3}
       propertyPath: requiredCoveragePercent
       value: 50
       objectReference: {fileID: 0}
