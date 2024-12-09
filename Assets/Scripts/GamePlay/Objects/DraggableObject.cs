@@ -213,10 +213,10 @@ public class DraggableObject : MonoBehaviour
         }
 
         // 更新放置验证
-        if (isDragging || isInvalidPosition)
-        {
-            DoUpdatePlacementValidation();
-        }
+        // if (isDragging || isInvalidPosition)
+        // {
+        //     DoUpdatePlacementValidation();
+        // }
     }
     #endregion
 
