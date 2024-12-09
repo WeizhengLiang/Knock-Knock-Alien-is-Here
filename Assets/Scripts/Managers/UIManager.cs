@@ -271,16 +271,16 @@ public class UIManager : MonoBehaviour
                 // 停止分数攀升音效
                 SoundManager.Instance.StopSound("Reveal");
                 
-                // 更新胜利UI的分数显示
+                // 更新胜利UI的分数显示，向下取整
                 if (winScoreText != null)
                 {
-                    winScoreText.text = $"{displayedCoverage:F1}%";
+                    winScoreText.text = $"{Mathf.FloorToInt(displayedCoverage)}%";
                 }
                 
                 // 等待指定时间
                 yield return new WaitForSeconds(endScoreDelay);
                 yield return StartCoroutine(ShowWinSequence());
-                break;  // 确保退出循环
+                break;
             }
 
             // 检查是否达到最终分数
@@ -290,10 +290,10 @@ public class UIManager : MonoBehaviour
                 // 停止分数攀升音效
                 SoundManager.Instance.StopSound("Reveal");
                 
-                // 更新失败UI的分数显示
+                // 更新失败UI的分数显示，向下取整
                 if (loseScoreText != null)
                 {
-                    loseScoreText.text = $"{displayedCoverage:F1}%";
+                    loseScoreText.text = $"{Mathf.FloorToInt(displayedCoverage)}%";
                 }
                 
                 if (targetCoverage < winThreshold)
@@ -302,7 +302,7 @@ public class UIManager : MonoBehaviour
                     yield return new WaitForSeconds(endScoreDelay);
                     yield return StartCoroutine(ShowLoseSequence());
                 }
-                break;  // 确保退出循环
+                break;
             }
 
             yield return null;
@@ -391,7 +391,7 @@ public class UIManager : MonoBehaviour
     {
         if (coverageText != null)
         {
-            coverageText.text = $"{coverage:F1}%";
+            coverageText.text = $"{coverage:F1}%";  // 游戏中的实时显示保持一位小数
         }
     }
 
@@ -488,7 +488,7 @@ public class UIManager : MonoBehaviour
             yield break;
         }
 
-        // ���保所有消息初始状态为隐藏
+        // 确保所有消息初始状态为隐藏
         foreach (var message in messages)
         {
             if (message != null)
@@ -523,7 +523,7 @@ public class UIManager : MonoBehaviour
             if (messageIndex < messages.Length && messages[messageIndex] != null)
             {
                 messages[messageIndex].gameObject.SetActive(true);
-                yield return StartCoroutine(TypeText(messages[messageIndex], 0.03f));  // 调整打字速度
+                yield return StartCoroutine(TypeText(messages[messageIndex], 0.03f));  // 调整打��速度
             }
             else
             {
