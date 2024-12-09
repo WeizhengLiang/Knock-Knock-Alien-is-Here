@@ -481,7 +481,6 @@ public class DraggableObject : MonoBehaviour
                 if (distance.distance < -surfaceIgnoreDistance)  // 使用负值因为重叠时距离为负
                 {
                     isValid = false;
-                    SoundManager.Instance.PlaySoundFromResources("Sound/Error", "Error", false, 1.0f);
                     break;
                 }
             }
@@ -565,6 +564,8 @@ public class DraggableObject : MonoBehaviour
         {
             AnimationManager.Instance.PlayFlickering(objectAnimator);
         }
+        
+        SoundManager.Instance.PlaySoundFromResources("Sound/Error", "Error", false, 1.0f);
     }
     #endregion
 
