@@ -31,7 +31,7 @@ public class SpecimenCollectible : CollectibleObject
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isUnlocked || isDragging) return;
+        if (isDragging) return;
 
         Vector2 relativePoint = collision.GetContact(0).point - (Vector2)transform.position;
         bool isTopCollision = relativePoint.y > 0;
@@ -50,7 +50,7 @@ public class SpecimenCollectible : CollectibleObject
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (isUnlocked || isDragging) return;
+        if (isDragging) return;
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
@@ -121,7 +121,7 @@ public class SpecimenCollectible : CollectibleObject
 
     private void OnDrawGizmos()
     {
-        if (!isUnlocked && Application.isPlaying && accumulatedForce > 0)
+        if (Application.isPlaying && accumulatedForce > 0)
         {
             float radius = accumulatedForce / breakForceThreshold * 0.5f;
             Gizmos.color = Color.yellow;
