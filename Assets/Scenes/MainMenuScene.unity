@@ -2118,7 +2118,7 @@ MonoBehaviour:
   levelCompleteDelay: 1
   totalGameTime: 20
   finalCountdownTime: 3
-  winThreshold: 20
+  winThreshold: 60
   startCountdownTime: 3
 --- !u!4 &1878425535
 Transform:
