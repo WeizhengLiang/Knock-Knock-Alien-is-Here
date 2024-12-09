@@ -48,7 +48,7 @@ public class WiretapperCollectible : CollectibleObject
             {
                 // Area is vertically aligned - show both VFX
                 SetVFXState(true, true);
-                SoundManager.Instance.PlaySoundFromResources("Assets/Resources/Sound/5End3-Alien1.mp3", "5End3-Alien1", false, 1.0f);
+                SoundManager.Instance.PlaySoundFromResources("Sound/5End3-Alien1", "5End3-Alien1", false, 1.0f);
                 // 只在未解锁且距离合适时解锁
                 if (!isUnlocked && distance <= acceptableDistance)
                 {
@@ -65,7 +65,7 @@ public class WiretapperCollectible : CollectibleObject
                 // Area is to the right
                 SetVFXState(false, true);
             }
-            SoundManager.Instance.PlaySoundFromResources("Assets/Resources/Sound/Searching.wav", "Searching", true, 1.0f);
+            SoundManager.Instance.PlaySoundFromResources("Sound/Searching", "Searching", true, 1.0f);
         }
         else
         {

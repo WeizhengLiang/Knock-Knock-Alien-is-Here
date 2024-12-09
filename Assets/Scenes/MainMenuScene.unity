@@ -1041,7 +1041,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4760671321472910834, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5018572272631157866, guid: 3af761ba9b28b6d46a85207fb792d430, type: 3}
       propertyPath: m_Pivot.x
@@ -2118,7 +2118,7 @@ MonoBehaviour:
   levelCompleteDelay: 1
   totalGameTime: 20
   finalCountdownTime: 3
-  winThreshold: 60
+  winThreshold: 20
   startCountdownTime: 3
 --- !u!4 &1878425535
 Transform:

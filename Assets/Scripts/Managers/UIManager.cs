@@ -28,16 +28,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject winUI;
     [SerializeField] private GameObject loseUI;
     [SerializeField] private Button returnButton;
-    [SerializeField] private Button futureDayButton;    // 胜利时显示
-    [SerializeField] private Button timeMachineButton;  // 失败时显示
     [SerializeField] private float coverageAnimSpeed = 50f;
+    [SerializeField] private TextMeshProUGUI winScoreText;     // Win UI 下的分数文本
+    [SerializeField] private TextMeshProUGUI loseScoreText;    // Lose UI 下的分数文本
+    [SerializeField] private float endScoreDelay = 0.5f;       // 分数显示完成后的等待时间
 
     [Header("Countdown UI")]
     [SerializeField] private GameObject finalCountdownUI;   // 最后3秒倒计时UI
     [SerializeField] private TextMeshProUGUI countdownText;
-
-    [Header("Collection Button")]
-    [SerializeField] private GameObject newCollectibleIcon; // 感叹号图标
 
     [Header("Start Countdown UI")]
     [SerializeField] private GameObject startCountdownUI;    // 开始倒计时UI
@@ -48,6 +46,12 @@ public class UIManager : MonoBehaviour
 
     [Header("Real Ending")]
     [SerializeField] private GameObject realEndingBG;
+
+    [Header("Unlock Message UI")] 
+    [SerializeField] private GameObject winUnlockMessagePanel;    // Win UI 下的消息面板
+    [SerializeField] private GameObject loseUnlockMessagePanel;   // Lose UI 下的消息面板
+    [SerializeField] private TextMeshProUGUI[] winAlienMessages;  // Win UI 下的消息
+    [SerializeField] private TextMeshProUGUI[] loseAlienMessages; // Lose UI 下的消息
 
     private float displayedCoverage;
     private float targetCoverage;
@@ -107,13 +111,9 @@ public class UIManager : MonoBehaviour
         restartButton.onClick.AddListener(OnRestartButtonClicked);
         startButton.onClick.AddListener(OnStartButtonClicked);
         returnButton.onClick.AddListener(() => SceneController.Instance.ReturnToMainMenu());
-        futureDayButton.onClick.AddListener(() => SceneController.Instance.ShowWinAnimation());
-        timeMachineButton.onClick.AddListener(() => SceneController.Instance.ShowLoseAnimation());
 
         // 初始时隐藏所有结算按钮
         returnButton.gameObject.SetActive(false);
-        futureDayButton.gameObject.SetActive(false);
-        timeMachineButton.gameObject.SetActive(false);
     }
 
     public void ShowMainPanel(bool show)
@@ -222,8 +222,6 @@ public class UIManager : MonoBehaviour
         restartButton.onClick.RemoveListener(OnRestartButtonClicked);
         startButton.onClick.RemoveListener(OnStartButtonClicked);
         returnButton.onClick.RemoveAllListeners();
-        futureDayButton.onClick.RemoveAllListeners();
-        timeMachineButton.onClick.RemoveAllListeners();
 
         if (Instance == this)
         {
@@ -243,10 +241,13 @@ public class UIManager : MonoBehaviour
 
     public void StartGameEndSequence(float finalCoverage, float winThreshold)
     {
-        targetCoverage = finalCoverage;
-        displayedCoverage = 0f;
-        isAnimatingCoverage = true;
-        StartCoroutine(AnimateCoverageSequence(winThreshold));
+        if (!isAnimatingCoverage)
+        {
+            isAnimatingCoverage = true;
+            targetCoverage = finalCoverage;
+            displayedCoverage = 0f;
+            StartCoroutine(AnimateCoverageSequence(winThreshold));
+        }
     }
 
     private IEnumerator AnimateCoverageSequence(float winThreshold)
@@ -266,9 +267,20 @@ public class UIManager : MonoBehaviour
             // 检查是否达到胜利阈值
             if (targetCoverage >= winThreshold && displayedCoverage >= winThreshold)
             {
+                isAnimatingCoverage = false;
                 // 停止分数攀升音效
                 SoundManager.Instance.StopSound("Reveal");
+                
+                // 更新胜利UI的分数显示
+                if (winScoreText != null)
+                {
+                    winScoreText.text = $"{displayedCoverage:F1}%";
+                }
+                
+                // 等待指定时间
+                yield return new WaitForSeconds(endScoreDelay);
                 yield return StartCoroutine(ShowWinSequence());
+                break;  // 确保退出循环
             }
 
             // 检查是否达到最终分数
@@ -277,10 +289,20 @@ public class UIManager : MonoBehaviour
                 isAnimatingCoverage = false;
                 // 停止分数攀升音效
                 SoundManager.Instance.StopSound("Reveal");
+                
+                // 更新失败UI的分数显示
+                if (loseScoreText != null)
+                {
+                    loseScoreText.text = $"{displayedCoverage:F1}%";
+                }
+                
                 if (targetCoverage < winThreshold)
                 {
+                    // 等待指定时间
+                    yield return new WaitForSeconds(endScoreDelay);
                     yield return StartCoroutine(ShowLoseSequence());
                 }
+                break;  // 确保退出循环
             }
 
             yield return null;
@@ -318,24 +340,51 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator ShowWinSequence()
     {
-        winUI.SetActive(true);
-        resultText.text = "Victory!";
-        // 显示胜利相关按钮
-        returnButton.gameObject.SetActive(true);
-        futureDayButton.gameObject.SetActive(true);
-        SoundManager.Instance.PlaySoundFromResources("Sound/Victory", "Victory", false, 1.0f);
+        ShowEndGameContent(true);
         yield return null;
     }
 
     private IEnumerator ShowLoseSequence()
     {
-        loseUI.SetActive(true);
-        resultText.text = "Lose...";
-        // 显示失败相关按钮
-        returnButton.gameObject.SetActive(true);
-        timeMachineButton.gameObject.SetActive(true);
-        SoundManager.Instance.PlaySoundFromResources("Sound/Defeat", "Defeat", false, 1.0f);
+        ShowEndGameContent(false);
         yield return null;
+    }
+
+    private void ShowEndGameContent(bool isWin)
+    {
+        // 先隐藏其他面板
+        mainPanel?.SetActive(false);
+        gamePanel?.SetActive(false);
+        gameOverPanel.SetActive(true);
+        
+        // 重置按钮状态
+        returnButton.gameObject.SetActive(false);
+
+        // 设置胜负UI
+        winUI.SetActive(isWin);
+        loseUI.SetActive(!isWin);
+        
+        // 播放音效
+        if (isWin)
+        {
+            SoundManager.Instance.PlaySoundFromResources("Sound/Victory", "Victory", false, 1.0f);
+        }
+        else
+        {
+            SoundManager.Instance.PlaySoundFromResources("Sound/Defeat", "Defeat", false, 1.0f);
+        }
+
+        // 显示按钮
+        returnButton.gameObject.SetActive(true);
+
+        // 检查并显示收藏品解锁信息
+        if (CollectibleManager.Instance != null && CollectibleManager.Instance.HasNewUnlocksThisSession())
+        {
+            StartCoroutine(ShowUnlockMessageSequence(isWin));
+        }
+        
+        // 更新收藏品图标
+        UpdateNewCollectibleIcons();
     }
 
     private void UpdateCoverageDisplay(float coverage)
@@ -420,5 +469,77 @@ public class UIManager : MonoBehaviour
     public void OnMainSceneLoaded()
     {
         UpdateNewCollectibleIcons();
+    }
+
+    private IEnumerator ShowUnlockMessageSequence(bool isWin)
+    {
+        // 先等待分数动画完全显示
+        while (isAnimatingCoverage)
+        {
+            yield return null;
+        }
+
+        GameObject messagePanel = isWin ? winUnlockMessagePanel : loseUnlockMessagePanel;
+        TextMeshProUGUI[] messages = isWin ? winAlienMessages : loseAlienMessages;
+
+        if (messagePanel == null || messages == null) 
+        {
+            Debug.LogWarning($"Message panel or messages array is null for {(isWin ? "win" : "lose")} UI");
+            yield break;
+        }
+
+        // ���保所有消息初始状态为隐藏
+        foreach (var message in messages)
+        {
+            if (message != null)
+            {
+                message.gameObject.SetActive(false);
+            }
+        }
+
+        // 确保另一个面板是隐藏的
+        if (isWin)
+        {
+            loseUnlockMessagePanel?.SetActive(false);
+        }
+        else
+        {
+            winUnlockMessagePanel?.SetActive(false);
+        }
+
+        var newlyUnlocked = CollectibleManager.Instance.GetNewlyUnlockedCollectibles();
+        if (newlyUnlocked.Count > 0)
+        {
+            messagePanel.SetActive(true);
+            yield return new WaitForSeconds(0.5f);  // 给玩家一点时间注意到面板的出现
+
+            // 如果有多个解锁，随机选择一个显示
+            CollectibleType typeToShow = newlyUnlocked.Count > 1 
+                ? newlyUnlocked.ElementAt(Random.Range(0, newlyUnlocked.Count))
+                : newlyUnlocked.First();
+
+            // 显示对应消息
+            int messageIndex = (int)typeToShow;
+            if (messageIndex < messages.Length && messages[messageIndex] != null)
+            {
+                messages[messageIndex].gameObject.SetActive(true);
+                yield return StartCoroutine(TypeText(messages[messageIndex], 0.03f));  // 调整打字速度
+            }
+            else
+            {
+                Debug.LogWarning($"No message found for collectible type: {typeToShow}");
+            }
+        }
+    }
+
+    private IEnumerator TypeText(TextMeshProUGUI textComponent, float delay)
+    {
+        string fullText = textComponent.text;
+        textComponent.text = "";
+        foreach (char letter in fullText.ToCharArray())
+        {
+            textComponent.text += letter;
+            yield return new WaitForSeconds(delay);
+        }
     }
 }

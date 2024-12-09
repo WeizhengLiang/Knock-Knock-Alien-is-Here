@@ -99,7 +99,7 @@ public class SpecimenCollectible : CollectibleObject
         {
             Vector3 groundPosition = new Vector3(breakPoint.x, groundY, 0);
             Instantiate(groundItemPrefab, groundPosition, Quaternion.identity);
-            SoundManager.Instance.PlaySoundFromResources("Assets/Resources/Sound/Runaway.wav", "Runaway", false, 1.0f);
+            SoundManager.Instance.PlaySoundFromResources("Sound/Runaway", "Runaway", false, 1.0f);
         }
 
         if (!isUnlocked)

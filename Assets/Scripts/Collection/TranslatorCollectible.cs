@@ -13,7 +13,7 @@ public class TranslatorCollectible : CollectibleObject
 
     protected override void Unlock()
     {
-        SoundManager.Instance.PlaySoundFromResources("Assets/Resources/Sound/Computing.wav", "Computing", true, 1.0f);
+        SoundManager.Instance.PlaySoundFromResources("Sound/Computing", "Computing", true, 1.0f);
         if (!isUnlocked)
         {
             var spriteSwitch = GetComponent<SpriteSwitch>();
