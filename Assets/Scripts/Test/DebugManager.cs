@@ -39,6 +39,19 @@ public class DebugManager : MonoBehaviour
             PlayerPrefsManager.UnlockAllCollectibles();
         }
 
+        // 添加性能监控选项
+        if (GUILayout.Button("切换内存监视器"))
+        {
+            PerformanceMonitorManager.Instance?.ToggleMemoryMonitor(
+                !(PerformanceMonitorManager.Instance.GetComponent<MemoryMonitor>()?.enabled ?? false)
+            );
+        }
+        
+        if (GUILayout.Button("强制内存检查"))
+        {
+            PerformanceMonitorManager.Instance?.ForceMemoryCheck();
+        }
+
         // 音效调试开关
         showSoundDebug = GUILayout.Toggle(showSoundDebug, "显示当前播放的音效");
         

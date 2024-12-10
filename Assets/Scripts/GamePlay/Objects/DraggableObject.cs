@@ -232,7 +232,7 @@ public class DraggableObject : MonoBehaviour
             float massMultiplier = 1f / (1f + (rb.mass * massInfluence));
             dragSpeed = baseDragSpeed * massMultiplier;
             dragSpeed = Mathf.Clamp(dragSpeed, minDragSpeed, maxDragSpeed);
-            Debug.Log($"{gameObject.name} mass: {rb.mass}, drag speed: {dragSpeed}");
+            // Debug.Log($"{gameObject.name} mass: {rb.mass}, drag speed: {dragSpeed}");
         }
         else
         {

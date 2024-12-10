@@ -114,8 +114,8 @@ public class FragileObject : DraggableObject
                 accumulatedForce += appliedForce * Time.deltaTime;
                 lastForceTime = currentTime;
 
-                Debug.Log($"Pressure force: {accumulatedForce} on {gameObject.name} from {collision.gameObject.name}" +
-                          $" (NormalForce: {contact.normalImpulse})");
+                // Debug.Log($"Pressure force: {accumulatedForce} on {gameObject.name} from {collision.gameObject.name}" +
+                //           $" (NormalForce: {contact.normalImpulse})");
 
                 if (accumulatedForce >= breakForceThreshold)
                 {
@@ -150,7 +150,7 @@ public class FragileObject : DraggableObject
         if (isBroken) return;
         isBroken = true;
 
-        Debug.Log($"{gameObject.name} has broken");
+        // Debug.Log($"{gameObject.name} has broken");
         SoundManager.Instance.PlaySoundFromResources("Sound/1putbreak", "1putbreak", false, 1.0f);
 
         if (brokenPrefab != null)
