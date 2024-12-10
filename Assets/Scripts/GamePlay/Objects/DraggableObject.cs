@@ -126,6 +126,13 @@ public class DraggableObject : MonoBehaviour
         {
             spriteRenderer.sortingOrder = defaultSortingOrder;
         }
+
+        if (rb != null)
+        {
+            float gravityScale = 1f + (rb.mass - 1f) * 0.5f;
+            rb.gravityScale = gravityScale;
+            Debug.Log($"{gameObject.name} mass: {rb.mass}, gravity scale: {gravityScale}");
+        }
     }
 
     /// <summary>

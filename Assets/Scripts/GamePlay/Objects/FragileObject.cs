@@ -38,6 +38,14 @@ public class FragileObject : DraggableObject
         // Increase drag speed to reflect lighter weight
         baseDragSpeed *= 1.2f;
         CalculateDragSpeed();
+        
+        // Decrease gravity impact
+        if (rb != null)
+        {
+            // Fragile objects fall more lightly
+            rb.gravityScale *= 0.8f;  // Adjust this coefficient to change the fall speed of fragile objects
+        }
+        
         lastForceTime = Time.time;
     }
     #endregion
