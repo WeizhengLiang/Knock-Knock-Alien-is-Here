@@ -264,21 +264,22 @@ public class UIManager : MonoBehaviour
         yield return StartCoroutine(HandleInvalidObjects());
 
         // 开始播放分数攀升音效
-        SoundManager.Instance.PlaySoundFromResources("Sound/Reveal", "Reveal", true, 1.0f);
+        SoundManager.Instance.PlaySoundFromResources("Sound/Reveal", "Reveal", false, 1.0f);
 
         // 动画显示百分比
         while (isAnimatingCoverage)
         {
             displayedCoverage = Mathf.MoveTowards(displayedCoverage, targetCoverage, coverageAnimSpeed * Time.deltaTime);
             UpdateCoverageDisplay(displayedCoverage);
+            
+            // 停止分数攀升音效
+            SoundManager.Instance.StopSound("Reveal");
 
             // 检查是否达到胜利阈值
             if (targetCoverage >= winThreshold && displayedCoverage >= winThreshold)
             {
                 isAnimatingCoverage = false;
-                // 停止分数攀升音效
-                SoundManager.Instance.StopSound("Reveal");
-                
+
                 // 更新胜利UI的分数显示，向下取整
                 if (winScoreText != null)
                 {
@@ -295,9 +296,7 @@ public class UIManager : MonoBehaviour
             if (Mathf.Approximately(displayedCoverage, targetCoverage))
             {
                 isAnimatingCoverage = false;
-                // 停止分数攀升音效
-                SoundManager.Instance.StopSound("Reveal");
-                
+
                 // 更新失败UI的分数显示，向下取整
                 if (loseScoreText != null)
                 {
