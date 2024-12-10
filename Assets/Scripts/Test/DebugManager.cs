@@ -2,14 +2,32 @@ using UnityEngine;
 
 public class DebugManager : MonoBehaviour
 {
+    public static DebugManager Instance { get; private set; }
     private Vector2 scrollPosition;
     private bool showCollectibleButtons = false;
+    private bool showSoundDebug = false;
 
+    private void Awake()
+    {
+        // 单例模式设置
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
     private void OnGUI()
     {
         #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        GUILayout.BeginArea(new Rect(10, 10, 200, 400));
+        GUILayout.BeginArea(new Rect(10, 10, 200, 500));
         
+        // 显示当前场景名称
+        GUILayout.Label($"当前场景: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}", GUI.skin.box);
         // 主要功能按钮
         if (GUILayout.Button("清除所有收集物数据"))
         {
@@ -19,6 +37,27 @@ public class DebugManager : MonoBehaviour
         if (GUILayout.Button("解锁所有收集物"))
         {
             PlayerPrefsManager.UnlockAllCollectibles();
+        }
+
+        // 音效调试开关
+        showSoundDebug = GUILayout.Toggle(showSoundDebug, "显示当前播放的音效");
+        
+        if (showSoundDebug && SoundManager.Instance != null)
+        {
+            GUILayout.Label("当前播放的音效：", GUI.skin.box);
+            var playingSounds = SoundManager.Instance.GetPlayingSounds();
+            
+            if (playingSounds.Count == 0)
+            {
+                GUILayout.Label("没有正在播放的音效");
+            }
+            else
+            {
+                foreach (string sound in playingSounds)
+                {
+                    GUILayout.Label(sound, GUI.skin.box);
+                }
+            }
         }
 
         // 单个收集物解锁按钮
@@ -51,5 +90,12 @@ public class DebugManager : MonoBehaviour
         
         GUILayout.EndArea();
         #endif
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

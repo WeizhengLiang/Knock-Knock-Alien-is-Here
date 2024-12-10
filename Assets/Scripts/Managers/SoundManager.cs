@@ -137,4 +137,27 @@ public class SoundManager : MonoBehaviour
             Debug.LogWarning($"找不到BGM文件: {resourcePath}");
         }
     }
+
+    // 新增：获取当前正在播放的所有音效信息
+    public List<string> GetPlayingSounds()
+    {
+        List<string> playingSounds = new List<string>();
+        
+        // 检查BGM
+        if (bgmSource != null && bgmSource.isPlaying)
+        {
+            playingSounds.Add($"BGM: {(bgmSource.clip != null ? bgmSource.clip.name : "Unknown")} (Volume: {bgmSource.volume:F2})");
+        }
+        
+        // 检查所有音效
+        foreach (var pair in soundSources)
+        {
+            if (pair.Value != null && pair.Value.isPlaying)
+            {
+                playingSounds.Add($"Sound: {pair.Key} (Volume: {pair.Value.volume:F2}, Loop: {pair.Value.loop})");
+            }
+        }
+        
+        return playingSounds;
+    }
 }
