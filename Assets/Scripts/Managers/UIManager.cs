@@ -283,7 +283,7 @@ public class UIManager : MonoBehaviour
                 // 更新胜利UI的分数显示，向下取整
                 if (winScoreText != null)
                 {
-                    winScoreText.text = $"{Mathf.FloorToInt(displayedCoverage)}%";
+                    winScoreText.text = $"{Mathf.Round(displayedCoverage)}%";
                 }
                 
                 // 等待指定时间
@@ -300,7 +300,7 @@ public class UIManager : MonoBehaviour
                 // 更新失败UI的分数显示，向下取整
                 if (loseScoreText != null)
                 {
-                    loseScoreText.text = $"{Mathf.FloorToInt(displayedCoverage)}%";
+                    loseScoreText.text = $"{Mathf.Round(displayedCoverage)}%";
                 }
                 
                 if (targetCoverage < winThreshold)
@@ -401,7 +401,7 @@ public class UIManager : MonoBehaviour
     {
         if (coverageText != null)
         {
-            coverageText.text = $"{coverage:F1}%";  // 游戏中的实时显示保持一位小数
+            coverageText.text = $"{Mathf.Round(coverage)}%";
         }
     }
 
