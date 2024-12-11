@@ -2297,6 +2297,7 @@ GameObject:
   - component: {fileID: 1722566643}
   - component: {fileID: 1722566645}
   - component: {fileID: 1722566644}
+  - component: {fileID: 1722566646}
   m_Layer: 0
   m_Name: Timeline
   m_TagString: Untagged
@@ -2329,6 +2330,8 @@ PlayableDirector:
     value: {fileID: 1722566645}
   - key: {fileID: -444732624963995336, guid: f50c00408d542ce4d9a2ebab93a31e8d, type: 2}
     value: {fileID: 1722566644}
+  - key: {fileID: -6045547536694722173, guid: f50c00408d542ce4d9a2ebab93a31e8d, type: 2}
+    value: {fileID: 1876478585}
   m_ExposedReferences:
     m_References:
     - f4a5625c1eb60e04c8f81184a5589b2f: {fileID: 1013334459}
@@ -2551,6 +2554,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1722566646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722566640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56020937b7bf34dafaf36950f62d192c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  director: {fileID: 1722566641}
 --- !u!1 &1817390932
 GameObject:
   m_ObjectHideFlags: 0
@@ -2688,6 +2704,126 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &1876478584
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1876478587}
+  - component: {fileID: 1876478586}
+  - component: {fileID: 1876478585}
+  m_Layer: 0
+  m_Name: TimelineSignalReceiver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1876478585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876478584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: a3bae8c85c6014eb08b5b60f3af39809, type: 2}
+    - {fileID: 11400000, guid: 62717914daec44da684e696104e8a31b, type: 2}
+    - {fileID: 11400000, guid: 36403d325cc1346ffb2428a9119d395d, type: 2}
+    - {fileID: 11400000, guid: c43496965308e4c64abf1015cf1e6d28, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1876478586}
+          m_TargetAssemblyTypeName: TimelineSignalReceiver, Assembly-CSharp
+          m_MethodName: PlayNextSound
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1876478586}
+          m_TargetAssemblyTypeName: TimelineSignalReceiver, Assembly-CSharp
+          m_MethodName: StopCurrentSound
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1876478586}
+          m_TargetAssemblyTypeName: TimelineSignalReceiver, Assembly-CSharp
+          m_MethodName: PlayBGM
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1876478586}
+          m_TargetAssemblyTypeName: TimelineSignalReceiver, Assembly-CSharp
+          m_MethodName: StopBGM
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1876478586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876478584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8598019363616405cbd830193c62019c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1876478587
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1876478584}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 84.55986, y: 64.6278, z: -11.136855}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1925027332
 GameObject:
   m_ObjectHideFlags: 0
@@ -3236,3 +3372,4 @@ SceneRoots:
   - {fileID: 201831618}
   - {fileID: 1722566642}
   - {fileID: 823841030}
+  - {fileID: 1876478587}
