@@ -249,6 +249,7 @@ public class UIManager : MonoBehaviour
 
     public void StartGameEndSequence(float finalCoverage, float winThreshold)
     {
+        Debug.Log($"实际覆盖率: {finalCoverage:F2}%, 目标阈值: {winThreshold}%");
         if (!isAnimatingCoverage)
         {
             isAnimatingCoverage = true;
@@ -260,60 +261,50 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator AnimateCoverageSequence(float winThreshold)
     {
-        // 等待无效物体消失动画完成
         yield return StartCoroutine(HandleInvalidObjects());
-
-        // 开始播放分数攀升音效
         SoundManager.Instance.PlaySoundFromResources("Sound/Reveal", "Reveal", false, 1.0f);
 
-        // 动画显示百分比
         while (isAnimatingCoverage)
         {
             displayedCoverage = Mathf.MoveTowards(displayedCoverage, targetCoverage, coverageAnimSpeed * Time.deltaTime);
             UpdateCoverageDisplay(displayedCoverage);
             
-            // 停止分数攀升音效
-            SoundManager.Instance.StopSound("Reveal");
-
-            // 检查是否达到胜利阈值
-            if (targetCoverage >= winThreshold && displayedCoverage >= winThreshold)
-            {
-                isAnimatingCoverage = false;
-
-                // 更新胜利UI的分数显示，向下取整
-                if (winScoreText != null)
-                {
-                    winScoreText.text = $"{Mathf.FloorToInt(displayedCoverage)}%";
-                }
-                
-                // 等待指定时间
-                yield return new WaitForSeconds(endScoreDelay);
-                yield return StartCoroutine(ShowWinSequence());
-                break;
-            }
-
-            // 检查是否达到最终分数
             if (Mathf.Approximately(displayedCoverage, targetCoverage))
             {
                 isAnimatingCoverage = false;
-
-                // 更新失败UI的分数显示，向下取整
-                if (loseScoreText != null)
-                {
-                    loseScoreText.text = $"{Mathf.FloorToInt(displayedCoverage)}%";
-                }
                 
-                if (targetCoverage < winThreshold)
+                // 使用四舍五入的分数来判断胜负
+                float roundedScore = Mathf.Round(displayedCoverage);
+                string scoreText = $"{roundedScore}%";
+                
+                // 使用取整后的分数进行胜负判定
+                if (roundedScore >= winThreshold)
                 {
-                    // 等待指定时间
+                    if (winScoreText != null)
+                    {
+                        winScoreText.text = scoreText;
+                    }
+                    Debug.Log($"胜利判定: 实际分数={displayedCoverage:F2}%, 取整后={roundedScore}%, 目标={winThreshold}%");
+                    yield return new WaitForSeconds(endScoreDelay);
+                    yield return StartCoroutine(ShowWinSequence());
+                }
+                else
+                {
+                    if (loseScoreText != null)
+                    {
+                        loseScoreText.text = scoreText;
+                    }
+                    Debug.Log($"失败判定: 实际分数={displayedCoverage:F2}%, 取整后={roundedScore}%, 目标={winThreshold}%");
                     yield return new WaitForSeconds(endScoreDelay);
                     yield return StartCoroutine(ShowLoseSequence());
                 }
                 break;
             }
-
+            
             yield return null;
         }
+        
+        SoundManager.Instance.StopSound("Reveal");
     }
 
     private IEnumerator HandleInvalidObjects()
@@ -401,7 +392,8 @@ public class UIManager : MonoBehaviour
     {
         if (coverageText != null)
         {
-            coverageText.text = $"{coverage:F1}%";  // 游戏中的实时显示保持一位小数
+            // 保持一致的四舍五入显示
+            coverageText.text = $"{Mathf.Round(coverage)}%";
         }
     }
 
