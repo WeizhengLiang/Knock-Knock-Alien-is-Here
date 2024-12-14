@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
     {
         // 游戏开始时就锁定相机和交互
         SmoothCameraScroller.Instance?.SetCameraLocked(true);
-        DraggableObject.SetGlobalFrozen(true);
+        DraggableObjectManager.Instance.SetGlobalFrozen(true);
         SetGameState(GameState.Menu);
         SoundManager.Instance.PlayBGMFromResources("Sound/GameLoopBGMusic", 0.5f);
     }
@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     {
         // 进入主场景时保持锁定状态
         SmoothCameraScroller.Instance?.SetCameraLocked(true);
-        DraggableObject.SetGlobalFrozen(true);
+        DraggableObjectManager.Instance.SetGlobalFrozen(true);
         SetGameState(GameState.Ready);
     }
     
@@ -90,7 +90,6 @@ public class GameManager : MonoBehaviour
     {
         if (CurrentState != GameState.Ready) return;
         
-        // 先切换UI
         if (UIManager.Instance != null)
         {
             UIManager.Instance.SwitchToGamePanel();
@@ -104,7 +103,7 @@ public class GameManager : MonoBehaviour
     {
         // 保持锁定状态
         SmoothCameraScroller.Instance?.SetCameraLocked(true);
-        DraggableObject.SetGlobalFrozen(true);
+        DraggableObjectManager.Instance?.SetGlobalFrozen(true);
         
         // 显示倒计时
         if (UIManager.Instance != null)
@@ -114,7 +113,7 @@ public class GameManager : MonoBehaviour
         
         // 倒计时结束，解锁并开始游戏
         SmoothCameraScroller.Instance?.SetCameraLocked(false);
-        DraggableObject.SetGlobalFrozen(false);
+        DraggableObjectManager.Instance?.SetGlobalFrozen(false);
         
         // 开始正式游戏
         remainingTime = totalGameTime;
@@ -134,11 +133,10 @@ public class GameManager : MonoBehaviour
     {
         // 重启时重新锁定
         SmoothCameraScroller.Instance?.SetCameraLocked(true);
-        DraggableObject.SetGlobalFrozen(true);
+        DraggableObjectManager.Instance?.SetGlobalFrozen(true);
         
         remainingTime = totalGameTime;
         Time.timeScale = 1;
-        DraggableObject.ResetGlobalState();
         
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
@@ -183,7 +181,7 @@ public class GameManager : MonoBehaviour
     
     private IEnumerator LevelCompleteSequence()
     {
-        DraggableObject.SetGlobalFrozen(true);
+        DraggableObjectManager.Instance.SetGlobalFrozen(true);
         yield return new WaitForSeconds(levelCompleteDelay);
     }
 
@@ -204,9 +202,7 @@ public class GameManager : MonoBehaviour
             
             // 清理所有管理器的静态引用
             UIManager.ClearStaticReferences();
-            DraggableObject.ClearStaticReferences();
-            CollectibleObject.ClearStaticReferences();
-            
+
             StopAllCoroutines();
         }
     }

@@ -31,7 +31,7 @@ public class SpecimenCollectible : CollectibleObject
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isDragging) return;
+        if (IsDragging) return;
 
         Vector2 relativePoint = collision.GetContact(0).point - (Vector2)transform.position;
         bool isTopCollision = relativePoint.y > 0;
@@ -50,7 +50,7 @@ public class SpecimenCollectible : CollectibleObject
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (isDragging) return;
+        if (IsDragging) return;
 
         foreach (ContactPoint2D contact in collision.contacts)
         {

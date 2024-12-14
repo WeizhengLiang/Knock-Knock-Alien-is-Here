@@ -74,7 +74,7 @@ public class FragileObject : DraggableObject
     /// </summary>
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isBroken || isDragging) return;
+        if (isBroken || IsDragging) return;
 
         // Get collision point relative to fragile object
         Vector2 relativePoint = collision.GetContact(0).point - (Vector2)transform.position;
@@ -103,7 +103,7 @@ public class FragileObject : DraggableObject
     /// </summary>
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (isBroken || isDragging) return;
+        if (isBroken || IsDragging) return;
 
         foreach (ContactPoint2D contact in collision.contacts)
         {

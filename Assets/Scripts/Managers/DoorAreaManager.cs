@@ -49,9 +49,9 @@ public class DoorAreaManager : MonoBehaviour
     {
         List<DraggableObject> objectsInDoor = new List<DraggableObject>();
         
-        foreach (var obj in DraggableObject.AllDraggableObjects)
+        foreach (var obj in DraggableObjectManager.Instance.AllDraggableObjects)
         {
-            if (!obj.IsInInvalidPosition() && !obj.IsDragging() && IsObjectInDoorArea(obj))
+            if (!obj.IsInvalidPosition && !obj.IsDragging && IsObjectInDoorArea(obj))
             {
                 objectsInDoor.Add(obj);
             }

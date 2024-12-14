@@ -9,9 +9,9 @@ public class TriggerObject : DraggableObject
     {
         if (spriteRenderer != null)
         {
-            if (isDragging)
+            if (IsDragging)
             {
-                if (isInvalidPosition)
+                if (IsInvalidPosition)
                 {
                     spriteRenderer.material = invalidMaterial;
                 }
@@ -46,7 +46,7 @@ public class TriggerObject : DraggableObject
 
     protected override bool IsValidPlacement()
     {
-        if (!isDragging) return true;
+        if (!IsDragging) return true;
 
         Collider2D[] colliders = Physics2D.OverlapBoxAll(
             transform.position,
@@ -90,7 +90,7 @@ public class TriggerObject : DraggableObject
 
     protected override void CompletePlace()
     {
-        if (currentTarget != null && !isInvalidPosition)
+        if (currentTarget != null && !IsInvalidPosition)
         {
             var triggerable = currentTarget.GetComponent<ITriggerable>();
             if (triggerable != null)

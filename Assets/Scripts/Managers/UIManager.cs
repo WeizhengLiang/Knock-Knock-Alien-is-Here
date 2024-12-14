@@ -309,12 +309,11 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator HandleInvalidObjects()
     {
-        var invalidObjects = DraggableObject.AllDraggableObjects
-            .Where(obj => obj.IsInInvalidPosition() || obj.IsDragging());
+        var invalidObjects = DraggableObjectManager.Instance.AllDraggableObjects
+            .Where(obj => obj.IsInvalidPosition || obj.IsDragging);
 
         foreach (var obj in invalidObjects)
         {
-            // 触发消失动画
             obj.TriggerDisappearAnimation();
         }
 

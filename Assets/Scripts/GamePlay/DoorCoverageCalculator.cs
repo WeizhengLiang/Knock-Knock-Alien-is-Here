@@ -79,7 +79,7 @@ public class DoorCoverageCalculator : MonoBehaviour
                 if (obj != null)
                 {
                     // 如果是可拖拽物体，检查其状态
-                    if (!obj.IsInInvalidPosition() && !obj.IsDragging())
+                    if (!obj.IsInvalidPosition && !obj.IsDragging)
                     {
                         hitCount++;
                     }

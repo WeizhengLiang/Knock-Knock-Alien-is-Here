@@ -140,8 +140,7 @@ public class SceneController : MonoBehaviour
         {
             Instance = null;
         }
-        // 确保在场景切换时也清理
-        DraggableObject.ClearStaticReferences();
+
         // 其他管理器的清理...
     }
 
@@ -163,10 +162,6 @@ public class SceneController : MonoBehaviour
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
-        
-        // 清理所有静态引用
-        DraggableObject.ClearStaticReferences();
-        // 其他管理器的清理...
     }
 
     public void ShowWinScene()

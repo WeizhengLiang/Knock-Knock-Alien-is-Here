@@ -73,7 +73,7 @@ public class CollectibleObject : DraggableObject
     /// </summary>
     protected override void CompletePlace()
     {
-        if (currentMergeTarget != null && !isInvalidPosition)
+        if (currentMergeTarget != null && !IsInvalidPosition)
         {
             HandleTriggerEffect();
         }
@@ -120,9 +120,9 @@ public class CollectibleObject : DraggableObject
     {
         if (spriteRenderer != null)
         {
-            if (isDragging)
+            if (IsDragging)
             {
-                if (isInvalidPosition)
+                if (IsInvalidPosition)
                 {
                     spriteRenderer.material = invalidMaterial;
                 }
